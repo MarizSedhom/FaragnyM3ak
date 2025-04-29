@@ -93,7 +93,7 @@
                 placeholder="Create a password"
                 formControlName="password"
               >
-              <i (click)="togglePasswordVisibility('password')" class="bi bi-eye toggle-password" [class.bi-eye-slash]="showPassword"></i>
+              <i (click)="togglePasswordVisibility('password')" class="bi toggle-password" [class.bi-eye] ="!showPassword" [class.bi-eye-slash]="showPassword"></i>
             </div>
             @if(registrationForm.get('password')?.invalid && (registrationForm.get('password')?.dirty || registrationForm.get('password')?.touched || isSubmitted))
             {
@@ -115,7 +115,7 @@
                 placeholder="Confirm your password"
                 formControlName="confirmPassword"
               >
-              <i (click)="togglePasswordVisibility('confirm')" class="bi bi-eye toggle-password" [class.bi-eye-slash]="showConfirmPassword"></i>
+              <i (click)="togglePasswordVisibility('confirm')" class="bi toggle-password" [class.bi-eye] ="!showConfirmPassword" [class.bi-eye-slash]="showConfirmPassword"></i>
             </div>
             @if(registrationForm.get('confirmPassword')?.invalid && (registrationForm.get('confirmPassword')?.dirty || registrationForm.get('confirmPassword')?.touched || isSubmitted))
             {
