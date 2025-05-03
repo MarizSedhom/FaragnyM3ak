@@ -1,6 +1,6 @@
 body {
     min-height: 100vh;
-    background-color: #f8f9fa;
+    background: linear-gradient(to right, #1a2b3c, #2d4b66);
     margin: 0;
   }
   
@@ -20,14 +20,14 @@ body {
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background-color: #007bff;
+    background-color: transparent;
     color: white;
     font-size: 1.5rem;
     display: flex;
     align-items: center;
     justify-content: center;
     text-decoration: none;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
     position: relative;
     z-index: 2; 
   }
@@ -47,6 +47,10 @@ body {
     pointer-events: none;
   }
   
+  .icon-container {
+    position: relative;
+  }
+
   .icon-container::after {
     content: '';
     position: absolute;
@@ -55,26 +59,49 @@ body {
     transform: translateY(-50%);
     width: 0;
     height: 60px;
-    background-color: #007bff;
     border-radius: 999px;
     z-index: 1; 
-    transition: width 0.3s ease;
+    transition: all 0.3s ease;
   }
   
   .icon-container:hover::after {
-    width: 160px; 
-    box-shadow: 0 4px 20px rgba(0, 123, 255, 0.4);
+    width: 200px;
+    opacity: 0.7;
   }
   
   .icon-container:hover .icon-label {
     opacity: 1;
     transform: translateX(10px) translateY(-50%);
   }
+
   .vertical-nav .icon-container.active::after {
-    background-color: #1e3b5a;
-    box-shadow: 0 0 10px rgba(0, 123, 255, 0.8);
+    width: 0;
+    opacity: 0;
   }
   
   .vertical-nav .icon-container.active .circle-icon {
-    background-color: #1e3b5a;
+    background-color: #007bff;
+    box-shadow: 
+      0 0 20px rgba(0, 123, 255, 0.4),
+      0 0 40px rgba(0, 123, 255, 0.2);
+  }
+
+  .vertical-nav .icon-container:not(.active) {
+    .circle-icon {
+      background-color: transparent;
+      box-shadow: 0 0 1px rgba(255, 255, 255, 0.5),
+                  0 0 2px rgba(255, 255, 255, 0.3);
+    }
+
+    &::after {
+      background-color: #1a2b3c;
+    }
+
+    &:hover .circle-icon {
+      background-color: rgba(26, 43, 60, 0.5);
+    }
+
+    &:hover::after {
+      background-color: #1a2b3c;
+    }
   }
