@@ -1,0 +1,77 @@
+// .movie-card {
+//     width: 220px;
+//     border-radius: 16px;
+//     overflow: hidden;
+//     background-color: #1e1e1e;
+//     transition: transform 0.3s ease, box-shadow 0.3s ease;
+//     position: relative;
+  
+//     &:hover {
+//       transform: scale(1.04);
+//       box-shadow: 0 6px 20px #FF6A00;
+//     }
+  
+//     .card-img-top {
+//       height: 300px;
+//       object-fit: cover;
+//       transition: opacity 0.3s;
+//     }
+  
+//     .card-body h6 {
+//       font-size: 1rem;
+//       font-weight: 600;
+//     }
+//   }
+  
+//   .rating-badge {
+//     background-color: #0f1c2e;
+//     border-radius: 10px;
+//     font-size: 13px;
+//     padding: 4px 8px;
+//     display: flex;
+//     align-items: center;
+  
+//     img {
+//       width: 16px;
+//       height: 16px;
+//       margin-right: 4px;
+//     }
+  
+//     .small {
+//       font-size: 0.75rem;
+//       color: #999;
+//     }
+//   }
+  
+body
+{
+    background-color: #212529;
+}
+
+.Container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  max-width: 1200px;
+  justify-content: center;
+  margin: 0 auto;
+  padding: 20px;
+  color: white;
+}
+
+.card-wrapper {
+  max-width: 100%;
+}
+
+.custom-hr {
+  width: 100%;
+  height: 2px;
+  background-color: white;
+  border: none;
+  margin: 0 auto;
+}
+
+footer {
+  border-top: 1px solid #444;
+  font-size: 0.9rem;
+}
