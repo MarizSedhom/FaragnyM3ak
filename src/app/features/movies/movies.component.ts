@@ -4,7 +4,9 @@ import { CommonModule } from '@angular/common';
 import { Movie } from './Model/movie.model';
 import { MovieCardComponent } from "./movie-card/movie-card.component";
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 @Component({
+  standalone: true,
   selector: 'app-movies',
   imports: [CommonModule, MovieCardComponent, FormsModule],
   templateUrl: './movies.component.html',
@@ -12,6 +14,8 @@ import { FormsModule } from '@angular/forms';
 })
 
 export class MoviesComponent {
+
+  
   movies: Movie[] = [
     {
       id: 1,
@@ -127,7 +131,7 @@ export class MoviesComponent {
   searchQuery: string = '';
   filteredMovies: Movie[] = [];
 
-  constructor() {
+  constructor(private route: Router) {
     this.filteredMovies = [...this.movies]; // Initializing with all movies
   }
 
