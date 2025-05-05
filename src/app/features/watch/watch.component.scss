@@ -1,0 +1,439 @@
+@use "sass:math";
+@use "sass:color";
+@use 'swiper/css';
+@use 'swiper/css/scrollbar';
+
+// ============================
+// Variables
+// ============================
+$primary-orange: #ff6b01;
+$dark-orange: #e05800;
+$light-orange: #ff8c3d;
+$primary-black: #0a0a0a;
+$dark-gray: #121212;
+$medium-gray: #222222;
+$light-gray: #555555;
+$error-red: #f44336;
+
+// ============================
+// Global Reset
+// ============================
+* {
+  box-sizing: border-box;
+}
+
+// ============================
+// Watch Page Styles
+// ============================
+.watch-page {
+  min-height: 100vh;
+  background-color: $primary-black;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+// ============================
+// Watch Section Styles
+// ============================
+.watch-section {
+  height: 90vh;
+  border: 2px solid $primary-orange;
+  box-shadow: 0 0 12px 4px $primary-orange;
+  transition: all 0.3s ease-in-out;
+
+  &.playing {
+    box-shadow: 0 0 12px 10px $primary-orange;
+  }
+
+  .video-wrapper {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+
+    // Controls Wrapper (Video controls)
+    .controls-wrapper {
+      opacity: 1;
+      transition: opacity 0.5s ease-in-out;
+      pointer-events: all; // Allow interaction when visible
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: $primary-black;
+
+      &.fade-out {
+        opacity: 0;
+        pointer-events: none; // Prevent interaction when hidden
+      }
+    }
+
+    // iframe video player
+    iframe {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    // Video Overlay Styles (Used for left, center, and right)
+    .video-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+
+      .left-side, .right-side {
+        height: 100%;
+        flex: 1;
+        position: relative;
+        transition: all 0.3s ease-in-out;
+
+        &::after {
+          display: none;
+          content: "\A\F234\F234\F231\A 10 seconds"; // Icon for 10 seconds
+          white-space: pre;
+          transition: all 0.3s ease-in-out;
+          font-family: "bootstrap-icons";
+          position: absolute;
+          top: calc(50% - 50px);
+          left: calc(50% - 50px);
+          width: 100px;
+          height: 100px;
+          border-radius: 50%;
+          text-align: center;
+          color: white;
+          background: rgba($primary-black, 0.3);
+        }
+      }
+
+      .left-side::after {
+        content: "\A\F22D\F230\F230\A 10 Seconds";
+      }
+
+      .showAfter::after {
+        display: block;
+        transition: all 0.3s ease-in-out;
+      }
+
+      .center {
+        flex: 2;
+      }
+    }
+  }
+
+  #videoTime {
+    color: $primary-orange;
+  }
+
+  // Slider Styles
+  .slider-styled {
+    height: 7px;
+    box-shadow: 0 0 2px 2px $primary-orange;
+
+    ::ng-deep .noUi-connect {
+      background: color.mix($primary-black, $primary-orange, 20%);
+    }
+
+    ::ng-deep .noUi-connects {
+      background: $primary-black;
+      padding: 3px;
+      cursor: pointer;
+    }
+
+    ::ng-deep .noUi-touch-area {
+      cursor: pointer;
+    }
+
+    ::ng-deep .noUi-handle {
+      height: 18px;
+      width: 18px;
+      top: -5px;
+      right: -9px; // Adjusted for centering
+      border-radius: 9px;
+
+      &::after, &::before {
+        display: none;
+      }
+    }
+  }
+
+  #slider-volume {
+    width: 200px;
+  }
+
+  // Controls Section (Play, Mute, Volume, Fullscreen)
+  .controls {
+    border-bottom: 1px solid $primary-orange;
+    color: $primary-orange;
+
+    button {
+      color: $primary-orange;
+      background-color: $primary-black;
+      border: none;
+      transition: all 0.3s ease-in-out;
+      padding: 5px 10px;
+
+      &#play {
+        border-radius: 2px 0px 0px 2px;
+      }
+
+      &:hover {
+        background-color: $primary-orange;
+        color: $primary-black;
+        box-shadow: 0 0 5px 2px $primary-orange;
+      }
+    }
+  }
+}
+
+// ============================
+// Playlist Styles
+// ============================
+.playlist {
+  margin: 20px;
+  border: 1px solid $primary-orange;
+  border-radius: 50px;
+
+  swiper-container {
+    height: 350px;
+    color: $primary-orange;
+    --swiper-scrollbar-drag-bg-color: #ff6b01;
+    margin: 20px 50px;
+  }
+
+  swiper-container::part(scrollbar) {
+    background-color: $primary-black;
+    height: 8px;
+    border-radius: 4px;
+    color: $primary-orange;
+    border: 1px solid $primary-orange;
+  }
+
+  // Keyframe Animation (for pulse effect)
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba($primary-orange, 0.7);
+    }
+    70% {
+      box-shadow: 0 0 0 10px rgba($primary-orange, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba($primary-orange, 0);
+    }
+  }
+
+  // Card Styles (for each playlist item)
+  .card {
+    width: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: $primary-black;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    margin: 15px;
+    position: relative;
+
+    &:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 14px 28px rgba($primary-orange, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+
+      .card__image {
+        transform: scale(1.08);
+      }
+
+      .card__overlay {
+        opacity: 1;
+      }
+
+      .card__play {
+        transform: translate(-50%, -50%) scale(1);
+      }
+
+      .card__title {
+        color: $primary-orange;
+      }
+    }
+
+    // Playing State (for active video)
+    &--playing {
+      border: 2px solid $primary-orange;
+      animation: pulse 2s infinite;
+
+      .card__play-icon {
+        color: $primary-black;
+      }
+
+      &:after {
+        content: '';
+        position: absolute;
+        width: 15px;
+        height: 15px;
+        top: 10px;
+        right: 10px;
+        border-radius: 50%;
+        background-color: $primary-orange;
+        box-shadow: 0 0 10px rgba($primary-orange, 0.8);
+      }
+    }
+
+    // Thumbnail Styling
+    &__thumbnail {
+      position: relative;
+      height: 180px;
+      overflow: hidden;
+    }
+
+    &__image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    // Overlay on Image
+    &__overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to top, rgba($primary-black, 0.8) 0%, rgba($primary-black, 0.2) 50%, rgba($primary-black, 0.4) 100%);
+      opacity: 0.7;
+      transition: opacity 0.3s ease;
+    }
+
+    // Play Button on Thumbnail
+    &__play {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.9);
+      width: 54px;
+      height: 54px;
+      background-color: rgba($primary-orange, 0.9);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 20px rgba($primary-orange, 0.5);
+
+      &:hover {
+        background-color: $primary-orange;
+        transform: translate(-50%, -50%) scale(1.1);
+        box-shadow: 0 0 30px rgba($primary-orange, 0.8);
+      }
+    }
+
+    &__play-icon {
+      font-size: 24px;
+      color: white;
+      margin-left: 2px; // Adjust for visual alignment
+    }
+
+    // Duration Badge on Thumbnail
+    &__duration {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      background-color: rgba($primary-black, 0.8);
+      color: white;
+      padding: 4px 8px;
+      font-size: 12px;
+      border-radius: 4px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      border-left: 2px solid $primary-orange;
+    }
+
+    // Card Content Area (Title, Actions)
+    &__content {
+      padding: 16px;
+    }
+
+    // Title for Each Card
+    &__title {
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      line-height: 1.3;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      transition: color 0.3s ease;
+    }
+
+    // Actions on the card (Share, Favorite)
+    &__actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 12px;
+    }
+
+    // Button Styles for Actions (Share, Favorite)
+    &__button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      outline: none;
+
+      &-icon {
+        margin-right: 6px;
+        font-size: 16px;
+      }
+
+      &--primary {
+        background-color: $primary-orange;
+        color: white;
+
+        &:hover {
+          background-color: $dark-orange;
+          transform: translateY(-2px);
+        }
+
+        &:active {
+          transform: translateY(0);
+        }
+      }
+
+      &--secondary {
+        background-color: $medium-gray;
+        color: white;
+
+        &:hover {
+          background-color: color.adjust($medium-gray, $lightness: 10%);
+          transform: translateY(-2px);
+        }
+
+        &:active {
+          transform: translateY(0);
+        }
+
+        &--active {
+          background-color: rgba($primary-orange, 0.2);
+          color: $primary-orange;
+
+          .card__button-icon {
+            color: $primary-orange;
+          }
+
+          &:hover {
+            background-color: rgba($primary-orange, 0.3);
+            transform: translateY(-2px);
+          }
+        }
+      }
+    }
+  }
+}
