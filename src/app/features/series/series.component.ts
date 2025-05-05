@@ -13,9 +13,10 @@
 // movies.component.ts
 import { Component, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Series } from './Model/series.model';
 import { FormsModule } from '@angular/forms';
 import { SeriesCardComponent } from './series-card/series-card.component';
+import { Series } from '../../shared/models/series.model';
+// import { Series } from '../../shared/models/series.model';
 @Component({
   selector: 'app-series',
   imports: [CommonModule, SeriesCardComponent, FormsModule],

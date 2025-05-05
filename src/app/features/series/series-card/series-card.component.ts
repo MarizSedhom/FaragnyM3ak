@@ -1,5 +1,6 @@
 import { Component,Input } from '@angular/core';
-import { Series } from '../Model/series.model';
+import { Series } from '../../../shared/models/series.model';
+// import { Series } from '../Model/series.model';
 
 
 @Component({
