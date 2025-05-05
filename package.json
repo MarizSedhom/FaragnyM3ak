@@ -22,6 +22,7 @@
     "@ngrx/effects": "^19.1.0",
     "@ngrx/entity": "^19.1.0",
     "@ngrx/store": "^19.1.0",
+    "bootstrap": "^5.3.5",
     "firebase": "^11.6.1",
     "movie-app": "file:",
     "rxjs": "~7.8.0",
