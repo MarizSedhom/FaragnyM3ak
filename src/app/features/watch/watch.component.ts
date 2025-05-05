@@ -5,28 +5,46 @@ import * as noUiSlider from 'nouislider';
 import { register, SwiperContainer } from 'swiper/element/bundle';
 import { Swiper } from 'swiper/types';
 
-
-
 declare global {
   interface Window {
     YT: any;
     onYouTubeIframeAPIReady: () => void;
   }
 }
+
+interface YouTubePlayer {
+  getPlayerState?: () => number;
+  playVideo?: () => void;
+  pauseVideo?: () => void;
+  seekTo?: (seconds: number, allowSeekAhead: boolean) => void;
+  getCurrentTime?: () => number;
+  getDuration?: () => number;
+  getVolume?: () => number;
+  setVolume?: (volume: number) => void;
+  isMuted?: () => boolean;
+  mute?: () => void;
+  unMute?: () => void;
+  loadVideoById?: (videoId: string) => void;
+  destroy?: () => void;
+}
+
 @Component({
   selector: 'app-watch',
+  standalone: true,
   imports: [CommonModule],
   templateUrl: './watch.component.html',
-  styleUrl:'./watch.component.scss',
-  schemas:[CUSTOM_ELEMENTS_SCHEMA]
+  styleUrls: ['./watch.component.scss'],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class WatchComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(private route: ActivatedRoute, private router: Router) {
     this.watchID = route.snapshot.paramMap.get('watchid') || this.episodeList[0].watchID;
   }
 
-  // YouTube player instance
-  player: any;
+  // YouTube player instance with proper typing
+  player: YouTubePlayer | null = null;
+  playerLoading = true;
+  playerReady = false;
 
   // Component state and references
   isFullscreen = false;
@@ -71,20 +89,20 @@ export class WatchComponent implements OnInit, OnDestroy, AfterViewInit {
   // Keyboard control handler
   @HostListener('window:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent): void {
-    if (!this.player) return;
+    if (!this.playerReady) return;
 
     switch (event.key) {
       case ' ': event.preventDefault(); this.playVideo(); break;
       case 'ArrowLeft': this.seekBack(); break;
       case 'ArrowRight': this.seekAhead(); break;
       case 'ArrowUp':
-        if (this.player.getPlayerState() === 1) {
+        if (this.isPlaying()) {
           event.preventDefault();
           this.changeVolume(5);
         }
         break;
       case 'ArrowDown':
-        if (this.player.getPlayerState() === 1) {
+        if (this.isPlaying()) {
           event.preventDefault();
           this.changeVolume(-5);
         }
@@ -116,21 +134,27 @@ export class WatchComponent implements OnInit, OnDestroy, AfterViewInit {
 
       // Tap and mouse interactions
       this.setupTouchListeners();
+    }).catch(error => {
+      console.error('Failed to initialize YouTube player:', error);
+      this.playerLoading = false;
     });
   }
 
   ngOnDestroy(): void {
     this.player?.destroy?.();
+    clearTimeout(this.HideControlsEvent);
+    clearInterval(this.SliderUpdateEvent);
   }
 
   // Load YouTube API dynamically
   private loadYouTubeAPI(): Promise<void> {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       if (window.YT && window.YT.Player) {
         resolve();
       } else {
         const script = document.createElement('script');
         script.src = 'https://www.youtube.com/iframe_api';
+        script.onerror = () => reject(new Error('Failed to load YouTube API'));
         document.body.appendChild(script);
         window.onYouTubeIframeAPIReady = () => resolve();
       }
@@ -139,34 +163,53 @@ export class WatchComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // Initialize YouTube Player
   private initPlayer(): void {
-    this.player = new window.YT.Player('youtube-player', {
-      height: '100%',
-      width: '100%',
-      videoId: this.watchID,
-      playerVars: {
-        controls: 0,
-        rel: 0,
-        modestbranding: 1,
-        showinfo: 0,
-        iv_load_policy: 3,
-        autoplay: 1
-      },
-      events: {
-        onReady: () => this.onPlayerReady(),
-        onStateChange: () => {
-          if (this.player.getPlayerState() === 1) this.dynamicShowControl();
-          else this.showControls();
+    try {
+      this.player = new window.YT.Player('youtube-player', {
+        height: '100%',
+        width: '100%',
+        videoId: this.watchID,
+        playerVars: {
+          controls: 0,
+          rel: 0,
+          modestbranding: 1,
+          showinfo: 0,
+          iv_load_policy: 3,
+          autoplay: 1,
+          origin: window.location.origin
+        },
+        events: {
+          onReady: () => {
+            this.playerReady = true;
+            this.playerLoading = false;
+            this.onPlayerReady();
+          },
+          onStateChange: () => {
+            if (this.isPlaying()) {
+              this.dynamicShowControl();
+            } else {
+              this.showControls();
+            }
+          },
+          onError: (event: any) => {
+            console.error('YouTube Player Error:', event);
+            this.playerLoading = false;
+          }
         }
-      }
-    });
+      });
+    } catch (error) {
+      console.error('Error initializing YouTube player:', error);
+      this.playerLoading = false;
+    }
   }
 
   private onPlayerReady(): void {
+    if (!this.playerReady) return;
+
     // Create playback slider
     noUiSlider.create(this.slider.nativeElement, {
-      start: [this.player.getCurrentTime()],
+      start: [this.getCurrentTime()],
       connect: [true, false],
-      range: { min: 0, max: this.player.getDuration() },
+      range: { min: 0, max: this.getDuration() },
       step: 1,
       tooltips: false,
       format: { to: (v) => v, from: (v) => Number(v) }
@@ -174,7 +217,7 @@ export class WatchComponent implements OnInit, OnDestroy, AfterViewInit {
 
     // Create volume slider
     noUiSlider.create(this.volSlider.nativeElement, {
-      start: [this.player.getVolume()],
+      start: [this.player?.getVolume?.() || 50],
       connect: [true, false],
       range: { min: 0, max: 100 },
       step: 1,
@@ -186,40 +229,65 @@ export class WatchComponent implements OnInit, OnDestroy, AfterViewInit {
     const volSliderElement = this.volSlider.nativeElement as noUiSlider.target;
 
     volSliderElement.noUiSlider?.on('change', (values: any) => {
-      this.player.setVolume(values[0]);
+      if (this.playerReady) {
+        this.player?.setVolume?.(values[0]);
+      }
     });
 
     this.startSliderInterval();
 
     sliderElement.noUiSlider?.on('change', (values: any) => {
       this.stopSliderInterval();
-      this.player.seekTo(values[0], true);
+      if (this.playerReady) {
+        this.player?.seekTo?.(values[0], true);
+      }
     });
 
     sliderElement.noUiSlider?.on('slide', (values: any) => {
       this.stopSliderInterval();
-      this.player.seekTo(values[0], false);
+      if (this.playerReady) {
+        this.player?.seekTo?.(values[0], false);
+      }
     });
+  }
+
+  // Safe player methods
+  isPlaying(): boolean {
+    return this.playerReady && this.player?.getPlayerState?.() === 1;
+  }
+
+  getCurrentTime(): number {
+    return this.playerReady ? this.player?.getCurrentTime?.() || 0 : 0;
+  }
+
+  getDuration(): number {
+    return this.playerReady ? this.player?.getDuration?.() || 0 : 0;
   }
 
   // Toggle play/pause
   playVideo(): void {
-    switch (this.player.getPlayerState()) {
-      case 1: this.player.pauseVideo(); this.showControls(); break;
+    if (!this.playerReady) return;
+
+    switch (this.player?.getPlayerState?.()) {
+      case 1: 
+        this.player?.pauseVideo?.(); 
+        this.showControls(); 
+        break;
       case 0:
       case 2:
       case 5:
-      case -1: this.player.playVideo(); this.hideControls(); break;
+      case -1: 
+        this.player?.playVideo?.(); 
+        this.hideControls(); 
+        break;
     }
   }
 
   seekTo(seconds: number): void {
-    const time = this.player.getCurrentTime() + seconds;
-    this.player.seekTo(time, true);
-  }
-
-  isPlaying(): boolean {
-    return this.player?.getPlayerState() === 1;
+    if (!this.playerReady) return;
+    
+    const time = this.getCurrentTime() + seconds;
+    this.player?.seekTo?.(time, true);
   }
 
   // Show/hide controls
@@ -229,7 +297,7 @@ export class WatchComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   hideControls(): void {
-    if ([1, 2].includes(this.player.getPlayerState())) {
+    if (this.playerReady && [1, 2].includes(this.player?.getPlayerState?.() || -1)) {
       this.HideControlsEvent = setTimeout(() => {
         this.controlSection.nativeElement.classList.add('fade-out');
       }, 3000);
@@ -254,16 +322,21 @@ export class WatchComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   toggleMute(): void {
-    if (this.player.isMuted()) this.player.unMute();
-    else this.player.mute();
+    if (!this.playerReady) return;
+    
+    if (this.player?.isMuted?.()) {
+      this.player?.unMute?.();
+    } else {
+      this.player?.mute?.();
+    }
   }
 
   startSliderInterval(): void {
     clearInterval(this.SliderUpdateEvent);
     this.SliderUpdateEvent = setInterval(() => {
-      if (this.player.getPlayerState() === 1) {
+      if (this.isPlaying()) {
         const sliderElement = this.slider.nativeElement as noUiSlider.target;
-        sliderElement.noUiSlider?.set(this.player.getCurrentTime());
+        sliderElement.noUiSlider?.set(this.getCurrentTime());
       }
     }, 500);
   }
@@ -301,16 +374,20 @@ export class WatchComponent implements OnInit, OnDestroy, AfterViewInit {
 
   // Volume control
   changeVolume(delta: number): void {
-    const currentVolume = this.player.getVolume();
+    if (!this.playerReady) return;
+    
+    const currentVolume = this.player?.getVolume?.() || 50;
     const newVolume = Math.min(100, Math.max(0, currentVolume + delta));
-    this.player.setVolume(newVolume);
+    this.player?.setVolume?.(newVolume);
     const volSliderElement = this.volSlider.nativeElement as noUiSlider.target;
     volSliderElement.noUiSlider?.set(newVolume);
   }
 
   // Change watchID and reload player
   goToWatchPage(newId: string): void {
-    this.player.loadVideoById(newId);
+    if (!this.playerReady) return;
+    
+    this.player?.loadVideoById?.(newId);
     this.startSliderInterval();
   }
 
@@ -345,8 +422,6 @@ export class WatchComponent implements OnInit, OnDestroy, AfterViewInit {
     this.dynamicShowControl();
     this.lastClick = now;
   }
-
-
 
   episodeList = [
     {
@@ -817,5 +892,7 @@ export class WatchComponent implements OnInit, OnDestroy, AfterViewInit {
       "duration": 1154,
       "watchID": "WszPVaOgfR8"
     }
-  ]
+  ];
+
 }
+ 

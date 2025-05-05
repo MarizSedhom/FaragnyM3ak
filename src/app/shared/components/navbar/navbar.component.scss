@@ -1,8 +1,4 @@
-// body {
-//     min-height: 100vh;
-//     background: linear-gradient(to right, #1a2b3c, #2d4b66);
-//     margin: 0;
-//   }
+
   
   .vertical-nav {
     position: fixed;
@@ -13,7 +9,7 @@
     flex-direction: column;
     gap: 1.5rem;
     padding-left: 2rem;
-    z-index: 10; 
+    z-index: 100; 
   }
   
   .circle-icon {

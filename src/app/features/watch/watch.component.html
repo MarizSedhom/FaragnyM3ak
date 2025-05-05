@@ -20,12 +20,12 @@
 
         <!-- Time and Seek Slider -->
         <div class="placeholder-glow d-flex align-items-center gap-3" id="videoTime">
-          <span id="timeNow" [class.placeholder]="!player">
-            {{ player ? formatTime(player.getCurrentTime()) : "1:00" }}
+          <span id="timeNow" [class.placeholder]="!playerReady">
+            {{ playerReady ? formatTime(getCurrentTime()) : "0:00" }}
           </span>
           <div class="slider-styled flex-grow-1" id="slider-round" #slider></div>
-          <span id="totalTime" [class.placeholder]="!player">
-            {{ player ? formatTime(player.getDuration()) : "1:00" }}
+          <span id="totalTime" [class.placeholder]="!playerReady">
+            {{ playerReady ? formatTime(getDuration()) : "0:00" }}
           </span>
         </div>
 
@@ -39,25 +39,16 @@
 
           <!-- Play / Pause / Buffering / Ended -->
           <button id="play" (click)="playVideo()" #playBTN>
-            @if (!player)
-            {
+            @if (playerLoading) {
               <div class="spinner-border spinner-border-sm"></div>
             }
-            @else if (player.getPlayerState() === 1)
-            {
-              <i class="bi bi-pause-fill"></i>
-            }
-            @else if (player.getPlayerState() === 2 || player.getPlayerState() === 5 || player.getPlayerState() === -1)
-            {
-              <i class="bi bi-play-fill"></i>
-            }
-            @else if (player.getPlayerState() === 3)
-            {
-              <div class="spinner-border spinner-border-sm"></div>
-            }
-            @else if (player.getPlayerState() === 0)
-            {
-              <i class="bi bi-arrow-repeat"></i>
+            @else if (playerReady) {
+              @if (isPlaying()) {
+                <i class="bi bi-pause-fill"></i>
+              }
+              @else {
+                <i class="bi bi-play-fill"></i>
+              }
             }
           </button>
 
@@ -68,12 +59,10 @@
 
           <!-- Mute / Unmute -->
           <button id="mute" (click)="toggleMute()">
-            @if (player?.isMuted())
-            {
+            @if (player?.isMuted()) {
               <i class="bi bi-volume-mute-fill"></i>
             }
-            @else
-            {
+            @else {
               <i class="bi bi-volume-up-fill"></i>
             }
           </button>
@@ -83,12 +72,10 @@
 
           <!-- Fullscreen Toggle -->
           <button id="fullScreen" class="ms-auto" (click)="toggleFullScreen()">
-            @if (isFullscreen)
-            {
+            @if (isFullscreen) {
               <i class="bi bi-arrows-angle-contract"></i>
             }
-            @else
-            {
+            @else {
               <i class="bi bi-arrows-angle-expand"></i>
             }
           </button>
