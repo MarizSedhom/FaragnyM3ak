@@ -1,21 +1,20 @@
-
 <div class="card">
-    <img [src]="series.imageUrl" [alt]="series.title" class="card-image">
-    <div class="card-subtitle">
-      {{ series.hasSub ? 'Sub' : '' }}{{ series.hasSub && series.hasDub ? ' | ' : '' }}{{ series.hasDub ? 'Dub' : '' }}
-    </div>
-    <div class="card-overlay">
-      <div class="card-title">{{ series.title }}</div>
-      <div class="card-rating">
-        <span class="star">★</span> {{ formatRating(series.rating) }} ({{ formatCount(series.ratingCount) }})
-      </div>
-      <div class="card-info">{{ series.seasons }} Seasons | {{ series.episodes }} Episodes</div>
-      <div class="card-description">{{ series.description }}</div>
-      <div class="action-buttons">
-        <div class="action-button">▶</div>
-        <div class="action-button">♥</div>
-        <div class="action-button">+</div>
-      </div>
-    </div>
-    
+  <img [src]="series.imageUrl" [alt]="series.title" class="card-image">
+  <div class="card-subtitle text-white">
+    {{ series.hasSub ? 'Sub' : '' }}{{ series.hasSub && series.hasDub ? ' | ' : '' }}{{ series.hasDub ? 'Dub' : '' }}
   </div>
+  <div class="card-overlay">
+    <div class="card-title text-white">{{ series.title }}</div>
+    <div class="card-rating text-white">
+      <span class="star">★</span> {{ formatRating(series.rating) }} ({{ formatCount(series.ratingCount) }})
+    </div>
+    <div class="card-info">{{ series.seasons }} Seasons | {{ series.episodes }} Episodes</div>
+    <div class="card-description">{{ series.description }}</div>
+    <div class="action-buttons">
+      <div class="action-button">▶</div>
+      <div class="action-button">♥</div>
+      <div class="action-button">+</div>
+    </div>
+  </div>
+
+</div>

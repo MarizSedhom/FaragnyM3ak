@@ -1,11 +1,11 @@
-body {
-    min-height: 100vh;
-    background: linear-gradient(to right, #1a2b3c, #2d4b66);
-    margin: 0;
-  }
+// body {
+//     min-height: 100vh;
+//     background: linear-gradient(to right, #1a2b3c, #2d4b66);
+//     margin: 0;
+//   }
   
   .vertical-nav {
-    position: absolute;
+    position: fixed;
     left: 0;
     top: 50%;
     transform: translateY(-50%);

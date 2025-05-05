@@ -15,7 +15,6 @@ import { Router } from '@angular/router';
 
 export class MoviesComponent {
 
-  
   movies: Movie[] = [
     {
       id: 1,

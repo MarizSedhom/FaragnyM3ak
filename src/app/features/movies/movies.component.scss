@@ -1,3 +1,8 @@
+body {
+  min-height: 100vh;
+  background: linear-gradient(to right, #1a2b3c, #2d4b66);
+  margin: 0;
+}
 .search-container {
   width: 100%;
   max-width: 1200px;
@@ -36,6 +41,6 @@
   justify-content: center;
   margin: 0 auto;
   padding: 20px;
-  background-color: #121212;
-  color: white;
+  // background-color: #121212;
+  // color: white;
 }
