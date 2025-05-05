@@ -1,79 +1,212 @@
-// .movie-card {
-//     width: 220px;
-//     border-radius: 16px;
-//     overflow: hidden;
-//     background-color: #1e1e1e;
-//     transition: transform 0.3s ease, box-shadow 0.3s ease;
-//     position: relative;
-  
-//     &:hover {
-//       transform: scale(1.04);
-//       box-shadow: 0 6px 20px #FF6A00;
-//     }
-  
-//     .card-img-top {
-//       height: 300px;
-//       object-fit: cover;
-//       transition: opacity 0.3s;
-//     }
-  
-//     .card-body h6 {
-//       font-size: 1rem;
-//       font-weight: 600;
-//     }
-//   }
-  
-//   .rating-badge {
-//     background-color: #0f1c2e;
-//     border-radius: 10px;
-//     font-size: 13px;
-//     padding: 4px 8px;
-//     display: flex;
-//     align-items: center;
-  
-//     img {
-//       width: 16px;
-//       height: 16px;
-//       margin-right: 4px;
-//     }
-  
-//     .small {
-//       font-size: 0.75rem;
-//       color: #999;
-//     }
-//   }
-  
-body
-{
-    // background-color: #212529;
-  background: linear-gradient(to right, #1a2b3c, #2d4b66);
-
+/* ===== GLOBAL STYLES ===== */
+:root {
+  --primary-color: #e50914;  // Netflix red for accent
+  --secondary-color: #f5f5f1;  // Light text color
+  --background-color: #141414;  // Dark background
+  --surface-color: #222222;  // Cards/surface color
+  --text-primary: #ffffff;
+  --text-secondary: #b3b3b3;
+  --control-bg: rgba(0, 0, 0, 0.7);
+  --control-hover: rgba(255, 255, 255, 0.1);
+  --shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
+body {
+  font-family: 'Netflix Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-primary);
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* ===== NAVBAR ===== */
+.navbar {
+  background-color: rgba(20, 20, 20, 0.9) !important;
+  backdrop-filter: blur(10px);
+  padding: 0.5rem 1rem;
+  transition: all 0.3s ease;
+
+  .navbar-brand {
+    font-family: 'Netflix Sans', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    
+    img {
+      transition: transform 0.3s ease;
+    }
+    
+    &:hover img {
+      transform: rotate(15deg);
+    }
+  }
+}
+
+/* ===== CAROUSEL ===== */
+.carousel {
+  margin-top: 56px;  // Account for fixed navbar
+  
+  .carousel-item {
+    transition: transform 0.6s ease-in-out;
+    
+    img {
+      filter: brightness(0.7);
+      transition: filter 0.3s ease;
+    }
+    
+    &:hover img {
+      filter: brightness(1);
+    }
+  }
+  
+  .carousel-control-prev, 
+  .carousel-control-next {
+    width: 5%;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    
+    &:hover {
+      opacity: 1;
+    }
+  }
+  
+  &:hover .carousel-control-prev,
+  &:hover .carousel-control-next {
+    opacity: 0.7;
+  }
+}
+
+/* ===== CONTENT SECTIONS ===== */
 .Container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  max-width: 1200px;
-  justify-content: center;
+  max-width: 1400px;
   margin: 0 auto;
-  padding: 20px;
-  color: white;
+  padding: 0 2rem;
 }
 
-.card-wrapper {
-  max-width: 100%;
+h3 {
+  font-weight: 600;
+  font-size: 1.5rem;
+  position: relative;
+  padding-bottom: 0.5rem;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50px;
+    height: 3px;
+    background: var(--primary-color);
+  }
 }
 
 .custom-hr {
-  width: 100%;
-  height: 2px;
-  background-color: white;
-  border: none;
-  margin: 0 auto;
+  border: 0;
+  height: 1px;
+  background-image: linear-gradient(to right, transparent, var(--primary-color), transparent);
+  margin: 2rem 0;
 }
 
+/* ===== BUTTONS ===== */
+.btn-outline-light {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    transform: scale(1.05);
+  }
+  
+  &:disabled {
+    opacity: 0.3;
+    pointer-events: none;
+  }
+}
+
+/* ===== FOOTER ===== */
 footer {
-  border-top: 1px solid #444;
-  font-size: 0.9rem;
+  background-color: rgba(20, 20, 20, 0.9);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  
+  p {
+    font-size: 0.9rem;
+    opacity: 0.7;
+  }
+  
+  a {
+    transition: color 0.3s ease;
+    position: relative;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: var(--primary-color);
+      transition: width 0.3s ease;
+    }
+    
+    &:hover {
+      color: var(--primary-color) !important;
+      
+      &::after {
+        width: 100%;
+      }
+    }
+  }
+}
+
+/* ===== RESPONSIVE ADJUSTMENTS ===== */
+@media (max-width: 992px) {
+  .carousel img {
+    height: 500px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .Container {
+    padding: 0 1rem;
+  }
+  
+  .carousel img {
+    height: 400px !important;
+  }
+  
+  h3 {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .navbar-brand span {
+    font-size: 1.2rem;
+  }
+  
+  .carousel img {
+    height: 300px !important;
+  }
+  
+  footer {
+    padding: 1rem 0;
+    
+    div {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+  }
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Apply animation to content sections */
+.mt-5, .Container > div {
+  animation: fadeIn 0.6s ease-out forwards;
 }
