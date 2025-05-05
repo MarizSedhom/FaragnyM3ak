@@ -1,1 +1,11 @@
-<p>movies works!</p>
+<div class="search-container">
+  <input type="text" 
+         class="search-bar" 
+         placeholder="Search movie by name..." 
+         [(ngModel)]="searchQuery"
+         (input)="filterMovies()">
+</div>
+
+<div class="container">
+  <app-movie-card *ngFor="let movie of filteredMovies" [movie]="movie"></app-movie-card>
+</div>
