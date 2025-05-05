@@ -1,10 +1,10 @@
 // movies.component.ts
 import { Component, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MovieCardComponent } from "./movie-card/movie-card.component";
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Movie } from '../../shared/models/movie.model';
+import { MovieCardComponent } from '../../shared/components/movie-card/movie-card.component';
 @Component({
   standalone: true,
   selector: 'app-movies',

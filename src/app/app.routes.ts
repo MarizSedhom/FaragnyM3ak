@@ -6,9 +6,9 @@ export const routes: Routes = [
         loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent)
     },
     {
-        path: 'movies-preview',
+        path: 'movie-preview/:id', 
         loadComponent: () => import('./features/movie-preview/movie-preview.component').then(m => m.MoviePreviewComponent)
-    },
+      },
     {
         path: 'profile',
         loadComponent: () => import('./features/profile/profile.component').then(m => m.ProfileComponent)

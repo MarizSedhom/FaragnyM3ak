@@ -14,9 +14,8 @@
 import { Component, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { SeriesCardComponent } from './series-card/series-card.component';
 import { Series } from '../../shared/models/series.model';
-// import { Series } from '../../shared/models/series.model';
+import { SeriesCardComponent } from '../../shared/components/series-card/series-card.component';
 @Component({
   selector: 'app-series',
   imports: [CommonModule, SeriesCardComponent, FormsModule],
