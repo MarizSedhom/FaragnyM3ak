@@ -1,1 +1,152 @@
-<p>watch works!</p>
+<div class="watch-page py-5">
+
+  <!-- Video Player Section -->
+  <div class="watch-section container" [class.playing]="isPlaying()" #watchSection>
+
+    <div class="video-wrapper">
+
+      <!-- Overlay for user interactions -->
+      <div class="video-overlay d-flex" #videoOverlay>
+        <div class="left-side" #leftOverlay></div>
+        <div class="center" #centerOverlay></div>
+        <div class="right-side" #rightOverlay></div>
+      </div>
+
+      <!-- YouTube IFrame Player Container -->
+      <div id="youtube-player"></div>
+
+      <!-- Player Controls -->
+      <div class="controls-wrapper" #controlsWrapper>
+
+        <!-- Time and Seek Slider -->
+        <div class="placeholder-glow d-flex align-items-center gap-3" id="videoTime">
+          <span id="timeNow" [class.placeholder]="!player">
+            {{ player ? formatTime(player.getCurrentTime()) : "1:00" }}
+          </span>
+          <div class="slider-styled flex-grow-1" id="slider-round" #slider></div>
+          <span id="totalTime" [class.placeholder]="!player">
+            {{ player ? formatTime(player.getDuration()) : "1:00" }}
+          </span>
+        </div>
+
+        <!-- Playback Buttons -->
+        <div class="controls d-flex align-items-center">
+
+          <!-- Seek Back -->
+          <button (click)="seekBack()">
+            <i class="bi bi-skip-backward-fill"></i>
+          </button>
+
+          <!-- Play / Pause / Buffering / Ended -->
+          <button id="play" (click)="playVideo()" #playBTN>
+            @if (!player)
+            {
+              <div class="spinner-border spinner-border-sm"></div>
+            }
+            @else if (player.getPlayerState() === 1)
+            {
+              <i class="bi bi-pause-fill"></i>
+            }
+            @else if (player.getPlayerState() === 2 || player.getPlayerState() === 5 || player.getPlayerState() === -1)
+            {
+              <i class="bi bi-play-fill"></i>
+            }
+            @else if (player.getPlayerState() === 3)
+            {
+              <div class="spinner-border spinner-border-sm"></div>
+            }
+            @else if (player.getPlayerState() === 0)
+            {
+              <i class="bi bi-arrow-repeat"></i>
+            }
+          </button>
+
+          <!-- Seek Forward -->
+          <button (click)="seekAhead()">
+            <i class="bi bi-skip-forward-fill"></i>
+          </button>
+
+          <!-- Mute / Unmute -->
+          <button id="mute" (click)="toggleMute()">
+            @if (player?.isMuted())
+            {
+              <i class="bi bi-volume-mute-fill"></i>
+            }
+            @else
+            {
+              <i class="bi bi-volume-up-fill"></i>
+            }
+          </button>
+
+          <!-- Volume Slider -->
+          <div class="slider-styled" id="slider-volume" #volumeSlider></div>
+
+          <!-- Fullscreen Toggle -->
+          <button id="fullScreen" class="ms-auto" (click)="toggleFullScreen()">
+            @if (isFullscreen)
+            {
+              <i class="bi bi-arrows-angle-contract"></i>
+            }
+            @else
+            {
+              <i class="bi bi-arrows-angle-expand"></i>
+            }
+          </button>
+
+        </div> <!-- End Controls -->
+
+      </div> <!-- End Controls Wrapper -->
+
+    </div> <!-- End Video Wrapper -->
+
+  </div> <!-- End Watch Section -->
+
+  <!-- Playlist Section -->
+  <div class="playlist">
+
+    <!-- Swiper Container -->
+    <swiper-container init="false" scrollbar="true" #swiperContainer>
+
+      <!-- Episode Slides -->
+      <swiper-slide *ngFor="let item of episodeList">
+
+        <!-- Episode Card -->
+        <div class="card">
+
+          <!-- Thumbnail with Play Overlay -->
+          <div class="card__thumbnail">
+            <img [src]="item.thumbnail" [alt]="item.title" class="card__image">
+            <div class="card__overlay">
+              <div class="card__play" (click)="goToWatchPage(item.watchID)">
+                <i class="bi bi-play-fill card__play-icon"></i>
+              </div>
+            </div>
+            <div class="card__duration">
+              <span>{{ formatTime(item.duration) }}</span>
+            </div>
+          </div>
+
+          <!-- Episode Details -->
+          <div class="card__content">
+            <h3 class="card__title">{{ item.title }}</h3>
+            <div class="card__actions">
+              <button class="card__button card__button--primary">
+                <i class="bi bi-share card__button-icon"></i>
+                <span>Share</span>
+              </button>
+              <button class="card__button card__button--secondary">
+                <i class="bi bi-heart-fill card__button-icon"></i>
+                <span>Favorite</span>
+              </button>
+            </div>
+          </div>
+
+        </div> <!-- End Card -->
+
+      </swiper-slide>
+
+    </swiper-container>
+
+  </div> <!-- End Playlist -->
+
+</div>

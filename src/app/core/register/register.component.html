@@ -1,0 +1,198 @@
+<div class="register-page">
+  <div class="register-container">
+    <!-- Left Side - Registration Form -->
+    <div class="registration-form-section">
+      <div class="logo-area">
+        <div class="logo">
+          <i class="bi bi-film"></i>
+        </div>
+      </div>
+
+      <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
+        <h1 class="register-title">Create Account</h1>
+
+        <div class="form-group">
+          <label for="fullname">Full Name</label>
+          <div class="input-wrapper">
+            <i class="bi bi-person input-icon"></i>
+            <input
+              type="text"
+              id="fullname"
+              class="form-input"
+              placeholder="Enter your full name"
+              formControlName="fullname"
+            >
+          </div>
+          @if(registrationForm.get('fullname')?.invalid && (registrationForm.get('fullname')?.dirty || registrationForm.get('fullname')?.touched || isSubmitted))
+          {
+            <div class="field-error">
+              <i class="bi bi-exclamation-circle-fill"></i>
+              <span>Full name is required</span>
+            </div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email</label>
+          <div class="input-wrapper">
+            <i class="bi bi-envelope input-icon"></i>
+            <input
+              type="email"
+              id="email"
+              class="form-input"
+              placeholder="Enter your email"
+              formControlName="email"
+            >
+          </div>
+          @if(registrationForm.get('email')?.invalid && (registrationForm.get('email')?.dirty || registrationForm.get('email')?.touched || isSubmitted))
+          {
+            <div class="field-error">
+              <i class="bi bi-exclamation-circle-fill"></i>
+              @if(registrationForm.get('email')?.errors?.['required'])
+              {
+                <span>Please enter an email address</span>
+              }
+              @else if(registrationForm.get('email')?.errors?.['email'])
+              {
+                <span>Please enter a valid email address</span>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="username">Username</label>
+          <div class="input-wrapper">
+            <i class="bi bi-person-badge input-icon"></i>
+            <input
+              type="text"
+              id="username"
+              class="form-input"
+              placeholder="Choose a username"
+              formControlName="username"
+            >
+          </div>
+          @if(registrationForm.get('username')?.invalid && (registrationForm.get('username')?.dirty || registrationForm.get('username')?.touched || isSubmitted))
+          {
+            <div class="field-error">
+              <i class="bi bi-exclamation-circle-fill"></i>
+              <span>Username is required (at least 4 characters)</span>
+            </div>
+          }
+        </div>
+
+        <div class="form-row">
+          <div class="form-group password-group">
+            <label for="password">Password</label>
+            <div class="input-wrapper">
+              <i class="bi bi-key input-icon"></i>
+              <input
+                [type]="showPassword ? 'text' : 'password'"
+                id="password"
+                class="form-input"
+                placeholder="Create a password"
+                formControlName="password"
+              >
+              <i (click)="togglePasswordVisibility('password')" class="bi toggle-password" [class.bi-eye] ="!showPassword" [class.bi-eye-slash]="showPassword"></i>
+            </div>
+            @if(registrationForm.get('password')?.invalid && (registrationForm.get('password')?.dirty || registrationForm.get('password')?.touched || isSubmitted))
+            {
+              <div class="field-error">
+                <i class="bi bi-exclamation-circle-fill"></i>
+                <span>Password must be at least 8 characters</span>
+              </div>
+            }
+          </div>
+
+          <div class="form-group password-group">
+            <label for="confirmPassword">Confirm Password</label>
+            <div class="input-wrapper">
+              <i class="bi bi-key input-icon"></i>
+              <input
+                [type]="showConfirmPassword ? 'text' : 'password'"
+                id="confirmPassword"
+                class="form-input"
+                placeholder="Confirm your password"
+                formControlName="confirmPassword"
+              >
+              <i (click)="togglePasswordVisibility('confirm')" class="bi toggle-password" [class.bi-eye] ="!showConfirmPassword" [class.bi-eye-slash]="showConfirmPassword"></i>
+            </div>
+            @if(registrationForm.get('confirmPassword')?.invalid && (registrationForm.get('confirmPassword')?.dirty || registrationForm.get('confirmPassword')?.touched || isSubmitted))
+            {
+              <div class="field-error">
+                <i class="bi bi-exclamation-circle-fill"></i>
+                <span>Please confirm your password</span>
+              </div>
+            }
+            @if(registrationForm.hasError('passwordMismatch') && registrationForm.get('confirmPassword')?.value && (registrationForm.get('confirmPassword')?.dirty || registrationForm.get('confirmPassword')?.touched || isSubmitted))
+            {
+              <div class="field-error">
+                <i class="bi bi-exclamation-circle-fill"></i>
+                <span>Passwords do not match</span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="terms-privacy">
+          <label class="checkbox-container">
+            <span class="checkbox-label">I agree to the <a href="#" class="terms-link">Terms of Service</a> and <a href="#" class="terms-link">Privacy Policy</a></span>
+            <input type="checkbox" formControlName="termsAgreed">
+            <span class="checkmark"></span>
+          </label>
+          @if(registrationForm.get('termsAgreed')?.invalid && (registrationForm.get('termsAgreed')?.dirty || registrationForm.get('termsAgreed')?.touched || isSubmitted))
+          {
+            <div class="field-error terms-error">
+              <i class="bi bi-exclamation-circle-fill"></i>
+              <span>You must agree to the terms and privacy policy</span>
+            </div>
+          }
+        </div>
+
+        <button type="submit" class="register-button">
+          <span>Create Account</span>
+          <i class="bi bi-person-plus"></i>
+        </button>
+
+        <div class="additional-links">
+          <span>Already have an account?</span>
+          <a routerLink="/login" class="login-link">Sign In</a>
+        </div>
+      </form>
+    </div>
+
+    <!-- Right Side - Movie Posters -->
+    <div class="movie-posters-section">
+      <div class="poster-scroller">
+        <div class="poster-container">
+          <!-- We'll create multiple rows of posters that scroll at different speeds -->
+          <div class="poster-row row-1">
+            @for (i of images.slice(0,12); track $index)
+            {
+              <div class="poster">
+                <div [style.background-image]="'url(' + i + ')'" class="poster-image poster-{{$index}}"></div>
+              </div>
+            }
+          </div>
+          <div class="poster-row row-2">
+            @for (i of images.slice(12,24); track $index)
+            {
+              <div class="poster">
+                <div [style.background-image]="'url(' + i + ')'" class="poster-image poster-{{$index}}"></div>
+              </div>
+            }
+          </div>
+          <div class="poster-row row-3">
+            @for (i of images.slice(24,37); track $index)
+            {
+              <div class="poster">
+                <div [style.background-image]="'url(' + i + ')'" class="poster-image poster-{{$index}}"></div>
+              </div>
+            }
+          </div>
+        </div>
+        <div class="overlay-gradient"></div>
+      </div>
+    </div>
+  </div>
+</div>
