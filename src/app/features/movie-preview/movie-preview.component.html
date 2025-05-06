@@ -1,145 +1,168 @@
-<div class="movie-hero" [ngStyle]="{'background-image': 'linear-gradient(to right, rgba(0, 0, 0, 0.9) 20%, rgba(0, 0, 0, 0.6) 50%, rgba(0, 0, 0, 0.4) 100%), url(' + movie.backdropUrl + ')'}">
-  <div class="content-wrapper">
-    <div class="poster-section">
-      <img [src]="movie.posterUrl" alt="{{ movie.title }}" class="poster-img">
-      <div class="action-buttons">
-        <button class="primary-btn"><i class="play-icon">▶</i> Play Now</button>
-        <button class="secondary-btn"><i class="add-icon">+</i> My List</button>
-        <button class="favorite-btn" [class.favorited]="isFavorite" (click)="toggleFavorite()">
-          <i class="heart-icon">{{ isFavorite ? '❤️' : '🤍' }}</i> {{ isFavorite ? 'Favorite' : 'Add to Favorites' }}
-        </button>
-      </div>
-    </div>
+<!-- Loading state -->
+<div class="loading-container" *ngIf="loading">
+  <div class="spinner"></div>
+  <p>Loading movie details...</p>
+</div>
 
-    <div class="details-section">
-      <div class="title-section">
-        <h1 class="movie-title">{{ movie.title }}</h1>
-        <div class="rating-container">
-          <span class="imdb-rating">⭐ {{ movie.imdbRating }}/10</span>
-          <span class="content-rating">{{ movie.rating }}</span>
+<!-- Error state -->
+<div class="error-container" *ngIf="error">
+  <div class="error-message">{{ error }}</div>
+  <button class="retry-btn" (click)="retry()">Try Again</button>
+</div>
+
+<!-- Movie content -->
+<div *ngIf="movie && !loading && !error">
+  <!-- Movie hero section -->
+  <div class="movie-hero" [ngStyle]="{'background-image': 'linear-gradient(to right, rgba(0, 0, 0, 0.9) 20%, rgba(0, 0, 0, 0.6) 50%, rgba(0, 0, 0, 0.4) 100%), url(' + movie.backdropUrl + ')'}">
+    <div class="content-wrapper">
+      <div class="poster-section">
+        <img [src]="movie.imageUrl" alt="{{ movie.title }}" class="poster-img">
+        <div class="action-buttons">
+          <button class="primary-btn"><i class="play-icon">▶</i> Play Now</button>
+          <button class="secondary-btn"><i class="add-icon">+</i> My List</button>
+          <button class="favorite-btn" [class.favorited]="isFavorite" (click)="toggleFavorite()">
+            <i class="heart-icon">{{ isFavorite ? '❤️' : '🤍' }}</i> {{ isFavorite ? 'Favorite' : 'Add to Favorites' }}
+          </button>
         </div>
       </div>
 
-      <div class="meta-info">
-        <span class="release-year">{{ getYear(movie.releaseDate) }}</span>
-        <span class="duration">{{ movie.duration }}</span>
-        <span class="quality" *ngIf="movie.quality">{{ movie.quality }}</span>
-      </div>
-
-      <div class="genres">
-        <span *ngFor="let genre of movie.genres" class="genre-pill">{{ genre }}</span>
-      </div>
-
-      <p class="overview">{{ movie.overview }}</p>
-
-      <div class="extra-details">
-        <div class="detail-item" *ngIf="movie.director">
-          <span class="label">Director:</span>
-          <span class="value">{{ movie.director }}</span>
+      <div class="details-section">
+        <div class="title-section">
+          <h1 class="movie-title">{{ movie.title }}</h1>
+          <div class="rating-container">
+            <span class="imdb-rating">⭐ {{ movie.rating }}/10</span>
+            <span class="votes">({{ movie.ratingCount }} votes)</span>
+          </div>
         </div>
-        <div class="detail-item" *ngIf="movie.cast && movie.cast.length">
-          <span class="label">Starring:</span>
-          <span class="value">{{ movie.cast.slice(0, 3).join(', ') }}</span>
+
+        <div class="meta-info">
+          <span class="release-year" *ngIf="movie.releaseDate">{{ getYear(movie.releaseDate) }}</span>
+          <span class="duration">{{ formatDuration(movie.duration) }}</span>
+          <span class="subtitle-badge" *ngIf="movie.hasSub">SUB</span>
+          <span class="dub-badge" *ngIf="movie.hasDub">DUB</span>
+        </div>
+
+        <div class="genres" *ngIf="movie.genres && movie.genres.length">
+          <span *ngFor="let genre of movie.genres" class="genre-pill">{{ genre }}</span>
+        </div>
+
+        <p class="overview">{{ movie.description }}</p>
+
+        <div class="extra-details">
+          <div class="detail-item" *ngIf="movie.director">
+            <span class="label">Director:</span>
+            <span class="value">{{ movie.director }}</span>
+          </div>
+          <div class="detail-item" *ngIf="movie.cast && movie.cast.length">
+            <span class="label">Starring:</span>
+            <span class="value">{{ movie.cast.slice(0, 3).join(', ') }}</span>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<div class="content-section">
-  <div class="tab-container">
-    <div class="tabs">
-      <button class="tab-btn" [class.active]="activeTab === 'related'" (click)="switchTab('related')">More Like This</button>
-      <button class="tab-btn" [class.active]="activeTab === 'reviews'" (click)="switchTab('reviews')">Reviews</button>
-      <button class="tab-btn" [class.active]="activeTab === 'details'" (click)="switchTab('details')">Details</button>
-    </div>
-
-    <div class="tab-content" *ngIf="activeTab === 'related'">
-      <h2 class="section-title">More Like This</h2>
-      <div class="related-movies">
-        
-        <!-- <div class="related-movie-card" *ngFor="let relatedMovie of relatedMovies">
-          <img [src]="relatedMovie.posterUrl" alt="{{ relatedMovie.title }}" class="related-poster">
-          <div class="related-info">
-            <h3>{{ relatedMovie.title }}</h3>
-            <div class="match-rating">{{ relatedMovie.matchPercentage }}% Match</div>
-          </div>
-        </div> -->
-
-        <div class="d-flex flex-wrap justify-content-center gap-3">
-          <app-movie-card *ngFor="let relatedMovie of relatedMovies"></app-movie-card>
-        </div>
-
+  <div class="content-section">
+    <div class="tab-container">
+      <div class="tabs">
+        <button class="tab-btn" [class.active]="activeTab === 'related'" (click)="switchTab('related')">More Like This</button>
+        <button class="tab-btn" [class.active]="activeTab === 'reviews'" (click)="switchTab('reviews')">Reviews</button>
+        <button class="tab-btn" [class.active]="activeTab === 'details'" (click)="switchTab('details')">Details</button>
       </div>
-    </div>
 
-    <div class="tab-content" *ngIf="activeTab === 'reviews'">
-      <h2 class="section-title">User Reviews</h2>
-      <div class="reviews-container">
-        <div *ngFor="let review of reviews" class="review-card">
-          <div class="review-header">
-            <div class="user-avatar">{{ review.user.charAt(0) }}</div>
-            <div class="user-info">
-              <div class="username">{{ review.user }}</div>
-              <div class="star-rating">
-                <span *ngFor="let star of getStarsArray(review.stars)" class="star">⭐</span>
-                <span class="review-date">{{ review.date || 'Jan 12, 2025' }}</span>
+      <div class="tab-content" *ngIf="activeTab === 'related'">
+        <h2 class="section-title">More Like This</h2>
+        <div class="related-movies">
+          <!-- Use MovieCardComponent for each related movie -->
+          <app-movie-card
+            *ngFor="let relatedMovie of relatedMovies"
+            [movie]="convertToMovieFormat(relatedMovie)">
+          </app-movie-card>
+
+          <!-- No related movies message -->
+          <div class="no-content" *ngIf="!relatedMovies || !relatedMovies.length">
+            <p>No similar movies found</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content" *ngIf="activeTab === 'reviews'">
+        <h2 class="section-title">User Reviews</h2>
+        <div class="reviews-container">
+          <div *ngFor="let review of movie.reviews" class="review-card">
+            <div class="review-header">
+              <div class="user-avatar">{{ review.user.charAt(0) }}</div>
+              <div class="user-info">
+                <div class="username">{{ review.user }}</div>
+                <div class="star-rating">
+                  <span *ngFor="let star of getStarsArray(review.stars)" class="star">⭐</span>
+                  <span class="review-date">{{ review.date }}</span>
+                </div>
               </div>
             </div>
-          </div>
-          <p class="review-text">{{ review.comment }}</p>
-          <div class="review-actions">
-            <button class="review-action-btn"><i class="thumbs-up-icon">👍</i> Helpful</button>
-            <button class="review-action-btn"><i class="reply-icon">↩️</i> Reply</button>
-          </div>
-        </div>
-
-        <div class="add-review">
-          <h3>Add Your Review</h3>
-          <div class="rating-input">
-            <span>Your Rating:</span>
-            <div class="star-selector">
-              <span *ngFor="let i of [1,2,3,4,5]" class="selectable-star" (click)="setUserRating(i)">
-                {{ userRating >= i ? '⭐' : '☆' }}
-              </span>
+            <p class="review-text">{{ review.comment }}</p>
+            <div class="review-actions">
+              <button class="review-action-btn"><i class="thumbs-up-icon">👍</i> Helpful</button>
+              <button class="review-action-btn"><i class="reply-icon">↩️</i> Reply</button>
             </div>
           </div>
-          <textarea placeholder="Write your review here..." class="review-textarea"></textarea>
-          <button class="submit-review-btn">Submit Review</button>
+
+          <!-- No reviews message -->
+          <div class="no-content" *ngIf="!movie.reviews || !movie.reviews.length">
+            <p>No reviews yet. Be the first to review this movie!</p>
+          </div>
+
+          <div class="add-review">
+            <h3>Add Your Review</h3>
+            <div class="rating-input">
+              <span>Your Rating:</span>
+              <div class="star-selector">
+                <span *ngFor="let i of [1,2,3,4,5]" class="selectable-star" (click)="setUserRating(i)">
+                  {{ userRating >= i ? '⭐' : '☆' }}
+                </span>
+              </div>
+            </div>
+            <textarea placeholder="Write your review here..." class="review-textarea"></textarea>
+            <button class="submit-review-btn">Submit Review</button>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="tab-content" *ngIf="activeTab === 'details'">
-      <h2 class="section-title">Movie Details</h2>
-      <div class="detail-grid">
-        <div class="detail-row">
-          <div class="detail-label">Release Date</div>
-          <div class="detail-value">{{ formatDate(movie.releaseDate) }}</div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label">Genres</div>
-          <div class="detail-value">{{ movie.genres.join(', ') }}</div>
-        </div>
-        <div class="detail-row" *ngIf="movie.director">
-          <div class="detail-label">Director</div>
-          <div class="detail-value">{{ movie.director }}</div>
-        </div>
-        <div class="detail-row" *ngIf="movie.cast && movie.cast.length">
-          <div class="detail-label">Cast</div>
-          <div class="detail-value">{{ movie.cast.join(', ') }}</div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label">Duration</div>
-          <div class="detail-value">{{ movie.duration }}</div>
-        </div>
-        <div class="detail-row">
-          <div class="detail-label">IMDb Rating</div>
-          <div class="detail-value">⭐ {{ movie.imdbRating }}/10</div>
-        </div>
-        <div class="detail-row" *ngIf="movie.languages">
-          <div class="detail-label">Languages</div>
-          <div class="detail-value">{{ movie.languages.join(', ') }}</div>
+      <div class="tab-content" *ngIf="activeTab === 'details'">
+        <h2 class="section-title">Movie Details</h2>
+        <div class="detail-grid">
+          <div class="detail-row" *ngIf="movie.releaseDate">
+            <div class="detail-label">Release Date</div>
+            <div class="detail-value">{{ formatDate(movie.releaseDate) }}</div>
+          </div>
+          <div class="detail-row" *ngIf="movie.genres && movie.genres.length">
+            <div class="detail-label">Genres</div>
+            <div class="detail-value">{{ movie.genres.join(', ') }}</div>
+          </div>
+          <div class="detail-row" *ngIf="movie.director">
+            <div class="detail-label">Director</div>
+            <div class="detail-value">{{ movie.director }}</div>
+          </div>
+          <div class="detail-row" *ngIf="movie.cast && movie.cast.length">
+            <div class="detail-label">Cast</div>
+            <div class="detail-value">{{ movie.cast.join(', ') }}</div>
+          </div>
+          <div class="detail-row" *ngIf="movie.duration">
+            <div class="detail-label">Duration</div>
+            <div class="detail-value">{{ formatDuration(movie.duration) }}</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">Rating</div>
+            <div class="detail-value">⭐ {{ movie.rating }}/10 ({{ movie.ratingCount }} votes)</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">Subtitles</div>
+            <div class="detail-value">{{ movie.hasSub ? 'Available' : 'Not Available' }}</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">Dubbed</div>
+            <div class="detail-value">{{ movie.hasDub ? 'Available' : 'Not Available' }}</div>
+          </div>
         </div>
       </div>
     </div>

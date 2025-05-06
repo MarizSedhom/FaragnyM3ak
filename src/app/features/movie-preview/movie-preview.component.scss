@@ -6,6 +6,53 @@
   min-height: 100vh;
 }
 
+// Loading and Error States
+.loading-container, .error-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  padding: 20px;
+  text-align: center;
+}
+
+.spinner {
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top: 4px solid #e50914;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.error-message {
+  color: #e50914;
+  margin-bottom: 20px;
+  font-size: 18px;
+}
+
+.retry-btn {
+  background-color: #e50914;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #f40612;
+  }
+}
+
 // Hero Section
 .movie-hero {
   position: relative;
@@ -20,6 +67,7 @@
 
   @media (max-width: 768px) {
     min-height: auto;
+    padding-left: 5%;
     padding-top: 60px;
     padding-bottom: 60px;
   }
@@ -161,11 +209,9 @@
     font-weight: 500;
   }
 
-  .content-rating {
-    background-color: rgba(255, 255, 255, 0.2);
-    padding: 4px 8px;
-    border-radius: 4px;
+  .votes {
     font-size: 14px;
+    opacity: 0.8;
   }
 }
 
@@ -290,46 +336,18 @@
 // Related Movies
 .related-movies {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 20px;
 }
 
-.related-movie-card {
+// No Content Message
+.no-content {
+  text-align: center;
+  padding: 40px;
+  color: rgba(255, 255, 255, 0.7);
+  background-color: rgba(255, 255, 255, 0.05);
   border-radius: 8px;
-  overflow: hidden;
-  transition: transform 0.3s;
-
-  &:hover {
-    transform: scale(1.05);
-
-    .related-info {
-      opacity: 1;
-    }
-  }
-}
-
-.related-poster {
-  width: 100%;
-  aspect-ratio: 2/3;
-  object-fit: cover;
-}
-
-.related-info {
-  padding: 10px;
-  background-color: rgba(0, 0, 0, 0.8);
-  opacity: 0.8;
-  transition: opacity 0.3s;
-
-  h3 {
-    margin: 0 0 5px;
-    font-size: 16px;
-    font-weight: 500;
-  }
-
-  .match-rating {
-    color: #46d369;
-    font-size: 14px;
-  }
+  margin-top: 20px;
 }
 
 // Reviews
