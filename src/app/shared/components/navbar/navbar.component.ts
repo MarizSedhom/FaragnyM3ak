@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, ElementRef, ViewChild, HostListener} from '@angular/core';
+import { Component, ElementRef, ViewChild, HostListener} from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({

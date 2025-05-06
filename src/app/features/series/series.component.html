@@ -1,11 +1,3 @@
-<!-- <div class="search-container">
-    <input type="text" 
-           class="search-bar" 
-           placeholder="Search series by name..." 
-           [(ngModel)]="searchQuery"
-           (input)="filterSeries()"> -->
-  <!-- </div> -->
-  
-  <div class="container">
-    <app-series-card *ngFor="let series of filteredSeries" [series]="series"></app-series-card>
-  </div>
+<div class="container d-flex flex-wrap justify-content-center gap-3 mt-5 px-3" style="max-width: 1200px;">
+  <app-series-card *ngFor="let series of filteredSeries" [series]="series"></app-series-card>
+</div>

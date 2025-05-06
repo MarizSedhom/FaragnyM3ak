@@ -16,7 +16,8 @@
   <!-- <link href="styles.css" rel="stylesheet"> -->
 </head>
 
-<body>
+<body >
+
 
   <!-- Nav bar -->
   <nav class="navbar fixed-top">
@@ -40,43 +41,41 @@
       </span>
       <span class="icon-label text-white">Home</span>
     </a>
-  
+
     <a routerLink="/profile" routerLinkActive="active" class="icon-container position-relative d-block">
       <span class="circle-icon d-flex align-items-center justify-content-center">
         <i class="bi bi-person-fill"></i>
       </span>
       <span class="icon-label text-white">Profile</span>
     </a>
-  
+
     <a routerLink="/movie" routerLinkActive="active" class="icon-container position-relative d-block">
       <span class="circle-icon d-flex align-items-center justify-content-center">
         <i class="bi bi-film"></i>
       </span>
       <span class="icon-label text-white">Movies</span>
     </a>
-  
+
     <a routerLink="/series" routerLinkActive="active" class="icon-container position-relative d-block">
       <span class="circle-icon d-flex align-items-center justify-content-center">
         <i class="bi bi-tv"></i>
       </span>
       <span class="icon-label text-white">Series</span>
     </a>
-    
+
     <!-- Search component - Option 1: Using ViewChild references -->
-    <div #searchContainer id="search-container" class="icon-container position-relative d-block" (click)="toggleSearch($event)">
-      <span class="circle-icon d-flex align-items-center justify-content-center" >
+    <div #searchContainer id="search-container" class="icon-container position-relative d-block"
+      (click)="toggleSearch($event)">
+      <span class="circle-icon d-flex align-items-center justify-content-center">
         <i class="bi bi-search"></i>
       </span>
       <div class="inline-search">
-        <input #searchInput type="text" class="search-input" placeholder="Search..." 
-               (keydown.enter)="handleSearch()" 
-               (keydown.escape)="closeSearch()">
+        <input #searchInput type="text" class="search-input" placeholder="Search..." (keydown.enter)="handleSearch()"
+          (keydown.escape)="closeSearch()">
       </div>
     </div>
-    
-    <!-- Search component - Option 2: Using separate component -->
-    <!-- <app-search></app-search> -->
   </div>
+
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -84,5 +83,3 @@
   <script src="script.js"></script>
 
 </body>
-
-</html>

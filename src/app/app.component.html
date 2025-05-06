@@ -1,10 +1,24 @@
 <ng-container *ngIf="!isFullScreenRoute(); else fullScreen">
-  <app-navbar />
+  <!-- Navbar when not in fullscreen  -->
+  <app-navbar></app-navbar>
   <div class="page-content">
     <router-outlet></router-outlet>
   </div>
+  
+  <footer class="text-white text-center text-lg-start pt-3 pb-2"
+    style="position: absolute; bottom: 0; left: 0; width: 100%; background-color: rgba(0, 0, 0, 0.4); backdrop-filter: blur(5px);">
+    <div class="container text-center">
+      <p class="mb-1">© 2025 FaragnyM3ak. All rights reserved.</p>
+      <div>
+        <a href="#" class="text-white me-3 text-decoration-none">Privacy Policy</a>
+        <a href="#" class="text-white me-3 text-decoration-none">Terms of Service</a>
+        <a href="#" class="text-white text-decoration-none">Contact</a>
+      </div>
+    </div>
+  </footer>
 </ng-container>
 
 <ng-template #fullScreen>
+  Full-screen route without navbar
   <router-outlet></router-outlet>
 </ng-template>
