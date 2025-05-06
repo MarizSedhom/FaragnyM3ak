@@ -20,31 +20,9 @@ body {
   overflow-x: hidden;
 }
 
-/* ===== NAVBAR ===== */
-.navbar {
-  background-color: rgba(20, 20, 20, 0.9) !important;
-  backdrop-filter: blur(10px);
-  padding: 0.5rem 1rem;
-  transition: all 0.3s ease;
-
-  .navbar-brand {
-    font-family: 'Netflix Sans', sans-serif;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    
-    img {
-      transition: transform 0.3s ease;
-    }
-    
-    &:hover img {
-      transform: rotate(15deg);
-    }
-  }
-}
-
 /* ===== CAROUSEL ===== */
 .carousel {
-  margin-top: 56px;  // Account for fixed navbar
+  // margin-top: 16px;  // Account for fixed navbar
   
   .carousel-item {
     transition: transform 0.6s ease-in-out;
