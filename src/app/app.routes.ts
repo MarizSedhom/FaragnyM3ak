@@ -10,8 +10,11 @@ export const routes: Routes = [
         loadChildren: () => import('./features/movie-preview/movie-preview.component').then(m => m.MoviePreviewComponent)
     },
     {
-        path: 'profile',
-        loadChildren: () => import('./features/profile/profile.component').then(m => m.ProfileComponent)
+        // path: 'profile',
+        // loadChildren: () => import('./features/profile/profile.component').then(m => m.ProfileComponent)
+        path: 'profile', 
+        loadComponent: () => import('./features/profile/profile.component')
+                .then(m => m.ProfileComponent)
     },
     {
         path: 'movie',
