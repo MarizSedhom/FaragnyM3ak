@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import {FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { AuthService } from '../../services/auth.service';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AuthService } from '../auth/Service/authService';
 
 @Component({
   selector: 'app-login',
@@ -10,15 +10,17 @@ import { AuthService } from '../../services/auth.service';
   styleUrl: './login.component.scss'
 })
 export class LoginComponent implements OnInit {
-  constructor(private router:Router,private auth:AuthService){}
+  authService = inject(AuthService);
 
+  erroMessage: string | null = null;
+  constructor(private router: Router, private auth: AuthService) { }
 
-  protected isSubmitted : boolean = false;
+  protected isSubmitted: boolean = false;
   ngOnInit(): void {
-    if(this.auth.isAuthed)
-    {
-      this.router.navigate(["/"])
-    }
+    // if(this.auth.isAuthed)
+    // {
+    //   this.router.navigate(["/"])
+    // }
   }
 
   protected images: string[] = [
@@ -61,9 +63,6 @@ export class LoginComponent implements OnInit {
     "https://media.themoviedb.org/t/p/w440_and_h660_face/mFvoEwSfLqbcWwFsDjQebn9bzFe.jpg",
     "https://media.themoviedb.org/t/p/w440_and_h660_face/vGYJRor3pCyjbaCpJKC39MpJhIT.jpg",
   ];
-
-
-
 
   myFormVali = new FormGroup({
     email: new FormControl(null, [Validators.required]),
