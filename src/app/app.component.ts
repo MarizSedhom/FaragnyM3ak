@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { NavbarComponent } from "./shared/components/navbar/navbar.component";
 import { CommonModule } from '@angular/common';
+import { AuthService } from './core/auth/Service/authService';
 
 @Component({
   selector: 'app-root',
@@ -11,7 +12,18 @@ import { CommonModule } from '@angular/common';
 })
 export class AppComponent {
   title = 'movie-app';
-  constructor(private router: Router) {}
+  authService = inject(AuthService)
+  constructor(private router: Router) { }
+
+  ngOnInit() {
+    this.authService.user$.subscribe(user => {
+      if (user)
+        this.authService.currentUserSignal.set({ email: user.email!, password: user.displayName! });
+      else
+        this.authService.currentUserSignal.set(null);
+
+    })
+  }
 
   isFullScreenRoute() {
     const fullScreenRoutes = ['/login', '/register'];
