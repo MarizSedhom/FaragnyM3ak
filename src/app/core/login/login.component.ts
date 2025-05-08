@@ -65,7 +65,7 @@ export class LoginComponent implements OnInit {
   ];
 
   myFormVali = new FormGroup({
-    username: new FormControl(null, [Validators.required]),
+    email: new FormControl(null, [Validators.required]),
     password: new FormControl(null, [Validators.required]),
     remember: new FormControl(false),
   })
@@ -74,13 +74,13 @@ export class LoginComponent implements OnInit {
   onSubmit(): void {
     this.isSubmitted = true;
     if (this.myFormVali.valid) {
-
       const rawForm = this.myFormVali.getRawValue()
 
-      this.authService.login(rawForm.password!, rawForm.username!)
+      this.authService.login(rawForm.email!, rawForm.password!)
         .subscribe({
-          next: () => { this.router.navigateByUrl('/') },
-          error: (e) => { this.erroMessage = e.code }
+          next: () => { 
+            console.log("Registration successful. Navigating...");this.router.navigateByUrl('/profile') },
+          error: (e) => { this.erroMessage = e.code; console.log(rawForm.password!, rawForm.email!) }
         });
 
     } else {

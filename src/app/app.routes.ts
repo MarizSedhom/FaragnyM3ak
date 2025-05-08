@@ -1,46 +1,55 @@
 import { Routes } from '@angular/router';
+import { AuthGuard } from './core/auth/auth.guard';
 
 export const routes: Routes = [
     {
         path: '',
-        loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent)
+        loadComponent: () => import('./features/home/home.component').then(m => m.HomeComponent),
+        canActivate: [AuthGuard]
     },
     {
         path: 'movie-preview/:id', 
-        loadComponent: () => import('./features/movie-preview/movie-preview.component').then(m => m.MoviePreviewComponent)
+        loadComponent: () => import('./features/movie-preview/movie-preview.component').then(m => m.MoviePreviewComponent),
+        canActivate: [AuthGuard]
       },
     {
         path: 'profile',
-        loadComponent: () => import('./features/profile/profile.component').then(m => m.ProfileComponent)
+        loadComponent: () => import('./features/profile/profile.component').then(m => m.ProfileComponent),
+        canActivate: [AuthGuard]
     },
     {
         path: 'movie',
-        loadComponent: () => import('./features/movies/movies.component').then(m => m.MoviesComponent)
+        loadComponent: () => import('./features/movies/movies.component').then(m => m.MoviesComponent),
+        canActivate: [AuthGuard]
     },
     {
         path: 'series',
-        loadComponent: () => import('./features/series/series.component').then(m => m.SeriesComponent)
+        loadComponent: () => import('./features/series/series.component').then(m => m.SeriesComponent),
+        canActivate: [AuthGuard]
     },
     {
         path: 'services',
-        loadComponent: () => import('./services/services/services.component').then(m => m.ServicesComponent)
+        loadComponent: () => import('./services/services/services.component').then(m => m.ServicesComponent),
+        canActivate: [AuthGuard]
     },
     {
         path: 'watch',
-        loadComponent: () => import('./features/watch/watch.component').then(m => m.WatchComponent)
+        loadComponent: () => import('./features/watch/watch.component').then(m => m.WatchComponent),
+        canActivate: [AuthGuard]
     },
     {
         path: 'admin',
-        loadComponent: () => import('./features/admin/admin.component').then(m => m.AdminComponent)
+        loadComponent: () => import('./features/admin/admin.component').then(m => m.AdminComponent),
+        canActivate: [AuthGuard]
     },
-    // {
-    //   path: 'login',
-    //   loadComponent: () => import('./core/login/login.component').then(m => m.LoginComponent)
-    // },
-    // {
-    //   path: 'register',
-    //   loadComponent: () => import('./core/register/register.component').then(m => m.RegisterComponent)
-    // },
+    {
+      path: 'login',
+      loadComponent: () => import('./core/login/login.component').then(m => m.LoginComponent)
+    },
+    {
+      path: 'register',
+      loadComponent: () => import('./core/register/register.component').then(m => m.RegisterComponent)
+    },
     {
         path: '**',
         loadComponent: () => import('./shared/components/error/error.component').then(m => m.ErrorComponent)

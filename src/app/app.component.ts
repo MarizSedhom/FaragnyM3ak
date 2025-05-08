@@ -18,7 +18,7 @@ export class AppComponent {
   ngOnInit() {
     this.authService.user$.subscribe(user => {
       if (user)
-        this.authService.currentUserSignal.set({ email: user.email!, password: user.displayName! });
+        this.authService.currentUserSignal.set(user);
       else
         this.authService.currentUserSignal.set(null);
 

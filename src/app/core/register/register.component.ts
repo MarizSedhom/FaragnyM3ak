@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { FormGroup, FormControl, Validators, ValidationErrors, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { authGuard } from '../auth/auth.guard';
+// import { authGuard } from '../auth/auth.guard';
 import { AuthService } from '../auth/Service/authService';
 
 @Component({
@@ -103,7 +103,8 @@ export class RegisterComponent {
 
       this.authService.register(rawForm.email!, rawForm.password!, rawForm.username!)
         .subscribe({
-          next: () => { this.router.navigateByUrl('/') },
+          next: () => {
+            console.log("Registration successful. Navigating..."); this.router.navigateByUrl('/profile') },
           error: (e) => { this.erroMessage = e.code }
         });
 
