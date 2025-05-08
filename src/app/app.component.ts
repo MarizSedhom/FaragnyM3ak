@@ -1,8 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { NavbarComponent } from "./shared/components/navbar/navbar.component";
 import { CommonModule } from '@angular/common';
-import { AuthService } from './core/auth/Service/authService';
 
 @Component({
   selector: 'app-root',
