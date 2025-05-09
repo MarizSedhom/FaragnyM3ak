@@ -57,15 +57,13 @@
       <span class="icon-label text-white">Series</span>
     </a>
 
-    <!-- Search component - Option 1: Using ViewChild references -->
-    <div #searchContainer id="search-container" class="icon-container position-relative d-block"
-      (click)="toggleSearch($event)">
-      <span class="circle-icon d-flex align-items-center justify-content-center">
+    <!-- Search component -->
+    <div #searchContainer id="search-container" class="icon-container position-relative d-block">
+      <span class="circle-icon d-flex align-items-center justify-content-center" (click)="toggleSearch($event)">
         <i class="bi bi-search"></i>
       </span>
       <div class="inline-search">
-        <input #searchInput type="text" class="search-input" placeholder="Search..." (keydown.enter)="handleSearch()"
-          (keydown.escape)="closeSearch()">
+        <input #searchInput type="text" class="search-input" placeholder="Search..." (keydown.enter)="handleSearch()" (keydown.escape)="closeSearch()">
       </div>
     </div>
   </div>

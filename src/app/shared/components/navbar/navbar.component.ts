@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, HostListener} from '@angular/core';
+import { Component, ElementRef, ViewChild, HostListener, AfterViewInit } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
@@ -8,33 +8,32 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   styleUrl: './navbar.component.scss',
   standalone: true
 })
-export class NavbarComponent {
+export class NavbarComponent implements AfterViewInit {
   @ViewChild('searchContainer') searchContainer!: ElementRef;
   @ViewChild('searchInput') searchInput!: ElementRef;
   
   constructor() {}
   
   ngAfterViewInit() {
-    // Make sure the elements are available
-    if (this.searchContainer && this.searchInput) {
-      this.initSearchFunctionality();
-    }
+    // Initialize search functionality after view is initialized
+    this.initSearchFunctionality();
   }
 
   // Toggle search when clicking the icon
   toggleSearch(event: MouseEvent) {
-    const target = event.target as HTMLElement;
+    event.preventDefault();
+    event.stopPropagation();
     
-    // Prevent toggling if clicking the input itself
-    if (target === this.searchInput.nativeElement) {
-      return;
-    }
+    const searchContainer = this.searchContainer.nativeElement;
+    const searchInput = this.searchInput.nativeElement;
     
-    this.searchContainer.nativeElement.classList.toggle('expanded');
+    // Toggle expanded class
+    searchContainer.classList.toggle('expanded');
     
-    if (this.searchContainer.nativeElement.classList.contains('expanded')) {
+    // Focus input if expanded
+    if (searchContainer.classList.contains('expanded')) {
       setTimeout(() => {
-        this.searchInput.nativeElement.focus();
+        searchInput.focus();
       }, 300);
     }
   }
@@ -45,10 +44,6 @@ export class NavbarComponent {
     if (searchTerm) {
       console.log('Searching for:', searchTerm);
       // Implement your search functionality here
-      // For example:
-      // this.searchService.search(searchTerm).subscribe(results => {
-      //   this.searchResults = results;
-      // });
       
       // Clear input
       this.searchInput.nativeElement.value = '';
@@ -62,46 +57,19 @@ export class NavbarComponent {
     }
   }
   
-  // Alternative approach using native event listeners
+  // Initialize search functionality
   private initSearchFunctionality() {
-    const searchContainer = this.searchContainer.nativeElement;
     const searchInput = this.searchInput.nativeElement;
-    
-    // Toggle search input when clicking the search icon
-    searchContainer.addEventListener('click', (e: Event) => {
-      // Prevent the click on the input itself from toggling
-      if (e.target === searchInput) {
-        return;
-      }
-      
-      // Toggle expanded class
-      searchContainer.classList.toggle('expanded');
-      
-      // Focus input if expanded
-      if (searchContainer.classList.contains('expanded')) {
-        setTimeout(() => {
-          searchInput.focus();
-        }, 300);
-      }
-    });
     
     // Handle search submit
     searchInput.addEventListener('keydown', (e: KeyboardEvent) => {
       if (e.key === 'Enter') {
-        // Get search term
-        const searchTerm = searchInput.value.trim();
-        if (searchTerm) {
-          console.log('Searching for:', searchTerm);
-          // Add your search functionality here
-          
-          // Clear input
-          searchInput.value = '';
-        }
+        this.handleSearch();
       }
       
       // Close search on Escape
       if (e.key === 'Escape') {
-        searchContainer.classList.remove('expanded');
+        this.closeSearch();
       }
     });
   }
