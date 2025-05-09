@@ -6,7 +6,7 @@ $accent-green: #2ecc71;
   background: lighten($medium-green, 5%);
   border-radius: 12px;
   padding: 1.5rem;
-  min-height: 600px;
+  // min-height: 600px;
   border: 1px solid rgba($accent-green, 0.2);
   transition: transform 0.3s ease;
 
@@ -38,7 +38,7 @@ $accent-green: #2ecc71;
     background: var(--surface);
     border-radius: 8px;
     padding: 1.5rem;
-    min-height: 600px;
+  
     border: 1px solid var(--bg-secondary);
   
     .panel-title {
@@ -49,8 +49,19 @@ $accent-green: #2ecc71;
       font-size: 1.4rem;
     }
   
-    // .media-list {
-    //   display: grid;
-    //   gap: 1.2rem;
-    // }
+    .media-list {
+      min-width: 100%;
+      padding: 1rem;
+    }
   }
+
+#watchlistSection, #favoritesSection {
+  min-height: 300px; // Add minimum height
+  background: rgba(var(--accent), 0.05); // Better visibility
+  
+  &:empty::before {
+    content: "No items found";
+    color: var(--text-secondary);
+    padding: 2rem;
+  }
+}

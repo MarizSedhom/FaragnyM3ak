@@ -1,4 +1,3 @@
-
 :root {
   /* Base color definitions */
   --color-light-1: #ededf5;
@@ -30,7 +29,6 @@
   --surface: var(--color-dark-1);
   --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
 }
-
 
 .profile-container {
   min-height: 100vh;
@@ -175,17 +173,15 @@
   height: 24px;
 }
 
-/* Horizontal Scroll Containers */
 .scroll-container {
   display: flex;
   gap: 1.5rem;
   overflow-x: auto;
-  padding: 1rem 0.5rem 1.5rem;
+  padding: 1rem 0;
   scroll-behavior: smooth;
-  scrollbar-width: none;
+  scroll-snap-type: x mandatory;
 }
 
-/* Hide scrollbar for WebKit browsers */
 .scroll-container::-webkit-scrollbar {
   display: none;
 }
@@ -303,62 +299,94 @@
 .collection-section {
   margin-top: 3rem;
   padding: 2rem;
-  background: rgba(167, 156, 152, 0.7); /* Using the medium-1 color with some transparency */
-  border-radius: 20px;
-  box-shadow: var(--card-shadow);
+  border: 1px solid rgba(0,0,0,0.4);
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   backdrop-filter: blur(10px);
-  border-top: 3px solid var(--accent-alt);
 }
 
-.collection-title {
-  margin-bottom: 2rem;  
+.dual-column-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  margin-top: 1.5rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
 }
 
-.collections-container {
-  width: 100%;
+.collection-column {
+  background: rgba(var(--surface), 0.1);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--bg-secondary);
 }
 
-/* UNIFIED STYLES FOR WATCHLIST AND FAVORITES */
-.lists-container {
+.grid-container {
   display: flex;
   flex-direction: column;
-}
-
-/* Make both sections identical in appearance */
-#watchlistSection,
-#favoritesSection {
-  display: flex;
   gap: 1.5rem;
-  overflow-x: auto;
-  padding: 1rem 0.5rem 1.5rem;
-  scroll-behavior: smooth;
-  scrollbar-width: none;
-  background: rgba(217, 210, 204, 0.2);
-  border-radius: 12px;
-  margin-bottom: 2rem;
-  box-shadow: var(--card-shadow);
 }
 
-/* Hide scrollbar for WebKit browsers */
-#watchlistSection::-webkit-scrollbar,
-#favoritesSection::-webkit-scrollbar {
-  display: none;
-}
-
-/* Ensure app-media-panel has consistent styling */
-app-media-panel {
-  width: 100%;
-}
-
-/* Media items for watchlist and favorites */
-.media-items-container {
-  display: flex;
+.grid-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 1.5rem;
-  padding: 0.5rem 0;
-  width: 100%;
+  min-height: 350px;
 }
 
-/* Media cards in watchlist and favorites - ensure consistency */
+.grid-panel {
+  display: contents;
+  
+  .media-list {
+    display: contents;
+  }
+  
+  app-media-card {
+    flex: 0 0 calc(25% - 1.125rem); // 4 cards per view
+    scroll-snap-align: start;
+    transition: var(--transition);
+    
+    .card {
+      width: 100% !important;
+      height: 280px;
+      // margin: 0;
+    }
+  }
+}
+.collection-section{
+  .section-header {
+    position: relative;
+    padding-right: 100px; // Make space for scroll controls
+    
+    .scroll-controls {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  }
+
+}
+
+/* Maintain drag-drop styles */
+.cdk-drag-preview {
+  opacity: 0.8;
+  transform: rotate(3deg);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+/* Media Cards */
 .media-card {
   flex: 0 0 200px;
   height: 280px;
@@ -406,6 +434,13 @@ app-media-panel {
   white-space: nowrap;
 }
 
+.media-items-container {
+  display: flex;
+  gap: 1.5rem;
+  padding: 0 1rem;
+  min-width: 100%;
+}
+
 /* Media Queries */
 @media (max-width: 992px) {
   .lists-container {
@@ -435,3 +470,14 @@ app-media-panel {
     height: 240px;
   }
 }
+
+@media (max-width: 480px) {
+  .grid-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .media-card {
+    height: 300px;
+  }
+}
+

@@ -2,11 +2,12 @@ import { Component, Input, Output, EventEmitter, output } from '@angular/core';
 import { MediaItem, Season, Episode } from '../../models/media.model';
 import { CommonModule } from '@angular/common';
 import { CdkDrag } from '@angular/cdk/drag-drop';
+import { TruncatePipe } from '../../truncate.pipe'
 
 @Component({
   selector: 'app-media-card',
   standalone:true,
-  imports: [CommonModule, CdkDrag],
+  imports: [CommonModule, CdkDrag, TruncatePipe],
   templateUrl: './media-card.component.html',
   styleUrl: './media-card.component.scss'
 })
@@ -81,9 +82,15 @@ export class MediaCardComponent {
   // }
 
   getStarRating(rating?: number):string{
-    if(rating == null) return '☆'.repeat(5);
+    if(rating === undefined || rating === null){
+      return '☆'.repeat(5);
+    } 
+    const fullStars = Math.round(Math.min(Math.max(rating, 0), 5));
 
-    const fullStars = Math.round(rating);
-    return '★'.repeat(fullStars) + '☆'.repeat(5 - fullStars);
+    return '★'.repeat(fullStars) + '☆'.repeat(Math.max(0, 5 - fullStars));
+  }
+
+  formatCount(count: number): string {
+    return (count * 1000).toLocaleString(); // Formats with commas
   }
 }

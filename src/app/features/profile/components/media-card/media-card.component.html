@@ -1,90 +1,66 @@
 <div class="media-card">
-<div class="thumbnail-card" (click)="toggleExpanded()"
+<div class="card"
     cdkDrag
-     [cdkDragData]="media"
-     [cdkDragDisabled]="isExpanded">
-     
+     [cdkDragData]="media">
+
     <img [src]="media.posterUrl" [alt]="media.title" class="poster">
 
-    <div class="thumbnail-overlay">
-        <h3 class="title">{{ media.title}}</h3>
-        <!-- <div class="media-info"> -->
-            <p *ngIf="media.type === 'movie'">{{ media.releaseYear }} • {{ media.duration }}min</p>
-            <p *ngIf="media.type ==='series'">{{ media.totalSeasons }} Seasons</p>
-        <!-- </div> -->
+    <div class="card-overlay" *ngIf="media.type === 'movie'">
+        <div class="card-title">{{ media.title }}</div>
+
+        <div class="card-rating">
+          <span class="star">{{ getStarRating(media.rating) }} </span> ({{ formatCount(media.ratingCount) }})
+        </div>
+    
+        <div class="card-info">
+          {{ media.duration }} min
+        </div>
+    
+        <div class="card-subtitle text-white">
+          {{ media.hasSub ? 'Sub' : '' }}{{ media.hasSub && media.hasDub ? ' | ' : '' }}{{ media.hasDub ? 'Dub' : '' }}
+        </div>
+    
+        <div class="card-description">{{ media.description }}</div>
+    
+        <div class="action-buttons">
+          <div class="action-button">▶</div>
+          <div class="action-button">♥</div>
+          <div class="action-button">+</div>
+        </div>
+    </div>
+
+    <div class="card-overlay" *ngIf="media.type === 'series'">
+
+        <div class="card-title">{{ media.title }}</div>
+
+        <div class="card-rating">
+          <span class="star">{{ getStarRating(media.rating) }} </span> ({{ formatCount(media.ratingCount) }})
+        </div>
+    
+        <div class="card-info" *ngIf="media.totalSeasons == 1">
+          {{ media.totalSeasons}} Seasons | {{ media.seasons[0].episodes.length }} Episodes
+        </div>
+
+        <div class="card-info" *ngIf="media.totalSeasons > 1">
+            {{ media.totalSeasons}} Seasons
+          </div>
+    
+        <div class="card-subtitle">
+          {{ media.hasSub ? 'Sub' : '' }}{{ media.hasSub && media.hasDub ? ' | ' : '' }}{{ media.hasDub ? 'Dub' : '' }}
+        </div>
+    
+        <div class="card-description">{{ media.description | truncate:150 }}</div>
+    
+        <div class="action-buttons">
+          <div class="action-button">▶</div>
+          <div class="action-button">♥</div>
+          <div class="action-button">+</div>
+        </div>
+      </div>
     </div>
 </div>
 
-<div class="model-overlay" *ngIf="isExpanded" (click)="isExpanded = false">
-    <div class="model-card" >
-        <button class="close-btn" (click)="isExpanded = false">&times;</button>
 
-        <div class="modal-poster">
-            <img [src]="media.posterUrl" [alt]="media.title">
-        </div>
-
-        <div class="model-content">
-            <h2> {{ media.title }}</h2>
-
-            <div class="progress-section" *ngIf="media.type === 'movie'">
-                <div class="progress-bar">
-                  <div class="progress-fill" [style.width.%]="media.progress"></div>
-                </div>
-                <div class="progress-info">
-                  <span>{{ media.timeLeft }}m left</span>
-                  <button class="resume-btn">Resume</button>
-                </div>
-                <button class="watched-btn" (click)="markMovieWatched()">
-                  <input type="checkbox" [checked]="media.watched">
-                  Mark as Watched
-                </button>
-              </div>
-
-              <div *ngIf="media.type === 'series'" class="series-tracking">
-                <div class="seasons-list">
-                    <div *ngFor="let season of media.seasons" class="season">
-                        <div class="season-header" (click)="toggleSeasonExpansion(season)">
-                            <label class="season-check">
-                                <input type="checkbox"
-                                    [checked]="isSeasonWatched(season)"
-                                    (click)="toggleSeasonWatched(season)">
-                                    Season {{ season.seasonNumber }}
-                            </label>
-                            <span class="toggle-icon">
-                                {{ isSeasonExpanded(season) ? '▼' : '▶'}}
-                            </span>
-                        </div>
-
-                        <div *ngIf="isSeasonExpanded(season)" class="episodes-list">
-                            <div  *ngFor="let episode of season.episodes" class="episode">
-                                <label class="episode-check">
-                                    <input type="checkbox"
-                                        [checked]="episode.watched"
-                                        (change)="toggleEpisodeWatched(season, episode)">
-                                Episode {{ episode.episodeNumber }}: {{ episode.title }}
-                                </label>
-                                <span class="duration">{{ episode.duration }}m</span>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="additional-info">
-                <p class="genre">{{ media.genre.join(' • ') }}</p>
-                <p class="rating">{{ getStarRating(media.rating) }}</p>
-                <p class="description">{{ media.description }}</p>
-              </div> 
-            
-        </div>
-
-    </div>
-
- 
-</div>
-</div>
 
 
 

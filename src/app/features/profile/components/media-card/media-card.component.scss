@@ -1,374 +1,112 @@
 .media-card {
   position: relative;
   
-  // Thumbnail Card Styles
-  .thumbnail-card {
+  .card {
+    width: 200px;
+    height: 350px;
     position: relative;
-    width: 180px;
-    height: 270px;
-    border-radius: 8px;
-    overflow: hidden;
     cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
     transition: transform 0.3s ease;
-    
+    flex: 0 0 auto;
+    margin: 0 15px;
+  
     &:hover {
       transform: scale(1.05);
-      
-      .thumbnail-overlay {
-        opacity: 1;
-      }
     }
-    
-    .poster {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+  
+    &:hover .card-overlay {
+      transform: translateY(0);
+      opacity: 1;
     }
-    
-    .thumbnail-overlay {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
-      padding: 12px;
-      opacity: 0.8;
-      transition: opacity 0.3s ease;
-      
-      .title {
-        color: white;
-        margin: 0 0 4px;
-        font-size: 16px;
-        font-weight: 600;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      
-      p {
-        color: #e0e0e0;
-        margin: 4px 0;
-        font-size: 12px;
-      }
-      
-      .rating {
-        color: #ffcc00;
-      }
-      
-      .additional {
-        font-size: 11px;
-        background: rgba(255, 255, 255, 0.2);
-        padding: 2px 6px;
-        border-radius: 4px;
-        display: inline-block;
-      }
-      
-      .description {
-        font-size: 11px;
-        line-height: 1.4;
-        max-height: 45px;
-        overflow: hidden;
-      }
+  
+    &:hover .card-subtitle {
+      transform: translateY(100%);
     }
   }
   
-  // Modal overlay styles
-  .model-overlay {
-    position: fixed;
-    top: 0;
+  .poster {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    object-position: center top;
+  }
+  
+  .card-subtitle {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 8px;
+    font-size: 12px;
+    text-align: right;
+    color: white;
+    transform: translateY(0);
+    transition: transform 0.3s ease;
+  }
+  
+  .card-overlay {
+    position: absolute;
+    bottom: 0;
     left: 0;
     right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.85);
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.7), transparent);
+    padding: 15px;
+    transform: translateY(100%);
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    color: white;
+  }
+  
+  .card-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  
+  .card-rating {
     display: flex;
-    justify-content: center;
     align-items: center;
-    z-index: 1000;
-    
-    .model-card {
-      position: relative;
-      display: flex;
-      background-color: #1a1a1a;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 800px;
-      max-height: 90vh;
-      overflow-y: auto;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-      cursor: move; // Indicating it's draggable using cdkDrag
-      
-      .close-btn {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        background: rgba(0, 0, 0, 0.5);
-        color: white;
-        border: none;
-        border-radius: 50%;
-        width: 30px;
-        height: 30px;
-        font-size: 20px;
-        cursor: pointer;
-        z-index: 10;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        
-        &:hover {
-          background: rgba(255, 255, 255, 0.2);
-        }
-      }
-      
-      .modal-poster {
-        flex: 0 0 35%;
-        
-        img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          border-top-left-radius: 12px;
-          border-bottom-left-radius: 12px;
-        }
-      }
-      
-      .model-content {
-        flex: 1;
-        padding: 20px;
-        color: white;
-        
-        h2 {
-          margin-top: 0;
-          font-size: 24px;
-          color: white;
-        }
-        
-        .additional-info {
-          margin-bottom: 20px;
-          
-          .genre {
-            color: #b3b3b3;
-            font-size: 14px;
-          }
-          
-          .rating {
-            font-size: 16px;
-            color: #ffcc00;
-          }
-          
-          .media-actions {
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin: 10px 0;
-            
-            .sub-dub-info {
-              display: inline-block;
-              background: rgba(255, 255, 255, 0.2);
-              padding: 2px 8px;
-              border-radius: 4px;
-              font-size: 12px;
-              margin: 0;
-            }
-            
-            .favorite-btn {
-              display: flex;
-              align-items: center;
-              gap: 5px;
-              background-color: transparent;
-              border: 1px solid #666;
-              color: #ccc;
-              padding: 5px 10px;
-              border-radius: 4px;
-              cursor: pointer;
-              font-size: 12px;
-              transition: all 0.2s ease;
-              
-              &:hover {
-                background-color: rgba(255, 255, 255, 0.1);
-              }
-              
-              &.is-favorite {
-                background-color: rgba(255, 215, 0, 0.2);
-                border-color: #ffd700;
-                color: #ffd700;
-              }
-            }
-          }
-          
-          .description {
-            margin-top: 12px;
-            line-height: 1.6;
-            color: #e0e0e0;
-          }
-        }
-        
-        // Movie Progress Section
-        .progress-section {
-          margin-top: 20px;
-          
-          .progress-bar {
-            height: 8px;
-            background-color: #3a3a3a;
-            border-radius: 4px;
-            overflow: hidden;
-            margin-bottom: 10px;
-            
-            .progress-fill {
-              height: 100%;
-              background-color: #ff4081;
-              border-radius: 4px;
-              transition: width 0.3s ease;
-            }
-          }
-          
-          .progress-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            
-            span {
-              color: #b3b3b3;
-              font-size: 14px;
-            }
-            
-            .resume-btn {
-              background-color: #ff4081;
-              color: white;
-              border: none;
-              padding: 6px 16px;
-              border-radius: 4px;
-              cursor: pointer;
-              font-weight: 500;
-              
-              &:hover {
-                background-color: #f50057;
-              }
-            }
-          }
-          
-          .watched-btn {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background-color: transparent;
-            color: #b3b3b3;
-            border: 1px solid #4a4a4a;
-            padding: 8px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            
-            &:hover {
-              background-color: rgba(255, 255, 255, 0.1);
-            }
-            
-            input[type="checkbox"] {
-              margin: 0;
-            }
-          }
-        }
-        
-        // Series tracking section
-        .series-tracking {
-          margin-top: 20px;
-          
-          .seasons-list {
-            .season {
-              margin-bottom: 10px;
-              
-              .season-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 10px;
-                background-color: #2a2a2a;
-                border-radius: 4px;
-                cursor: pointer;
-                
-                &:hover {
-                  background-color: #3a3a3a;
-                }
-                
-                .season-check {
-                  display: flex;
-                  align-items: center;
-                  gap: 8px;
-                  cursor: pointer;
-                  font-weight: 500;
-                }
-                
-                .toggle-icon {
-                  font-size: 12px;
-                  color: #b3b3b3;
-                }
-              }
-              
-              .episodes-list {
-                margin-top: 5px;
-                padding-left: 20px;
-                
-                .episode {
-                  display: flex;
-                  justify-content: space-between;
-                  align-items: center;
-                  padding: 8px 10px;
-                  border-bottom: 1px solid #333;
-                  
-                  &:last-child {
-                    border-bottom: none;
-                  }
-                  
-                  .episode-check {
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                    cursor: pointer;
-                    font-size: 14px;
-                    color: #e0e0e0;
-                  }
-                  
-                  .episode-info {
-                    display: flex;
-                    align-items: center;
-                    gap: 10px;
-                    
-                    .duration {
-                      font-size: 12px;
-                      color: #b3b3b3;
-                    }
-                    
-                    .progress-text {
-                      font-size: 12px;
-                      color: #ff4081;
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
+    margin-bottom: 5px;
+    font-size: 14px;
+  
+    .star {
+      color: gold;
+      margin-right: 5px;
     }
   }
   
-  // Responsive design
-  @media (max-width: 768px) {
-    .model-overlay .model-card {
-      flex-direction: column;
-      
-      .modal-poster {
-        flex: 0 0 auto;
-        height: 300px;
-        
-        img {
-          border-top-left-radius: 12px;
-          border-top-right-radius: 12px;
-          border-bottom-left-radius: 0;
-        }
-      }
-    }
+  .card-info {
+    font-size: 12px;
+    margin-bottom: 8px;
+    color: #ccc;
   }
+  
+  .card-description {
+    font-size: 12px;
+    line-height: 1.4;
+    color: #aaa;
+    display: -webkit-box;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .action-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+  }
+  
+  .action-button {
+    color: #ff6b00;
+    cursor: pointer;
+  }
+  
+
+
 }

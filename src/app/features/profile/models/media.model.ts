@@ -7,9 +7,6 @@ interface BaseMedia {
     isFavorite:boolean;
     createdAt: Date;
     lastModified:Date;
-
-    //For Continue Watching Progress
-
     // From Yasser's Model
     rating: number;
     ratingCount: number;

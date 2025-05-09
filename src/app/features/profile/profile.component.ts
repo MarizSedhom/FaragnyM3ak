@@ -6,13 +6,13 @@ import { MediaPanelComponent } from './components/media-panel/media-panel.compon
 import { MediaCardComponent } from './components/media-card/media-card.component';
 import { CdkDrag, CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
-import { TruncatePipe } from './truncate.pipe'
+
 
 
 @Component({
   selector: 'app-profile',
   standalone:true,
-  imports: [CommonModule,MediaPanelComponent, DragDropModule, TruncatePipe],
+  imports: [CommonModule,MediaPanelComponent, DragDropModule],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'
 })
@@ -50,9 +50,14 @@ export class ProfileComponent {
   }
 
   handleFavoriteToggle(mediaId:string){
-    this.mediaItems = this.mediaItems.map(item =>
-      item.id === mediaId ? {...item, isFavorite: !item.isFavorite} : item
-    );
+    this.mediaItems = this.mediaItems.map(item => {
+      if(item.id === mediaId){
+        return {...item, isFavorite: !item.isFavorite};
+      }
+      return item;
+    });
+
+    this.mediaItems = [...this.mediaItems];
   }
 
   handleWatchedToggle(mediaId: string){
@@ -92,11 +97,11 @@ export class ProfileComponent {
   //To manage drop functionality
   onDrop(event: CdkDragDrop<MediaItem[]>){
     if(event.previousContainer === event.container){
-      // moveItemInArray(
-      //   event.container.data,
-      //   event.previousIndex,
-      //   event.currentIndex
-      // );
+      moveItemInArray(
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex
+      );
     }else{
      
       const draggedItem = event.item.data;
@@ -180,21 +185,41 @@ export class ProfileComponent {
 
 
   // Scrolling Section
-  @ViewChildren('scrollableSection')
-  sections!: QueryList<ElementRef>;
+  @ViewChild('continueScroll') continueScroll!: ElementRef;
+  @ViewChild('watchlistScroll') watchlistScroll!: ElementRef;
+  @ViewChild('favoritesScroll') favoritesScroll!: ElementRef;
 
-  scrollSection(sectionName: string, offset:number)
-  {
-    const section = this.sections.find(s => 
-      s.nativeElement.id === `${sectionName}Section`
-    );
+  scrollSection(section: 'continue' | 'watchlist' | 'favorites', direction: number) {
+    const container = this.getScrollContainer(section);
+    if (!container) return;
 
-    if(section){
-      const container = section.nativeElement;
-      container.scrollBy({
-        left:offset,
-        behavior: 'smooth'
-      });
+    const scrollAmount = this.calculateScrollAmount(section, direction);
+    container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+  }
+
+  private getScrollContainer(section: string): HTMLElement | null {
+    return {
+      'continue': this.continueScroll?.nativeElement,
+      'watchlist': this.watchlistScroll?.nativeElement,
+      'favorites': this.favoritesScroll?.nativeElement,
+    }[section] || null;
+  }
+
+  private calculateScrollAmount(section: string, direction: number): number {
+    const CARD_WIDTH = 200; // Match your card width
+    const CARD_GAP = 24; // Match your gap size
+    
+    if (section === 'continue') {
+      // Original pixel-based scroll for Continue Watching
+      return 300 * direction;
     }
+    
+    // Scroll 4 cards at a time for Watchlist/Favorites
+    // return (CARD_WIDTH + CARD_GAP) * 4 * direction;
+    return 300 * direction;
+
   }
 }
+
+
+

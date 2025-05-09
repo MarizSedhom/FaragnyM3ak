@@ -16,7 +16,7 @@
     <div class="section-header">
       <h2 class="section-title">Continue Watching</h2>
       <div class="scroll-controls">
-        <button class="scroll-arrow left" (click)="scrollSection('continue', -300)">
+        <button class="scroll-arrow left" (click)="scrollSection('continue', -1)">
           <svg class="arrow-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path class="arrow-path" 
                   d="M15 4l-10 10 10 10" 
@@ -27,7 +27,7 @@
                   stroke-linejoin="round"/>
           </svg>
         </button>
-        <button class="scroll-arrow right" (click)="scrollSection('continue', 300)">
+        <button class="scroll-arrow right" (click)="scrollSection('continue', 1)">
           <svg class="arrow-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path class="arrow-path" 
                   d="M9 4l10 10-10 10" 
@@ -41,7 +41,7 @@
       </div>
     </div>
 
-    <div class="scroll-container" #scrollableSection id="continueSection">
+    <div class="scroll-container" #continueScroll id="continueSection">
       <div *ngFor="let item of continueWatching" class="continue-card">
         <div class="play-icon">
           <svg width="40" height="40" viewBox="0 0 24 24">
@@ -66,7 +66,7 @@
   </section>
 
   <!--Collections Section-->
-  <section class="collection-section" style="background-color: rgb(59, 82, 72);">
+  <section class="collection-section">
     <h2 class="collection-title section-title">Your Collections</h2>
     <div class="collections-container card-body">
       <div class="lists-container" cdkDropListGroup>
@@ -80,7 +80,7 @@
               Your Watchlist
             </h3>
             <div class="scroll-controls">
-              <button class="scroll-arrow left" (click)="scrollSection('watchlist', -300)">
+              <button class="scroll-arrow left" (click)="scrollSection('watchlist', -1)">
                 <svg class="arrow-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path class="arrow-path" 
                         d="M15 4l-10 10 10 10" 
@@ -91,7 +91,7 @@
                         stroke-linejoin="round"/>
                 </svg>
               </button>
-              <button class="scroll-arrow right" (click)="scrollSection('watchlist', 300)">
+              <button class="scroll-arrow right" (click)="scrollSection('watchlist', 1)">
                 <svg class="arrow-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path class="arrow-path" 
                         d="M9 4l10 10-10 10" 
@@ -104,7 +104,7 @@
               </button>
             </div>
           </div>
-          <div  #scrollableSection id="watchlistSection" class="scroll-container">
+          <div  class="scroll-container" #watchlistScroll id="watchlistSection" >
             <div class="media-items-container">
               <app-media-panel 
                   class=""
@@ -129,7 +129,7 @@
               Favorite Titles
             </h3>
             <div class="scroll-controls">
-              <button class="scroll-arrow left" (click)="scrollSection('favorites', -300)">
+              <button class="scroll-arrow left" (click)="scrollSection('favorites', -1)">
                 <svg class="arrow-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path class="arrow-path" 
                         d="M15 4l-10 10 10 10" 
@@ -140,7 +140,7 @@
                         stroke-linejoin="round"/>
                 </svg>
               </button>
-              <button class="scroll-arrow right" (click)="scrollSection('favorites', 300)">
+              <button class="scroll-arrow right" (click)="scrollSection('favorites', 1)">
                 <svg class="arrow-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path class="arrow-path" 
                         d="M9 4l10 10-10 10" 
@@ -153,17 +153,19 @@
               </button>
             </div>
           </div>
-          <div #scrollableSection id="favoritesSection">
-            <app-media-panel
-                class=""
-                title="Favorites" 
-                [items]="favorites"
-                id="favorites"
-                (favoriteToggled)="handleFavoriteToggle($event)"
-                (watchedToggled)="handleWatchedToggle($event)"
-                (episodeToggled)="handleEpisodeToggle($event)"
-                (drop)="onDrop($event)">
-            </app-media-panel>
+          <div class="scroll-container" #favoritesScroll id="favoritesSection" >
+            <div class="media-items-container">
+              <app-media-panel
+                  class=""
+                  title="Favorites" 
+                  [items]="favorites"
+                  id="favorites"
+                  (favoriteToggled)="handleFavoriteToggle($event)"
+                  (watchedToggled)="handleWatchedToggle($event)"
+                  (episodeToggled)="handleEpisodeToggle($event)"
+                  (drop)="onDrop($event)">
+              </app-media-panel>
+            </div>
           </div>
         </section>
       </div>
