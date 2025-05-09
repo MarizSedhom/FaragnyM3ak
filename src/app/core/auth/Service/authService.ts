@@ -2,14 +2,13 @@ import { inject, Injectable, signal } from "@angular/core"
 import { Auth, createUserWithEmailAndPassword, onAuthStateChanged, user } from "@angular/fire/auth"
 import { signInWithEmailAndPassword, updateProfile, User } from "firebase/auth"
 import { BehaviorSubject, from, Observable } from "rxjs"
-// interface UserInterface {
-//     email: string,
-//     password: string
-// }
+import { Firestore, doc, setDoc, serverTimestamp } from '@angular/fire/firestore'
+
 @Injectable({ providedIn: 'root' })
 
 export class AuthService {
     firebaseAuth = inject(Auth)
+    firestore = inject(Firestore)
     user$ = user(this.firebaseAuth)
     currentUserSignal = signal<User | null | undefined>(undefined)
     private currentUserSubject = new BehaviorSubject<User | null>(null);
@@ -32,9 +31,36 @@ export class AuthService {
         return this.auth.signOut();
     }
 
+    private async createUserData(userId: string, email: string, username: string) {
+        const userRef = doc(this.firestore, 'users', userId);
+        
+        await setDoc(userRef, {
+            profile: {
+                email,
+                username,
+                createdAt: serverTimestamp()
+            },
+            movies: {
+                favorites: [],
+                watchlist: [],
+                tracking: [],
+                reviews: []
+            },
+            series: {
+                favorites: [],
+                watchlist: [],
+                tracking: [],
+                reviews: []
+            }
+        });
+    }
+
     register(email: string, password: string, username: string): Observable<void> {
         const promise = createUserWithEmailAndPassword(this.firebaseAuth, email, password)
-            .then(response => updateProfile(response.user, { displayName: username }));
+            .then(async response => {
+                await updateProfile(response.user, { displayName: username });
+                await this.createUserData(response.user.uid, email, username);
+            });
 
         return from(promise);
     }
@@ -44,7 +70,6 @@ export class AuthService {
             .then(() => { })
         return from(promise);
     }
-
 }
 
 
