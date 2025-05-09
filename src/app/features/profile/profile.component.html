@@ -1,1 +1,174 @@
-<p>profile works!</p>
+<div class="profile-container">
+  <!--Profile Header-->
+  <div class="profile-header">
+    <div class="profile-info">
+      <div class="profile-pic">
+        <svg class="user-icon" viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+        </svg>
+      </div>
+      <h1 class="profile-title">My Profile</h1>
+    </div>
+  </div>
+
+  <!--Continue Watching Section-->
+  <section class="media-section">
+    <div class="section-header">
+      <h2 class="section-title">Continue Watching</h2>
+      <div class="scroll-controls">
+        <button class="scroll-arrow left" (click)="scrollSection('continue', -1)">
+          <svg class="arrow-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path class="arrow-path" 
+                  d="M15 4l-10 10 10 10" 
+                  stroke="currentColor" 
+                  stroke-width="2" 
+                  fill="none"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button class="scroll-arrow right" (click)="scrollSection('continue', 1)">
+          <svg class="arrow-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path class="arrow-path" 
+                  d="M9 4l10 10-10 10" 
+                  stroke="currentColor"
+                  stroke-width="2" 
+                  fill="none" 
+                  stroke-linecap="round"
+                  stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="scroll-container" #continueScroll id="continueSection">
+      <div *ngFor="let item of continueWatching" class="continue-card">
+        <div class="play-icon">
+          <svg width="40" height="40" viewBox="0 0 24 24">
+            <path fill="white" d="M8 5v14l11-7z"/>
+          </svg>
+        </div>
+          
+        <div class="card-image">
+          <img [src]="item.posterUrl" [alt]="item.title">
+
+          <!--The progress bar-->
+          <div class="progress-container">
+            <div class="progress-bar" [style.width.%]="getProgress(item)"></div>
+          </div>
+          <div class="time-left">{{ getTimeLeft(item) }}m left</div>
+          <h3 class="media-title">{{ item.title }}
+            <span *ngIf="item.type ==='series'" class="episode">S{{getCurrentSeason(item)}}E{{ getCurrentEpisode(item)}}</span>
+          </h3>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!--Collections Section-->
+  <section class="collection-section">
+    <h2 class="collection-title section-title">Your Collections</h2>
+    <div class="collections-container card-body">
+      <div class="lists-container" cdkDropListGroup>
+        <!--Watchlist-->
+        <section class="media-section">
+          <div class="section-header">
+            <h3 class="section-heading">
+              <svg class="section-icon" viewBox="0 0 24 24">
+                <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/>
+              </svg>
+              Your Watchlist
+            </h3>
+            <div class="scroll-controls">
+              <button class="scroll-arrow left" (click)="scrollSection('watchlist', -1)">
+                <svg class="arrow-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path class="arrow-path" 
+                        d="M15 4l-10 10 10 10" 
+                        stroke="currentColor" 
+                        stroke-width="2" 
+                        fill="none"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <button class="scroll-arrow right" (click)="scrollSection('watchlist', 1)">
+                <svg class="arrow-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path class="arrow-path" 
+                        d="M9 4l10 10-10 10" 
+                        stroke="currentColor"
+                        stroke-width="2" 
+                        fill="none" 
+                        stroke-linecap="round"
+                        stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div  class="scroll-container" #watchlistScroll id="watchlistSection" >
+            <div class="media-items-container">
+              <app-media-panel 
+                  class=""
+                  title="WatchList" 
+                  id="watchlist"
+                  [items]="watchList" 
+                  (favoriteToggled)="handleFavoriteToggle($event)"
+                  (episodeToggled)="handleEpisodeToggle($event)"
+                  (drop)="onDrop($event)">
+              </app-media-panel>
+            </div>
+          </div>
+        </section>
+  
+        <!--Favorites-->
+        <section class="media-section">
+          <div class="section-header">
+            <h3 class="section-heading">
+              <svg class="section-icon" viewBox="0 0 24 24">
+                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+              </svg>
+              Favorite Titles
+            </h3>
+            <div class="scroll-controls">
+              <button class="scroll-arrow left" (click)="scrollSection('favorites', -1)">
+                <svg class="arrow-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path class="arrow-path" 
+                        d="M15 4l-10 10 10 10" 
+                        stroke="currentColor" 
+                        stroke-width="2" 
+                        fill="none"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <button class="scroll-arrow right" (click)="scrollSection('favorites', 1)">
+                <svg class="arrow-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path class="arrow-path" 
+                        d="M9 4l10 10-10 10" 
+                        stroke="currentColor"
+                        stroke-width="2" 
+                        fill="none" 
+                        stroke-linecap="round"
+                        stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div class="scroll-container" #favoritesScroll id="favoritesSection" >
+            <div class="media-items-container">
+              <app-media-panel
+                  class=""
+                  title="Favorites" 
+                  [items]="favorites"
+                  id="favorites"
+                  (favoriteToggled)="handleFavoriteToggle($event)"
+                  (watchedToggled)="handleWatchedToggle($event)"
+                  (episodeToggled)="handleEpisodeToggle($event)"
+                  (drop)="onDrop($event)">
+              </app-media-panel>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,20 @@
+<div class="media-panel" 
+    cdkDropList 
+    [id]="title.toLowerCase()" 
+    [cdkDropListData]="items" 
+    (cdkDropListDropped)="drop.emit($event)">
+
+    <!-- <h2 class="panel-title">{{title}}</h2> -->
+
+    <div class="media-list">
+        <app-media-card
+            *ngFor="let item of items; trackBy: trackById"
+            [media]="item"
+            cdkDrag
+            (favoriteToggled)="favoriteToggled.emit(item.id)"
+            (watchedToggled)="watchedToggled.emit(item.id)"
+            (episodeToggled)="onEpisodeToggled($event)"
+            >
+        </app-media-card>
+    </div>
+</div>
