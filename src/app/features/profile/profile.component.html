@@ -52,6 +52,11 @@
   <!--Collections Section-->
   <section class="collection-section">
     <h2 class="collection-title section-title">Your Collections</h2>
+    <div class="filter-tabs">
+      <button *ngFor="let filter of filters"
+        [class.active]="selectedFilter === filter.value"
+        (click)="setFilter(filter.value)"> {{ filter.label}} </button>
+    </div>
     <div class="collections-container card-body">
       <div class="lists-container" cdkDropListGroup>
         <!--Watchlist-->

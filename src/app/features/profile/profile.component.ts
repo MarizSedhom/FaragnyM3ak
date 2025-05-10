@@ -101,12 +101,67 @@ export class ProfileComponent {
     });
   }
 
+  // filtering tabs
+  filters = [
+    { label: 'All', value: 'all'},
+    { label: 'Watched', value: 'watched'},
+    { label: 'Unwatched', value: 'unwatched' },
+    { label: 'In Progress', value: 'in-progress'}
+  ];
+  selectedFilter = 'all';
+
+  setFilter(filter: string):void{
+    this.selectedFilter = filter;
+  }
+
+  isWatched(item: MediaItem): boolean {
+    if(item.type === 'movie'){
+      return item.watched;
+    }
+
+    return item.seasons.every(s => 
+      s.episodes.every(e => e.watched)
+    );
+  
+  }
+
+  isUnwatched(item: MediaItem): boolean {
+    if(item.type === 'movie'){
+      return !item.watched && item.progress === 0;
+    }
+
+    return item.seasons.every(s =>
+      s.episodes.every(e => !e.watched && e.progress === 0)
+    );
+  }
+
+  isInProgress(item: MediaItem): boolean{
+    if(item.type ==='movie'){
+      return item.progress > 0 && item.progress < 100;
+    }
+    return item.seasons.some(s =>
+      s.episodes.some(e => (e.progress > 0 && e.progress < 100) ||
+     (e.watched && !this.isWatched(item)))
+    );
+  }
+  applyFilter(items: MediaItem[]): MediaItem[]{
+    return items.filter(item => {
+      switch(this.selectedFilter){
+        case 'watched': return this.isWatched(item);
+        case 'unwatched': return this.isUnwatched(item);
+        case 'in-progress': return this.isInProgress(item);
+        default: return true;
+      }
+    });
+  }
+  
   get watchList(): MediaItem[] {
-    return this.mediaItems.filter(item => !item.isFavorite);
+    return this.applyFilter(this.mediaItems.filter(item => !item.isFavorite));
   }
 
   get favorites(): MediaItem[] {
-    return this.mediaItems.filter(item => item.isFavorite);
+    return this.applyFilter(this.mediaItems.filter(item => item.isFavorite));
+
   }
   
   get continueWatching(): MediaItem[] {

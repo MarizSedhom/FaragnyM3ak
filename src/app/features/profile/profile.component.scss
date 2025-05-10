@@ -488,3 +488,27 @@
   gap: 2rem;
 }
 
+.filter-tabs {
+  display: flex;
+  gap: 1rem;
+  margin: 1rem 0;
+  
+  button {
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--accent);
+    background: transparent;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: var(--transition);
+    
+    &.active {
+      background: var(--accent);
+      color: white;
+    }
+    
+    &:hover:not(.active) {
+      background: rgba(var(--accent), 0.1);
+    }
+  }
+}
