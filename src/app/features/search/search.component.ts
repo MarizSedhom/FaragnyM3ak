@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { MovieCardComponent } from "../../shared/components/movie-card/movie-card.component";
 import { CommonModule } from '@angular/common';
 import { config } from '../../../../assets/app.json';
@@ -12,109 +12,172 @@ import { SeriesCardComponent } from "../../shared/components/series-card/series-
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss'
 })
-export class SearchComponent implements OnInit {
+export class SearchComponent implements OnInit,AfterViewInit {
 
   query: string = '';
+  type: string = 'movie';
   private imageBaseUrl = 'https://image.tmdb.org/t/p/';
   paginationInfo : any  ;
+  currentPage: number = 1;
+  totalPages: number = 100;
+  @ViewChild("pageNum") pageNumInput!: ElementRef<HTMLInputElement>;
+  @ViewChild("movieBTN") movieInput!: ElementRef<HTMLButtonElement>;
+  @ViewChild("tvBTN") tvInput!: ElementRef<HTMLButtonElement>;
 
-  constructor(private http : HttpClient, private router: Router,private route: ActivatedRoute) {
+  constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute) {
     this.query = (route.snapshot.queryParamMap.get('query') || '').trim();
-    console.log(this.query);
-    if(this.query === '') {
+    this.type = (route.snapshot.queryParamMap.get('type') || 'movie').trim();
+    this.currentPage = Number(route.snapshot.queryParamMap.get('page')) || 1;
+
+    if (this.query === '') {
       this.router.navigate(['/error']);
     }
   }
+
+  ngAfterViewInit() {
+    if (this.type === 'tv') {
+      this.tvInput.nativeElement.classList.add('activeBTN');
+      this.movieInput.nativeElement.classList.remove('activeBTN');
+    } else {
+      this.movieInput.nativeElement.classList.add('activeBTN');
+      this.tvInput.nativeElement.classList.remove('activeBTN');
+    }
+
+    this.pageNumInput?.nativeElement.addEventListener('keydown', (event: KeyboardEvent) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        this.currentPage = Number(this.pageNumInput?.nativeElement.value);
+        if (this.currentPage < 1) {
+          this.currentPage = 1;
+        } else if (this.currentPage > this.totalPages) {
+          this.currentPage = this.totalPages;
+        }
+        this.navigateSearch();
+      }
+    });
+  }
+
   filteredSearch: any[] = [];
 
   ngOnInit(): void {
-    forkJoin({
-      movies: this.http.get(`${config.apiBaseUrl}/search/movie?query=${this.query}&api_key=${config.key}`)
-        .pipe(
-          map((response: any) => ({
-            data: response.results,
-            page: response.page,
-            total_pages: response.total_pages
-          }))
-        ),
-      tvShows: this.http.get(`${config.apiBaseUrl}/search/tv?query=${this.query}&api_key=${config.key}`)
-        .pipe(
-          map((response: any) => ({
-            data: response.results,
-            page: response.page,
-            total_pages: response.total_pages
-          }))
-        )
-    }).pipe(
-      switchMap(({ movies, tvShows }) => {
-        const movieDetailsRequests = movies.data.map((movie: any) =>
-          this.http.get(`${config.apiBaseUrl}/movie/${movie.id}?api_key=${config.key}`).pipe(
-            map((movieDetails: any) => ({
-              ...movie,
-              runtime: movieDetails.runtime
-            }))
-          )
-        );
+    if (this.type === 'tv') {
+      this.fetchTVShows();
 
-        const tvShowDetailsRequests = tvShows.data.map((tv: any) =>
-          this.http.get(`${config.apiBaseUrl}/tv/${tv.id}?api_key=${config.key}`).pipe(
-            map((tvShowDetails: any) => ({
-              ...tv,
-              seasons: tvShowDetails.seasons
-            }))
-          )
-        );
+    } else {
+      this.fetchMovies();
+    }
 
-        return forkJoin([...movieDetailsRequests, ...tvShowDetailsRequests]).pipe(
-          map((results) => {
-            const movieResults = results.slice(0, movies.data.length);
-            const tvShowResults = results.slice(movies.data.length);
-            return {
-              movieResults,
-              tvShowResults,
-              moviesPage: movies.page,
-              tvShowsPage: tvShows.page,
-              moviesTotalPages: movies.total_pages,
-              tvShowsTotalPages: tvShows.total_pages
-            };
-          })
-        );
-      }),
-      map(({ movieResults, tvShowResults, moviesPage, tvShowsPage, moviesTotalPages, tvShowsTotalPages }) => {
-        // Transform both movies and TV shows
-        const transformedMovies = movieResults.map((movie: any) => this.transformMovieData(movie));
-        const transformedTVShows = tvShowResults.map((tv: any) => this.transformTvShowData(tv));
 
-        // Interleave movies and TV shows
-        const mixedResults: any[] = [];
-        const maxLength = Math.max(transformedMovies.length, transformedTVShows.length);
 
-        for (let i = 0; i < maxLength; i++) {
-          if (i < transformedMovies.length) mixedResults.push(transformedMovies[i]);
-          if (i < transformedTVShows.length) mixedResults.push(transformedTVShows[i]);
-        }
 
-        return {
-          transformedResults: mixedResults,
-          moviesPage,
-          tvShowsPage,
-          moviesTotalPages,
-          tvShowsTotalPages
-        };
-      })
-    ).subscribe(({ transformedResults, moviesPage, tvShowsPage, moviesTotalPages, tvShowsTotalPages }) => {
-      // Handle the mixed and transformed results
-      this.filteredSearch = transformedResults;
+  }
 
-      // Optionally, store pagination info
-      this.paginationInfo = {
-        moviesPage,
-        tvShowsPage,
-        moviesTotalPages,
-        tvShowsTotalPages
-      };
+  goTo(page: string)
+  {
+    if(page === 'movie')
+      {
+      this.type = 'movie';
+      }
+      else if (page=== 'tv')
+      {
+        this.type = 'tv';
+      }
+      this.navigateSearch();
+  }
+
+  navigateSearch() {
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate(['/search'], { queryParams: { query: this.query, type: this.type, page: this.currentPage } });
     });
   }
+
+  // Fetch only Movies
+  fetchMovies(): void {
+    this.http.get(`${config.apiBaseUrl}/search/movie?query=${this.query}&api_key=${config.key}&page=${this.currentPage}`)
+      .pipe(
+        map((response: any) => ({
+          data: response.results,
+          page: response.page,
+          total_pages: response.total_pages
+        })),
+        switchMap((movies) => {
+          if (movies.data.length === 0) {
+            return of({
+              transformedResults: [],
+              moviesPage: movies.page,
+              moviesTotalPages: movies.total_pages
+            });
+          }
+
+          const movieDetailsRequests = movies.data.map((movie: any) =>
+            this.http.get(`${config.apiBaseUrl}/movie/${movie.id}?api_key=${config.key}`).pipe(
+              map((movieDetails: any) => ({
+                ...movie,
+                runtime: movieDetails.runtime
+              }))
+            )
+          );
+
+          return forkJoin(movieDetailsRequests).pipe(
+            map((movieResults: any) => ({
+              transformedResults: movieResults.map((movie: any) => this.transformMovieData(movie)),
+              moviesPage: movies.page,
+              moviesTotalPages: movies.total_pages
+            }))
+          );
+        })
+      ).subscribe(({ transformedResults, moviesPage, moviesTotalPages }) => {
+        console.log(moviesTotalPages);
+        this.filteredSearch = transformedResults;
+        this.paginationInfo = { moviesPage, moviesTotalPages };
+        this.totalPages = moviesTotalPages;
+      });
+  }
+
+  // Fetch only TV Shows
+  fetchTVShows(): void {
+    this.http.get(`${config.apiBaseUrl}/search/tv?query=${this.query}&api_key=${config.key}&page=${this.currentPage}`)
+      .pipe(
+        map((response: any) => ({
+          data: response.results,
+          page: response.page,
+          total_pages: response.total_pages
+        })),
+        switchMap((tvShows) => {
+          if (tvShows.data.length === 0) {
+            return of({
+              transformedResults: [],
+              tvShowsPage: tvShows.page,
+              tvShowsTotalPages: tvShows.total_pages
+            });
+          }
+
+          const tvShowDetailsRequests = tvShows.data.map((tv: any) =>
+            this.http.get(`${config.apiBaseUrl}/tv/${tv.id}?api_key=${config.key}`).pipe(
+              map((tvShowDetails: any) => ({
+                ...tv,
+                seasons: tvShowDetails.seasons
+              }))
+            )
+          );
+
+          return forkJoin(tvShowDetailsRequests).pipe(
+            map((tvShowResults: any) => ({
+              transformedResults: tvShowResults.map((tv: any) => this.transformTvShowData(tv)),
+              tvShowsPage: tvShows.page,
+              tvShowsTotalPages: tvShows.total_pages
+            }))
+          );
+        })
+      ).subscribe(({ transformedResults, tvShowsPage, tvShowsTotalPages }) => {
+        console.log(tvShowsTotalPages);
+        this.filteredSearch = transformedResults;
+        this.paginationInfo = { tvShowsPage, tvShowsTotalPages };
+        this.totalPages = tvShowsTotalPages;
+      });
+  }
+
+
 
 
 
@@ -125,7 +188,7 @@ export class SearchComponent implements OnInit {
     return {
       id: movie.id,
       title: movie.title || movie.name || "Unknown Title",
-        imageUrl: this.getImageUrl(movie.poster_path, 'w342'),
+        imageUrl: movie.poster_path ? this.getImageUrl(movie.poster_path, 'w342') : "https://viterbi-web.usc.edu/~zexunyao/itp301/Assignment_07/img.jpeg" ,
         rating: movie.vote_average, // TMDb uses 10-point scale
         ratingCount: movie.vote_count,
         duration: movie.runtime, // Not available in basic movie results, would need additional API call
@@ -147,7 +210,7 @@ export class SearchComponent implements OnInit {
       return {
         id: tvShow.id, // TV Show ID
         title: tvShow.name, // TV Show title
-        imageUrl: `https://image.tmdb.org/t/p/w500${tvShow.poster_path}`, // Poster image URL
+        imageUrl: tvShow.poster_path ? this.getImageUrl(tvShow.poster_path, 'w342') : "https://viterbi-web.usc.edu/~zexunyao/itp301/Assignment_07/img.jpeg" ,
         rating: tvShow.vote_average, // Rating (average score)
         ratingCount: tvShow.vote_count, // Total number of votes
         seasons: tvShow.seasons.length, // Number of seasons
