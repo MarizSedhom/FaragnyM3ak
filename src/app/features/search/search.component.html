@@ -1,0 +1,19 @@
+<div class="container d-flex flex-wrap justify-content-center gap-3 mt-5 px-3" style="max-width: 1200px;">
+  @if(filteredSearch.length === 0)
+  {
+    <div class="alert alert-info text-center" role="alert">
+      No results found for "{{ query }}". Please try a different search term.
+    </div>
+  }
+  @else
+  {
+    @for (item of filteredSearch; track $index){
+      @if (item.type === 'movie'){
+        <app-movie-card [movie]="item"></app-movie-card>
+      }
+      @else if (item.type === 'tv'){
+        <app-series-card [series]="item"></app-series-card>
+      }
+    }
+  }
+</div>
