@@ -15,29 +15,13 @@
   <section class="media-section">
     <div class="section-header">
       <h2 class="section-title">Continue Watching</h2>
-      <div class="scroll-controls">
-        <button class="scroll-arrow left" (click)="scrollSection('continue', -1)">
-          <svg class="arrow-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path class="arrow-path" 
-                  d="M15 4l-10 10 10 10" 
-                  stroke="currentColor" 
-                  stroke-width="2" 
-                  fill="none"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"/>
-          </svg>
-        </button>
-        <button class="scroll-arrow right" (click)="scrollSection('continue', 1)">
-          <svg class="arrow-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path class="arrow-path" 
-                  d="M9 4l10 10-10 10" 
-                  stroke="currentColor"
-                  stroke-width="2" 
-                  fill="none" 
-                  stroke-linecap="round"
-                  stroke-linejoin="round"/>
-          </svg>
-        </button>
+      <div>
+        <button class="btn btn-sm btn-outline-light me-2" 
+                (click)="prevContinue()" 
+                [disabled]="!canGoBack('continue')">‹</button>
+        <button class="btn btn-sm btn-outline-light" 
+                (click)="nextContinue()"
+                [disabled]="!canGoForward('continue')">›</button>
       </div>
     </div>
 
@@ -79,35 +63,18 @@
               </svg>
               Your Watchlist
             </h3>
-            <div class="scroll-controls">
-              <button class="scroll-arrow left" (click)="scrollSection('watchlist', -1)">
-                <svg class="arrow-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path class="arrow-path" 
-                        d="M15 4l-10 10 10 10" 
-                        stroke="currentColor" 
-                        stroke-width="2" 
-                        fill="none"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"/>
-                </svg>
-              </button>
-              <button class="scroll-arrow right" (click)="scrollSection('watchlist', 1)">
-                <svg class="arrow-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path class="arrow-path" 
-                        d="M9 4l10 10-10 10" 
-                        stroke="currentColor"
-                        stroke-width="2" 
-                        fill="none" 
-                        stroke-linecap="round"
-                        stroke-linejoin="round"/>
-                </svg>
-              </button>
+            <div>
+              <button class="btn btn-sm btn-outline-light me-2" 
+                      (click)="prevWatchlist()" 
+                      [disabled]="!canGoBack('watchlist')">‹</button>
+              <button class="btn btn-sm btn-outline-light" 
+                      (click)="nextWatchlist()"
+                      [disabled]="!canGoForward('watchlist')">›</button>
             </div>
           </div>
-          <div  class="scroll-container" #watchlistScroll id="watchlistSection" >
+          <div class="scroll-container" #watchlistScroll id="watchlistSection">
             <div class="media-items-container">
               <app-media-panel 
-                  class=""
                   title="WatchList" 
                   id="watchlist"
                   [items]="watchList" 
@@ -128,35 +95,18 @@
               </svg>
               Favorite Titles
             </h3>
-            <div class="scroll-controls">
-              <button class="scroll-arrow left" (click)="scrollSection('favorites', -1)">
-                <svg class="arrow-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path class="arrow-path" 
-                        d="M15 4l-10 10 10 10" 
-                        stroke="currentColor" 
-                        stroke-width="2" 
-                        fill="none"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"/>
-                </svg>
-              </button>
-              <button class="scroll-arrow right" (click)="scrollSection('favorites', 1)">
-                <svg class="arrow-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path class="arrow-path" 
-                        d="M9 4l10 10-10 10" 
-                        stroke="currentColor"
-                        stroke-width="2" 
-                        fill="none" 
-                        stroke-linecap="round"
-                        stroke-linejoin="round"/>
-                </svg>
-              </button>
+            <div>
+              <button class="btn btn-sm btn-outline-light me-2" 
+                      (click)="prevFavorites()" 
+                      [disabled]="!canGoBack('favorites')">‹</button>
+              <button class="btn btn-sm btn-outline-light" 
+                      (click)="nextFavorites()"
+                      [disabled]="!canGoForward('favorites')">›</button>
             </div>
           </div>
-          <div class="scroll-container" #favoritesScroll id="favoritesSection" >
+          <div class="scroll-container" #favoritesScroll id="favoritesSection">
             <div class="media-items-container">
               <app-media-panel
-                  class=""
                   title="Favorites" 
                   [items]="favorites"
                   id="favorites"

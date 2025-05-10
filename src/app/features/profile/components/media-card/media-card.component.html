@@ -1,68 +1,69 @@
 <div class="media-card">
-<div class="card"
-    cdkDrag
-     [cdkDragData]="media">
+  <div class="card" 
+       cdkDrag 
+       [cdkDragData]="media" 
+       cdkDragBoundary=".lists-container">
+
+    <!-- Custom drag preview template -->
+    <ng-template cdkDragPreview>
+      <div class="card">
+        <img [src]="media.posterUrl" [alt]="media.title" class="poster">
+      </div>
+    </ng-template>
 
     <img [src]="media.posterUrl" [alt]="media.title" class="poster">
 
     <div class="card-overlay" *ngIf="media.type === 'movie'">
-        <div class="card-title">{{ media.title }}</div>
+      <div class="card-title">{{ media.title }}</div>
 
-        <div class="card-rating">
-          <span class="star">{{ getStarRating(media.rating) }} </span> ({{ formatCount(media.ratingCount) }})
-        </div>
-    
-        <div class="card-info">
-          {{ media.duration }} min
-        </div>
-    
-        <div class="card-subtitle text-white">
-          {{ media.hasSub ? 'Sub' : '' }}{{ media.hasSub && media.hasDub ? ' | ' : '' }}{{ media.hasDub ? 'Dub' : '' }}
-        </div>
-    
-        <div class="card-description">{{ media.description }}</div>
-    
-        <div class="action-buttons">
-          <div class="action-button">▶</div>
-          <div class="action-button">♥</div>
-          <div class="action-button">+</div>
-        </div>
+      <div class="card-rating">
+        <span class="star">{{ getStarRating(media.rating) }} </span> ({{ formatCount(media.ratingCount) }})
+      </div>
+
+      <div class="card-info">
+        {{ media.duration }} min
+      </div>
+
+      <div class="card-subtitle text-white">
+        {{ media.hasSub ? 'Sub' : '' }}{{ media.hasSub && media.hasDub ? ' | ' : '' }}{{ media.hasDub ? 'Dub' : '' }}
+      </div>
+
+      <div class="card-description">{{ media.description }}</div>
+
+      <div class="action-buttons">
+        <div class="action-button">▶</div>
+        <div class="action-button">♥</div>
+        <div class="action-button">+</div>
+      </div>
     </div>
 
     <div class="card-overlay" *ngIf="media.type === 'series'">
 
-        <div class="card-title">{{ media.title }}</div>
+      <div class="card-title">{{ media.title }}</div>
 
-        <div class="card-rating">
-          <span class="star">{{ getStarRating(media.rating) }} </span> ({{ formatCount(media.ratingCount) }})
-        </div>
-    
-        <div class="card-info" *ngIf="media.totalSeasons == 1">
-          {{ media.totalSeasons}} Seasons | {{ media.seasons[0].episodes.length }} Episodes
-        </div>
+      <div class="card-rating">
+        <span class="star">{{ getStarRating(media.rating) }} </span> ({{ formatCount(media.ratingCount) }})
+      </div>
 
-        <div class="card-info" *ngIf="media.totalSeasons > 1">
-            {{ media.totalSeasons}} Seasons
-          </div>
-    
-        <div class="card-subtitle">
-          {{ media.hasSub ? 'Sub' : '' }}{{ media.hasSub && media.hasDub ? ' | ' : '' }}{{ media.hasDub ? 'Dub' : '' }}
-        </div>
-    
-        <div class="card-description">{{ media.description | truncate:150 }}</div>
-    
-        <div class="action-buttons">
-          <div class="action-button">▶</div>
-          <div class="action-button">♥</div>
-          <div class="action-button">+</div>
-        </div>
+      <div class="card-info" *ngIf="media.totalSeasons == 1">
+        {{ media.totalSeasons}} Season | {{ media.seasons[0].episodes.length }} Episodes
+      </div>
+
+      <div class="card-info" *ngIf="media.totalSeasons > 1">
+        {{ media.totalSeasons}} Seasons
+      </div>
+
+      <div class="card-subtitle">
+        {{ media.hasSub ? 'Sub' : '' }}{{ media.hasSub && media.hasDub ? ' | ' : '' }}{{ media.hasDub ? 'Dub' : '' }}
+      </div>
+
+      <div class="card-description">{{ media.description | truncate:150 }}</div>
+
+      <div class="action-buttons">
+        <div class="action-button">▶</div>
+        <div class="action-button">♥</div>
+        <div class="action-button">+</div>
       </div>
     </div>
+  </div>
 </div>
-
-
-
-
-
-
-
