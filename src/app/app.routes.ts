@@ -8,14 +8,14 @@ export const routes: Routes = [
         canActivate: [AuthGuard]
     },
     {
-        path: 'movie-preview/:id', 
+        path: 'movie-preview/:id',
         loadComponent: () => import('./features/movie-preview/movie-preview.component').then(m => m.MoviePreviewComponent),
         canActivate: [AuthGuard]
       },
     {
         // path: 'profile',
         // loadChildren: () => import('./features/profile/profile.component').then(m => m.ProfileComponent)
-        path: 'profile', 
+        path: 'profile',
         loadComponent: () => import('./features/profile/profile.component')
                 .then(m => m.ProfileComponent)
     },
@@ -43,6 +43,11 @@ export const routes: Routes = [
         path: 'admin',
         loadComponent: () => import('./features/admin/admin.component').then(m => m.AdminComponent),
         canActivate: [AuthGuard]
+    },
+    {
+      path: 'search',
+      loadComponent: () => import('./features/search/search.component').then(m => m.SearchComponent),
+      canActivate: [AuthGuard]
     },
     {
       path: 'login',
