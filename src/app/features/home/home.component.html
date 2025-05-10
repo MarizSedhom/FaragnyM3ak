@@ -1,5 +1,3 @@
-<!-- Home Component - This will be loaded through router-outlet in app component -->
-
 <!-- Dynamic Slide -->
 <div class="w-100">
   <div id="carouselExampleIndicators" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000"
@@ -42,7 +40,26 @@
       </div>
     </div>
 
-    <div class="d-flex flex-wrap justify-content-center gap-3">
+    <!-- Loading State -->
+    <div *ngIf="isLoadingMovies" class="text-center py-5">
+      <div class="spinner-border text-light" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2 text-light">Loading top movies...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="hasError && !isLoadingMovies && movies.length === 0" class="alert alert-danger">
+      Failed to load movies. Please try again later.
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoadingMovies && !hasError && movies.length === 0" class="text-center py-4">
+      <p class="text-light">No movies found.</p>
+    </div>
+
+    <!-- Content State -->
+    <div *ngIf="!isLoadingMovies && movies.length > 0" class="d-flex flex-wrap justify-content-center gap-3">
       <app-movie-card *ngFor="let movie of movieGroups[currentMovieGroup]" [movie]="movie"></app-movie-card>
     </div>
     <hr class="custom-hr" />
@@ -51,7 +68,7 @@
 
 <!--Top 10 Series-->
 <div>
-  <div class="Container">
+  <div class="Container mb-3">
     <div class="d-flex justify-content-between align-items-center mb-3 w-100">
       <h3 class="text-white m-0">Top 10 Series</h3>
       <div>
@@ -62,7 +79,26 @@
       </div>
     </div>
 
-    <div class="d-flex flex-wrap justify-content-center gap-3">
+    <!-- Loading State -->
+    <div *ngIf="isLoadingSeries" class="text-center py-5">
+      <div class="spinner-border text-light" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2 text-light">Loading top series...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="hasError && !isLoadingSeries && series.length === 0" class="alert alert-danger">
+      Failed to load series. Please try again later.
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoadingSeries && !hasError && series.length === 0" class="text-center py-4">
+      <p class="text-light">No series found.</p>
+    </div>
+
+    <!-- Content State -->
+    <div *ngIf="!isLoadingSeries && series.length > 0" class="d-flex flex-wrap justify-content-center gap-3">
       <app-series-card *ngFor="let series of seriesGroups[currentSeriesGroup]" [series]="series"></app-series-card>
     </div>
   </div>

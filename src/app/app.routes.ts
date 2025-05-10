@@ -8,14 +8,19 @@ export const routes: Routes = [
         canActivate: [AuthGuard]
     },
     {
-        path: 'movie-preview/:id', 
+        path: 'movie-preview/:id',
         loadComponent: () => import('./features/movie-preview/movie-preview.component').then(m => m.MoviePreviewComponent),
+        canActivate: [AuthGuard]
+      },
+      {
+        path: 'series-preview/:id',
+        loadComponent: () => import('./features/series-preview/series-preview.component').then(m => m.SeriesPreviewComponent),
         canActivate: [AuthGuard]
       },
     {
         // path: 'profile',
         // loadChildren: () => import('./features/profile/profile.component').then(m => m.ProfileComponent)
-        path: 'profile', 
+        path: 'profile',
         loadComponent: () => import('./features/profile/profile.component')
                 .then(m => m.ProfileComponent)
     },

@@ -1,4 +1,4 @@
-<div class="card">
+<div class="card" (click)="navigateToSeries()">
   <img [src]="series.imageUrl" [alt]="series.title" class="card-image" />
 
   <div class="card-overlay">
@@ -19,9 +19,9 @@
     <div class="card-description">{{ series.description }}</div>
 
     <div class="action-buttons">
-      <div class="action-button">▶</div>
-      <div class="action-button">♥</div>
-      <div class="action-button">+</div>
+      <div class="action-button" >▶</div>
+      <div class="action-button" (click)="AddToFavourite(series.id.toString())">♥</div>
+      <div class="action-button" (click)="AddToWatchList(series.id.toString())">+</div>
     </div>
   </div>
 </div>

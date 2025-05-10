@@ -1,4 +1,4 @@
- <div class="card">
+ <div class="card"  (click)="navigateToMovie()">
   <img [src]="movie.imageUrl" [alt]="movie.title" class="card-image" />
 
   <div class="card-overlay">
@@ -20,8 +20,8 @@
 
     <div class="action-buttons">
       <div class="action-button">▶</div>
-      <div class="action-button">♥</div>
-      <div class="action-button">+</div>
+      <div class="action-button" (click)="AddToFavourite(movie.id.toString())">♥</div>
+      <div class="action-button" (click)="AddToWatchList(movie.id.toString())">+</div>
     </div>
   </div>
 </div>

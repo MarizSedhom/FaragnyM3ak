@@ -1,0 +1,231 @@
+import { Injectable } from '@angular/core';
+import { environment } from '../../environments/environment';
+import { HttpClient } from '@angular/common/http';
+import { Observable, map, of, catchError, forkJoin } from 'rxjs';
+import { Series, SeriesCast } from '../shared/models/series.model';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class SeriesService {
+  private apiBaseUrl = 'https://api.themoviedb.org/3';
+  private apiKey = environment.ThemovieDB.apiKey;
+  private imageBaseUrl = 'https://image.tmdb.org/t/p/';
+
+  constructor(private http: HttpClient) { }
+
+   // Get series by ID - needed for the SeriesPreviewComponent
+  getSeriesById(id: string): Observable<Series> {
+    return this.http.get(`${this.apiBaseUrl}/tv/${id}?api_key=${this.apiKey}&append_to_response=created_by,networks`)
+      .pipe(
+        map((response: any) => {
+          return this.transformSeriesDetails(response);
+        }),
+        catchError(error => {
+          console.error(`Error fetching series with ID ${id}:`, error);
+          throw error;
+        })
+      );
+  }
+
+
+  getTopRatedSeries(): Observable<Series[]> {
+    return this.http.get(`${this.apiBaseUrl}/tv/top_rated?api_key=${this.apiKey}&language=en-US&page=1`)
+      .pipe(
+        map((response: any) => {
+          return response.results.slice(0, 10).map((series: any) => this.transformSeriesData(series));
+        }),
+        catchError(error => {
+          console.error('Error fetching top rated series:', error);
+          throw error;
+        })
+      );
+  }
+
+  // Get popular series
+  getPopularSeries(): Observable<Series[]> {
+    return this.http.get(`${this.apiBaseUrl}/tv/popular?api_key=${this.apiKey}`)
+      .pipe(
+        map((response: any) => {
+          return response.results.map((series: any) => this.transformSeriesData(series));
+        }),
+        catchError(error => {
+          console.error('Error fetching popular series:', error);
+          throw error;
+        })
+      );
+  }
+
+
+
+  // Get similar series
+  getSimilarSeries(id: string): Observable<Series[]> {
+    return this.http.get(`${this.apiBaseUrl}/tv/${id}/similar?api_key=${this.apiKey}`)
+      .pipe(
+        map((response: any) => {
+          return response.results.slice(0, 6).map((series: any) => this.transformSeriesData(series));
+        }),
+        catchError(error => {
+          console.error(`Error fetching similar series for ID ${id}:`, error);
+          return of([]);
+        })
+      );
+  }
+
+  // Get series cast members
+  getSeriesCast(id: string): Observable<SeriesCast[]> {
+    return this.http.get(`${this.apiBaseUrl}/tv/${id}/credits?api_key=${this.apiKey}`)
+      .pipe(
+        map((response: any) => {
+          return response.cast.slice(0, 12).map((actor: any) => ({
+            id: actor.id,
+            name: actor.name,
+            character: actor.character,
+            profilePath: this.getImageUrl(actor.profile_path, 'w185')
+          }));
+        }),
+        catchError(error => {
+          console.error(`Error fetching cast for series ID ${id}:`, error);
+          return of([]);
+        })
+      );
+  }
+
+  // Get series trailers
+  getSeriesTrailers(id: string): Observable<string | null> {
+    return this.http.get(`${this.apiBaseUrl}/tv/${id}/videos?api_key=${this.apiKey}`)
+      .pipe(
+        map((response: any) => {
+          const trailers = response.results.filter(
+            (video: any) => video.type === 'Trailer' && video.site === 'YouTube'
+          );
+          return trailers.length > 0 ? trailers[0].key : null;
+        }),
+        catchError(error => {
+          console.error(`Error fetching trailers for series ID ${id}:`, error);
+          return of(null);
+        })
+      );
+  }
+
+  // Get season details including episode count
+  getSeasonDetails(seriesId: string, seasonNumber: number): Observable<any> {
+    return this.http.get(`${this.apiBaseUrl}/tv/${seriesId}/season/${seasonNumber}?api_key=${this.apiKey}`)
+      .pipe(
+        map((response: any) => {
+          return {
+            seasonNumber: response.season_number,
+            episodeCount: response.episodes ? response.episodes.length : 0,
+            name: response.name,
+            overview: response.overview,
+            airDate: response.air_date
+          };
+        }),
+        catchError(error => {
+          console.error(`Error fetching season ${seasonNumber} for series ID ${seriesId}:`, error);
+          return of({
+            seasonNumber: seasonNumber,
+            episodeCount: 0,
+            name: `Season ${seasonNumber}`,
+            overview: '',
+            airDate: null
+          });
+        })
+      );
+  }
+
+  // Get all seasons' episode counts
+  getAllSeasonEpisodeCounts(seriesId: string, numberOfSeasons: number): Observable<{[key: number]: number}> {
+    if (numberOfSeasons <= 0) {
+      return of({});
+    }
+
+    // Create an array of observables for each season
+    const seasonObservables = Array.from({ length: numberOfSeasons }, (_, i) => i + 1)
+      .map(seasonNum => this.getSeasonDetails(seriesId, seasonNum)
+        .pipe(
+          map(season => ({ [seasonNum]: season.episodeCount })),
+          catchError(() => of({ [seasonNum]: 0 }))
+        )
+      );
+
+    // Combine all observables and merge results
+    return forkJoin(seasonObservables).pipe(
+      map(results => {
+        const episodeCounts: {[key: number]: number} = {};
+        results.forEach(result => {
+          Object.assign(episodeCounts, result);
+        });
+        return episodeCounts;
+      }),
+      catchError(() => of({}))
+    );
+  }
+
+  // Transform basic series data to match your Series interface
+  private transformSeriesData(series: any): Series {
+    return {
+      id: series.id,
+      title: series.name, // TV shows use 'name' instead of 'title' in TMDb API
+      imageUrl: this.getImageUrl(series.poster_path, 'w342'),
+      backdropUrl: this.getImageUrl(series.backdrop_path, 'original'),
+      rating: series.vote_average, // TMDb uses 10-point scale
+      ratingCount: series.vote_count,
+      seasons: series.number_of_seasons || 0,
+      episodes: series.number_of_episodes || 0,
+      description: series.overview,
+      hasSub: true, // Default values since TMDb doesn't provide this info
+      hasDub: false, // Default values since TMDb doesn't provide this info
+      firstAirDate: series.first_air_date || null,
+      lastAirDate: series.last_air_date || null,
+      status: series.status || 'Unknown',
+      genres: series.genres ? series.genres.map((g: any) => g.name) :
+              (series.genre_ids ? this.mapGenreIdsToNames(series.genre_ids) : []),
+      popularity: series.popularity || 0
+    };
+  }
+
+  // Transform detailed series data
+  private transformSeriesDetails(series: any): Series {
+    const basicData = this.transformSeriesData(series);
+
+    // Add additional details available only in the detailed endpoint
+    return {
+      ...basicData,
+      creators: series.created_by ? series.created_by.map((creator: any) => creator.name) : [],
+      networks: series.networks ? series.networks.map((network: any) => network.name) : []
+    };
+  }
+
+  // Helper to get image URL
+  private getImageUrl(path: string | null, size: string): string {
+    if (!path) {
+      return 'assets/images/no-image.png'; // Fallback image
+    }
+    return `${this.imageBaseUrl}${size}${path}`;
+  }
+
+  // Map genre IDs to genre names
+  private mapGenreIdsToNames(genreIds: number[]): string[] {
+    const genreMap: {[id: number]: string} = {
+      10759: 'Action & Adventure',
+      16: 'Animation',
+      35: 'Comedy',
+      80: 'Crime',
+      99: 'Documentary',
+      18: 'Drama',
+      10751: 'Family',
+      10762: 'Kids',
+      9648: 'Mystery',
+      10763: 'News',
+      10764: 'Reality',
+      10765: 'Sci-Fi & Fantasy',
+      10766: 'Soap',
+      10767: 'Talk',
+      10768: 'War & Politics',
+      37: 'Western'
+    };
+
+    return genreIds.map(id => genreMap[id] || 'Unknown');
+  }
+}
