@@ -24,7 +24,7 @@ export class MovieService {
           throw error;
         })
       );
-  }
+  } 
 
   // Get popular movies
   getPopularMovies(): Observable<Movie[]> {
@@ -57,6 +57,110 @@ export class MovieService {
         })
       );
   }
+  //------------------------ admin movies -----------------------------------
+// Get now playing movies
+getNowPlayingMovies(): Observable<{ totalResults: number, movies: Movie[] }> {
+  return this.http.get(`${this.apiBaseUrl}/movie/now_playing?api_key=${this.apiKey}`)
+    .pipe(
+      map((response: any) => {
+        const totalResults = response.total_results;
+        const movies = response.results.map((movie: any) => this.transformMovieData(movie));
+        return { totalResults, movies };
+      }),
+      catchError(error => {
+        console.error('Error fetching now playing movies:', error);
+        return of({ totalResults: 0, movies: [] });
+      })
+    );
+}
+
+// Get top rated movies
+getTopRatedMovies(): Observable<{ totalResults: number, movies: Movie[] }> {
+  return this.http.get(`${this.apiBaseUrl}/movie/top_rated?api_key=${this.apiKey}`)
+    .pipe(
+      map((response: any) => {
+        const totalResults = response.total_results;
+        const movies = response.results.map((movie: any) => this.transformMovieData(movie));
+        return { totalResults, movies };
+      }),
+      catchError(error => {
+        console.error('Error fetching top rated movies:', error);
+        return of({ totalResults: 0, movies: [] });
+      })
+    );
+}
+
+// Get upcoming movies
+getUpcomingMovies(): Observable<{ totalResults: number, movies: Movie[] }> {
+  return this.http.get(`${this.apiBaseUrl}/movie/upcoming?api_key=${this.apiKey}`)
+    .pipe(
+      map((response: any) => {
+        const totalResults = response.total_results;
+        const movies = response.results.map((movie: any) => this.transformMovieData(movie));
+        return { totalResults, movies };
+      }),
+      catchError(error => {
+        console.error('Error fetching upcoming movies:', error);
+        return of({ totalResults: 0, movies: [] });
+      })
+    );
+}
+
+// Get popular movies
+getPopularMoviestotal(): Observable<{ totalResults: number, movies: Movie[] }> {
+  return this.http.get(`${this.apiBaseUrl}/movie/popular?api_key=${this.apiKey}`)
+    .pipe(
+      map((response: any) => {
+        const totalResults = response.total_results;
+        const movies = response.results.map((movie: any) => this.transformMovieData(movie));
+        return { totalResults, movies };
+      }),
+      catchError(error => {
+        console.error('Error fetching popular movies:', error);
+        return of({ totalResults: 0, movies: [] });
+      })
+    );
+}
+
+//Category
+getMovieGenres(): Observable<{ id: number, name: string }[]> {
+  return this.http.get(`${this.apiBaseUrl}/genre/movie/list?api_key=${this.apiKey}&language=en-US`)
+    .pipe(
+      map((response: any) => response.genres),
+      catchError(error => {
+        console.error('Error fetching genres:', error);
+        return of([]);
+      })
+    );
+}
+
+getGenreDistribution(): Observable<{ genre: string, count: number }[]> {
+  return forkJoin({
+    genres: this.getMovieGenres(),
+    movies: this.getNowPlayingMovies()
+  }).pipe(
+    map(({ genres, movies }) => {
+      const genreMap = new Map<number, string>();
+      genres.forEach(g => genreMap.set(g.id, g.name));
+
+      const genreCounts: { [key: string]: number } = {};
+
+      movies.movies.forEach(movie => {
+        const movieGenres = (movie as any).genre_ids || [];
+        movieGenres.forEach((genreId: number) => {
+          const name = genreMap.get(genreId);
+          if (name) {
+            genreCounts[name] = (genreCounts[name] || 0) + 1;
+          }
+        });
+      });
+
+      return Object.entries(genreCounts).map(([genre, count]) => ({ genre, count }));
+    })
+  );
+}
+
+  //------------------------------------------------------------
 
   // Transform basic movie data to match your Movie interface
   private transformMovieData(movie: any): Movie {
@@ -69,7 +173,8 @@ export class MovieService {
       duration: 0, // Not available in basic movie results, would need additional API call
       description: movie.overview,
       hasSub: true, // Default values since TMDb doesn't provide this info
-      hasDub: false  // Default values since TMDb doesn't provide this info
+      hasDub: false,  // Default values since TMDb doesn't provide this info
+      genre_ids: movie.genre_ids || []
     };
   }
 
@@ -112,6 +217,7 @@ export class MovieService {
       description: movie.overview,
       hasSub: true, // Assuming defaults since TMDb doesn't provide this info
       hasDub: false, // Assuming defaults since TMDb doesn't provide this info
+      genre_ids: movie.genre_ids || [],
 
       // Additional detail fields
       backdropUrl: this.getImageUrl(movie.backdrop_path, 'original'),

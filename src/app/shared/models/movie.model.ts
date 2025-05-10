@@ -8,6 +8,7 @@ export interface Movie {
     description: string;
     hasSub: boolean;
     hasDub: boolean;
+    genre_ids?: number[];
   }
 
 // Additional interfaces for the preview component
