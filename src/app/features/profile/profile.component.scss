@@ -307,23 +307,23 @@
 }
 
 /* UPDATED: Lists container to display side by side */
-.lists-container {
-  display: flex;
-  flex-direction: row;
-  gap: 20px;
-}
+// .lists-container {
+//   display: flex;
+//   flex-direction: row;
+//   gap: 20px;
+// }
 
 /* UPDATED: Media section within lists container */
-.lists-container .media-section {
-  flex: 1;
-  min-width: 0; /* Prevents flex items from overflowing */
-  width: calc(50% - 10px);
-}
+// .lists-container .media-section {
+//   flex: 1;
+//   min-width: 0; /* Prevents flex items from overflowing */
+//   width: calc(50% - 10px);
+// }
 
 /* UPDATED: Ensure each scroll container stays within its parent */
-.lists-container .scroll-container {
-  width: 100%;
-}
+// .lists-container .scroll-container {
+//   width: 100%;
+// }
 
 /* Media Items Container */
 .media-items-container {
@@ -402,5 +402,72 @@
   
   .card-body {
     padding: 10px;
+  }
+}
+
+/* Update the lists container to properly display side by side */
+.lists-container {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  width: 100%;
+}
+
+/* Make each media section in the lists container take up half the width */
+.lists-container .media-section,
+.lists-container .section {
+  flex: 1;
+  min-width: 0; /* Prevents flex items from overflowing */
+  width: calc(50% - 10px);
+}
+
+/* Ensure each scroll container works independently */
+.section-content {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 1rem 0;
+  scrollbar-width: thin;
+  -ms-overflow-style: none; /* IE and Edge */
+  width: 100%;
+  
+  &::-webkit-scrollbar {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.05);
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+  }
+}
+
+/* Ensure the cards container takes up appropriate space */
+.cards-container {
+  display: flex;
+  gap: 1rem;
+  padding: 0.5rem;
+  min-width: min-content;
+  width: max-content;
+}
+
+/* Media card styles for consistent sizing */
+app-movie-card, 
+app-series-card {
+  min-width: 160px;
+  flex-shrink: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  /* Switch back to column on smaller screens */
+  .lists-container {
+    flex-direction: column;
+    gap: 30px;
+  }
+  
+  /* Full width on smaller screens */
+  .lists-container .media-section,
+  .lists-container .section {
+    width: 100%;
   }
 }

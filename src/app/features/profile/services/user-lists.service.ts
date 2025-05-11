@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Firestore, doc, updateDoc, arrayUnion, arrayRemove, getDoc } from '@angular/fire/firestore';
-import { Auth } from '@angular/fire/auth';
+import { Auth, user } from '@angular/fire/auth';
 import { Observable, from, map } from 'rxjs';
 
 export interface Review {
@@ -17,6 +17,7 @@ export class UserListsService {
     private firestore = inject(Firestore);
     private auth = inject(Auth);
 
+    
     // Movies operations
     addMovieToFavorites(movieId: string): Observable<void> {
         return this.updateUserList('movies', 'favorites', movieId, true);
@@ -98,6 +99,7 @@ export class UserListsService {
         return from(getDoc(doc(this.firestore, 'users', userId))).pipe(
             map(doc => {
                 const data = doc.data();
+                console.log("data",data);
                 return {
                     movies: {
                         favorites: data?.['movies']?.['favorites'] || [],

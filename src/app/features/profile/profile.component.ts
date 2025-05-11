@@ -1,151 +1,167 @@
-import { Component, QueryList, ViewChildren, ViewChild, ElementRef, OnInit } from '@angular/core';
+import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
+import { CdkDragDrop, DragDropModule, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
-import { CdkDragDrop, CdkDragPlaceholder, DragDropModule, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
-import { MovieCardComponent } from '../../shared/components/movie-card/movie-card.component';
-import { SeriesCardComponent } from '../../shared/components/series-card/series-card.component';
-import { UserListsService } from './services/user-lists.service';
-import { Movie } from '../../shared/models/movie.model';
-import { Series } from '../../shared/models/series.model';
-import { UserLists } from './models/user-lists.model';
-import { Firestore, collection, getDocs, query, where } from '@angular/fire/firestore';
+import { Review, UserListsService } from './services/user-lists.service';
 import { Auth, onAuthStateChanged } from '@angular/fire/auth';
 import { Router } from '@angular/router';
+import { forkJoin, of } from 'rxjs';
+import { catchError, map, switchMap } from 'rxjs/operators';
+import { MovieService } from '../../services/movie.service';
+import { SeriesService } from '../../services/series.service';
+import { MovieCardComponent } from "../../shared/components/movie-card/movie-card.component";
+import { SeriesCardComponent } from "../../shared/components/series-card/series-card.component";
+import { Movie } from '../../shared/models/movie.model';
+import { Series } from '../../shared/models/series.model';
+
+export type MediaItem = (Movie & { type: 'movie', isFavorite: boolean, watched: boolean, progress: number, timeLeft: number })
+                      | (Series & { type: 'series', isFavorite: boolean, watched: boolean, progress: number, timeLeft: number });
 
 @Component({
   selector: 'app-profile',
   standalone: true,
-  imports: [CommonModule, MovieCardComponent, SeriesCardComponent, DragDropModule],
+  imports: [CommonModule, DragDropModule, MovieCardComponent, SeriesCardComponent],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'
 })
 export class ProfileComponent implements OnInit {
-  // Type guard functions
-  isMovie(item: Movie | Series): item is Movie {
-    return 'duration' in item;
-  }
-
-  isSeries(item: Movie | Series): item is Series {
-    return 'seasons' in item;
-  }
-
   // Pagination for each section
   currentContinueIndex: number = 0;
   currentWatchlistIndex: number = 0;
   currentFavoritesIndex: number = 0;
-  
+
   // Number of items to display per page
   readonly itemsPerPage: number = 4;
   readonly scrollAmount: number = 300;
-  
-  // User lists
-  userLists: UserLists = {
-    movies: {
-      favorites: [],
-      watchlist: [],
-      tracking: [],
-      reviews: []
-    },
-    series: {
-      favorites: [],
-      watchlist: [],
-      tracking: [],
-      reviews: []
-    }
-  };
+
+  // User list IDs from Firestore
+  moviesFavorites: string[] = [];
+  moviesWatchlist: string[] = [];
+  moviesTracking: string[] = [];
+  moviesReviews: Review[] = [];
+
+  seriesFavorites: string[] = [];
+  seriesWatchlist: string[] = [];
+  seriesTracking: string[] = [];
+  seriesReviews: Review[] = [];
+
+  // MediaItems that will be filled with actual data from TheMovieDB API
+  mediaItems: MediaItem[] = [];
+  isLoading: boolean = true;
+
+  // For template variables
+  movie: Movie[] = [];
+  series: Series[] = [];
+
+  // Scroll container references
+  @ViewChild('continueScroll') continueScroll!: ElementRef;
+  @ViewChild('watchlistScroll') watchlistScroll!: ElementRef;
+  @ViewChild('favoritesScroll') favoritesScroll!: ElementRef;
+
+  // filtering tabs
+  filters = [
+    { label: 'All', value: 'all' },
+    { label: 'Watched', value: 'watched' },
+    { label: 'Unwatched', value: 'unwatched' },
+    { label: 'In Progress', value: 'in-progress' }
+  ];
+  selectedFilter = 'all';
 
   constructor(
     private userListsService: UserListsService,
-    private firestore: Firestore,
     private auth: Auth,
-    private router: Router
-  ) {}
-  
+    private router: Router,
+    private movieService: MovieService,
+    private seriesService: SeriesService
+  ) { }
+
   ngOnInit() {
-    // Listen for auth state changes
     onAuthStateChanged(this.auth, (user) => {
       if (user) {
-        // User is signed in, load their lists
-        this.loadUserLists();
+        this.loadUserData();
       } else {
-        // User is not signed in, redirect to login
         this.router.navigate(['/login']);
       }
     });
   }
 
-  private async loadUserLists() {
-    try {
-      // Get user lists from UserListsService
-      this.userListsService.getUserLists().subscribe(async lists => {
-        // Fetch full movie data for each list
+  private loadUserData() {
+    this.isLoading = true;
+    
+    // Get user lists from Firestore
+    this.userListsService.getUserLists().pipe(
+      switchMap(lists => {
+        // Store the raw ID lists
+        this.moviesFavorites = lists.movies?.favorites || [];
+        this.moviesWatchlist = lists.movies?.watchlist || [];
+        this.moviesTracking = lists.movies?.tracking || [];
+        this.moviesReviews = lists.movies?.reviews || [];
+        
+        this.seriesFavorites = lists.series?.favorites || [];
+        this.seriesWatchlist = lists.series?.watchlist || [];
+        this.seriesTracking = lists.series?.tracking || [];
+        this.seriesReviews = lists.series?.reviews || [];
+
+        // Collect all unique movie IDs
         const movieIds = [
-          ...lists.movies.favorites,
-          ...lists.movies.watchlist,
-          ...lists.movies.tracking
+          ...this.moviesFavorites,
+          ...this.moviesWatchlist,
+          ...this.moviesTracking,
         ];
-        
+
+        // Collect all unique series IDs
         const seriesIds = [
-          ...lists.series.favorites,
-          ...lists.series.watchlist,
-          ...lists.series.tracking
+          ...this.seriesFavorites,
+          ...this.seriesWatchlist,
+          ...this.seriesTracking
         ];
-        
-        // Fetch movies
-        const moviesQuery = query(
-          collection(this.firestore, 'movies'),
-          where('id', 'in', movieIds)
+
+        // Fetch movie details from TheMovieDB API
+        const movieRequests = movieIds.map(id =>
+          this.movieService.getMovieById(id).pipe(
+            map(movieData => {
+              const mediaItem: MediaItem = {
+                ...movieData,
+                type: 'movie',
+                isFavorite: this.moviesFavorites.includes(movieData.id.toString()),
+                watched: this.moviesTracking.includes(movieData.id.toString()),
+                progress: this.moviesTracking.includes(movieData.id.toString()) ? 50 : 0,
+                timeLeft: 0
+              };
+              return mediaItem;
+            }),
+            catchError(() => of(null))
+          )
         );
-        const moviesSnapshot = await getDocs(moviesQuery);
-        const movies = moviesSnapshot.docs.map(doc => {
-          const data = doc.data();
-          return {
-            ...data,
-            id: Number(data['id']), // Convert string ID to number
-            duration: Number(data['duration']), // Ensure duration is a number
-            rating: Number(data['rating']), // Ensure rating is a number
-            ratingCount: Number(data['ratingCount']) // Ensure ratingCount is a number
-          } as Movie;
-        });
 
-        // Fetch series
-        const seriesQuery = query(
-          collection(this.firestore, 'series'),
-          where('id', 'in', seriesIds)
+        // Fetch series details from TheMovieDB API
+        const seriesRequests = seriesIds.map(id =>
+          this.seriesService.getSeriesById(id).pipe(
+            map(seriesData => {
+              const mediaItem: MediaItem = {
+                ...seriesData,
+                type: 'series',
+                isFavorite: this.seriesFavorites.includes(seriesData.id.toString()),
+                watched: this.seriesTracking.includes(seriesData.id.toString()),
+                progress: this.seriesTracking.includes(seriesData.id.toString()) ? 50 : 0,
+                timeLeft: 0
+              };
+              return mediaItem;
+            }),
+            catchError(() => of(null))
+          )
         );
-        const seriesSnapshot = await getDocs(seriesQuery);
-        const series = seriesSnapshot.docs.map(doc => {
-          const data = doc.data();
-          return {
-            ...data,
-            id: Number(data['id']), // Convert string ID to number
-            rating: Number(data['rating']), // Ensure rating is a number
-            ratingCount: Number(data['ratingCount']), // Ensure ratingCount is a number
-            seasons: Number(data['seasons']), // Ensure seasons is a number
-            episodes: Number(data['episodes']) // Ensure episodes is a number
-          } as Series;
-        });
 
-        // Update user lists with full data
-        this.userLists = {
-          movies: {
-            favorites: movies.filter(movie => lists.movies.favorites.includes(movie.id.toString())),
-            watchlist: movies.filter(movie => lists.movies.watchlist.includes(movie.id.toString())),
-            tracking: movies.filter(movie => lists.movies.tracking.includes(movie.id.toString())),
-            reviews: lists.movies.reviews
-          },
-          series: {
-            favorites: series.filter(s => lists.series.favorites.includes(s.id.toString())),
-            watchlist: series.filter(s => lists.series.watchlist.includes(s.id.toString())),
-            tracking: series.filter(s => lists.series.tracking.includes(s.id.toString())),
-            reviews: lists.series.reviews
-          }
-        };
+        console.log("movieRequests",movieRequests);
+        console.log("seriesRequests",seriesRequests);
+        // Combine all requests
+        return forkJoin([...movieRequests, ...seriesRequests]);
+      })
+    ).subscribe(results => {
+      this.mediaItems = results.filter(item => item !== null) as MediaItem[];
+      this.isLoading = false;
+      console.log('WatchList:', this.watchList);
 
-        console.log('Loaded user lists:', this.userLists); // Debug log
-      });
-    } catch (error) {
-      console.error('Error loading user lists:', error);
-    }
+    });
   }
 
   // Pagination controls for Continue Watching
@@ -159,87 +175,97 @@ export class ProfileComponent implements OnInit {
   nextContinue() {
     const maxItems = this.continueWatching.length;
     const maxPages = Math.ceil(maxItems / this.itemsPerPage);
-    
+
     if (this.currentContinueIndex < maxPages - 1) {
       this.currentContinueIndex++;
       this.scrollSection('continue', 1);
     }
   }
 
-  // Pagination controls for Watchlist
-  prevWatchlist() {
-    if (this.currentWatchlistIndex > 0) {
-      this.currentWatchlistIndex--;
-      this.scrollSection('watchlist', -1);
-    }
-  }
-
-  nextWatchlist() {
-    const maxItems = this.watchList.length;
-    const maxPages = Math.ceil(maxItems / this.itemsPerPage);
-    
-    if (this.currentWatchlistIndex < maxPages - 1) {
-      this.currentWatchlistIndex++;
-      this.scrollSection('watchlist', 1);
-    }
-  }
-
-  // Pagination controls for Favorites
-  prevFavorites() {
-    if (this.currentFavoritesIndex > 0) {
-      this.currentFavoritesIndex--;
-      this.scrollSection('favorites', -1);
-    }
-  }
-
-  nextFavorites() {
-    const maxItems = this.favorites.length;
-    const maxPages = Math.ceil(maxItems / this.itemsPerPage);
-    
-    if (this.currentFavoritesIndex < maxPages - 1) {
-      this.currentFavoritesIndex++;
-      this.scrollSection('favorites', 1);
-    }
-  }
-
-  // filtering tabs
-  filters = [
-    { label: 'All', value: 'all'},
-    { label: 'Watched', value: 'watched'},
-    { label: 'Unwatched', value: 'unwatched' },
-    { label: 'In Progress', value: 'in-progress'}
-  ];
-  selectedFilter = 'all';
 
   setFilter(filter: string): void {
     this.selectedFilter = filter;
   }
 
-  get watchList(): (Movie | Series)[] {
-    return [
-      ...this.userLists.movies.watchlist,
-      ...this.userLists.series.watchlist
-    ];
+  isWatched(item: MediaItem): boolean {
+    if (item.type === 'movie') {
+      return !!item.watched;
+    }
+
+    // For series, we'd check if all episodes are watched
+    // Implementation depends on Series model structure
+    return false;
   }
 
-  get favorites(): (Movie | Series)[] {
-    return [
-      ...this.userLists.movies.favorites,
-      ...this.userLists.series.favorites
-    ];
+  isUnwatched(item: MediaItem): boolean {
+    if (item.type === 'movie') {
+      return !item.watched && (item.progress || 0) === 0;
+    }
+
+    // For series, check if no episodes have been watched
+    return false;
+  }
+
+  isInProgress(item: MediaItem): boolean {
+    if (item.type === 'movie') {
+      return (item.progress || 0) > 0 && (item.progress || 0) < 100;
+    }
+    // For series, check if some episodes are in progress
+    return false;
+  }
+
+  applyFilter(items: MediaItem[]): MediaItem[] {
+    return items.filter(item => {
+      switch (this.selectedFilter) {
+        case 'watched': return this.isWatched(item);
+        case 'unwatched': return this.isUnwatched(item);
+        case 'in-progress': return this.isInProgress(item);
+        default: return true;
+      }
+    });
+  }
+
+  get watchList(): MediaItem[] {
+    const seen = new Set();
+    return this.applyFilter(this.mediaItems.filter(item =>
+      (
+        (item.type === 'movie' && this.moviesWatchlist.includes(item.id.toString())) ||
+        (item.type === 'series' && this.seriesWatchlist.includes(item.id.toString()))
+      ) &&
+      !seen.has(item.id) && seen.add(item.id)
+    ));
+  }
+
+  get favorites(): MediaItem[] {
+    const seen = new Set();
+    return this.applyFilter(this.mediaItems.filter(item =>
+      (
+        (item.type === 'movie' && this.moviesFavorites.includes(item.id.toString())) ||
+        (item.type === 'series' && this.seriesFavorites.includes(item.id.toString()))
+      ) &&
+      !seen.has(item.id) && seen.add(item.id)
+    ));
+  }
+
+  get continueWatching(): MediaItem[] {
+    return this.mediaItems.filter(item => {
+      if (item.type === 'movie') {
+        return (item.progress || 0) > 1 && (item.progress || 0) < 100;
+      }
+
+      // For series, this would need to be expanded with series-specific logic
+      return false;
+    });
+  }
+
+  // Type guard functions to use in template
+  isMovie(item: MediaItem): item is (Movie & { type: 'movie', isFavorite: boolean, watched: boolean, progress: number, timeLeft: number }) {
+    return item.type === 'movie';
   }
   
-  get continueWatching(): (Movie | Series)[] {
-    return [
-      ...this.userLists.movies.tracking,
-      ...this.userLists.series.tracking
-    ];
+  isSeries(item: MediaItem): item is (Series & { type: 'series', isFavorite: boolean, watched: boolean, progress: number, timeLeft: number }) {
+    return item.type === 'series';
   }
-
-  // Scrolling Section
-  @ViewChild('continueScroll') continueScroll!: ElementRef;
-  @ViewChild('watchlistScroll') watchlistScroll!: ElementRef;
-  @ViewChild('favoritesScroll') favoritesScroll!: ElementRef;
 
   scrollSection(section: 'continue' | 'watchlist' | 'favorites', direction: number) {
     const container = this.getScrollContainer(section);
@@ -250,11 +276,12 @@ export class ProfileComponent implements OnInit {
   }
 
   private getScrollContainer(section: string): HTMLElement | null {
-    return {
-      'continue': this.continueScroll?.nativeElement,
-      'watchlist': this.watchlistScroll?.nativeElement,
-      'favorites': this.favoritesScroll?.nativeElement,
-    }[section] || null;
+    switch(section) {
+      case 'continue': return this.continueScroll?.nativeElement;
+      case 'watchlist': return this.watchlistScroll?.nativeElement;
+      case 'favorites': return this.favoritesScroll?.nativeElement;
+      default: return null;
+    }
   }
 
   // Helper functions for pagination buttons
@@ -270,7 +297,7 @@ export class ProfileComponent implements OnInit {
   canGoForward(section: 'continue' | 'watchlist' | 'favorites'): boolean {
     let maxPages = 0;
     let currentIndex = 0;
-    
+
     switch (section) {
       case 'continue':
         maxPages = Math.ceil(this.continueWatching.length / this.itemsPerPage);
@@ -285,7 +312,8 @@ export class ProfileComponent implements OnInit {
         currentIndex = this.currentFavoritesIndex;
         break;
     }
-    
+
     return currentIndex < maxPages - 1;
   }
+  
 }

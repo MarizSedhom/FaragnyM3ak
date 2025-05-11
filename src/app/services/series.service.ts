@@ -8,9 +8,9 @@ import { Series, SeriesCast } from '../shared/models/series.model';
   providedIn: 'root'
 })
 export class SeriesService {
-  private apiBaseUrl = 'https://api.themoviedb.org/3';
+  private apiBaseUrl = environment.ThemovieDB.apiBaseUrl;
   private apiKey = environment.ThemovieDB.apiKey;
-  private imageBaseUrl = 'https://image.tmdb.org/t/p/';
+  private imageBaseUrl = environment.ThemovieDB.imageBaseUrl;
 
   constructor(private http: HttpClient) { }
 

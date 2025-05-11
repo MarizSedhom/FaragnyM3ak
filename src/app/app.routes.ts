@@ -11,12 +11,12 @@ export const routes: Routes = [
         path: 'movie-preview/:id',
         loadComponent: () => import('./features/movie-preview/movie-preview.component').then(m => m.MoviePreviewComponent),
         canActivate: [AuthGuard]
-      },
-      {
+    },
+    {
         path: 'series-preview/:id',
         loadComponent: () => import('./features/series-preview/series-preview.component').then(m => m.SeriesPreviewComponent),
         canActivate: [AuthGuard]
-      },
+    },
     {
         // path: 'profile',
         // loadChildren: () => import('./features/profile/profile.component').then(m => m.ProfileComponent)
@@ -53,6 +53,10 @@ export const routes: Routes = [
       path: 'search',
       loadComponent: () => import('./features/search/search.component').then(m => m.SearchComponent),
       canActivate: [AuthGuard]
+    },
+    {
+        path: 'payment',
+        loadComponent: () => import('./features/payment/payment.component').then(m => m.PaymentComponent)
     },
     {
       path: 'login',

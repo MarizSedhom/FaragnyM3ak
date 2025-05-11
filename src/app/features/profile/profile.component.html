@@ -39,15 +39,11 @@
         (click)="setFilter(filter.value)"> {{ filter.label}} </button>
     </div>
     <div class="collections-container card-body">
-      <div class="lists-container" cdkDropListGroup>
+      <div class="lists-container">
         <!--Watchlist-->
         <section class="section">
           <div class="section-header">
             <h2>Watchlist</h2>
-            <div class="section-controls">
-              <button (click)="prevWatchlist()" [disabled]="!canGoBack('watchlist')">❮</button>
-              <button (click)="nextWatchlist()" [disabled]="!canGoForward('watchlist')">❯</button>
-            </div>
           </div>
           <div class="section-content" #watchlistScroll>
             <div class="cards-container">
@@ -63,10 +59,6 @@
         <section class="section">
           <div class="section-header">
             <h2>Favorites</h2>
-            <div class="section-controls">
-              <button (click)="prevFavorites()" [disabled]="!canGoBack('favorites')">❮</button>
-              <button (click)="nextFavorites()" [disabled]="!canGoForward('favorites')">❯</button>
-            </div>
           </div>
           <div class="section-content" #favoritesScroll>
             <div class="cards-container">
