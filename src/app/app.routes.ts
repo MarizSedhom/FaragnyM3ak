@@ -50,6 +50,11 @@ export const routes: Routes = [
         canActivate: [AuthGuard]
     },
     {
+      path: 'search',
+      loadComponent: () => import('./features/search/search.component').then(m => m.SearchComponent),
+      canActivate: [AuthGuard]
+    },
+    {
       path: 'login',
       loadComponent: () => import('./core/login/login.component').then(m => m.LoginComponent)
     },

@@ -1,0 +1,56 @@
+
+
+.gradient-container {
+  background: linear-gradient(to right, #1a2b3c, #2d4b66); /* Gradient background */
+  border-radius: 8px;
+  padding: 10px 15px;
+  color: #ffffff;
+}
+
+.custom-btn {
+  background-color: transparent;
+  color: #ffffff;
+  border: 2px solid #ffffff;
+  padding: 5px 15px;
+  margin-right: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s;
+
+  &:hover {
+    background-color: #ffffff;
+    color: #2d4b66;
+  }
+
+  &.activeBTN {
+    background-color: #ffffff;
+    color: #2d4b66;
+
+    &:hover {
+      background-color: transparent;
+      color: #ffffff;
+    }
+  }
+
+}
+
+
+
+
+
+
+.page-info {
+  display: flex;
+  align-items: center;
+}
+
+.page-input {
+  background: #ffffff;
+  color: #2d4b66;
+  border: none;
+  border-radius: 5px;
+  padding: 2px;
+  width: 50px;
+  text-align: center;
+  margin-right: 10px;
+}
