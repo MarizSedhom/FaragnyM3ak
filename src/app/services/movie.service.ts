@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map,of, catchError } from 'rxjs';
-import { Movie, MovieDetail, RelatedMovie } from '../shared/models/movie.model';
+import { Movie, MovieDetail, MovieResponse, RelatedMovie } from '../shared/models/movie.model';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -21,6 +21,23 @@ export class MovieService {
         map((response: any) => this.transformMovieDetailData(response)),
         catchError(error => {
           console.error('Error fetching movie:', error);
+          throw error;
+        })
+      );
+  }
+
+
+  getPopularMoviesWithPagination(page: number = 1): Observable<MovieResponse> {
+    return this.http.get(`${this.apiBaseUrl}/movie/popular?api_key=${this.apiKey}&page=${page}`)
+      .pipe(
+        map((response: any) => ({
+          results: response.results.map((movie: any) => this.transformMovieData(movie)),
+          total_pages: response.total_pages,
+          total_results: response.total_results,
+          page: response.page
+        })),
+        catchError(error => {
+          console.error('Error fetching popular movies:', error);
           throw error;
         })
       );

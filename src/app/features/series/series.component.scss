@@ -1,0 +1,124 @@
+/* Add these styles to your component's CSS file */
+body {
+  min-height: 100vh;
+  background: linear-gradient(to right, #1a2b3c, #2d4b66);
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 1200px;
+  padding: 40px 15px;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  padding-left: 80px;
+}
+
+
+@media (max-width: 768px) {
+  .container {
+    padding-left: 70px;
+    padding-top: 70px; 
+    gap: 12px;
+  }
+  
+  .series-card {
+    width: calc(43% - 12px); /* 2 cards per row */
+  }
+}
+
+@media (max-width: 576px) {
+  .container {
+    padding-left: 65px; 
+    padding-top: 60px;
+    gap: 10px;
+  }
+  
+  .series-card {
+    width: calc(60% - 10px); /* very small screens */
+  }
+}
+
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 0;
+  margin: 20px 0;
+  width: 100%;
+  background-color: rgba(15, 32, 49, 0.8); /* Dark blue semi-transparent */
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.pagination-button {
+  background: linear-gradient(145deg, #1a84ff, #0065d1);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+.pagination-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(26, 132, 255, 0.4);
+}
+
+.pagination-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
+}
+
+.pagination-button:disabled {
+  background: linear-gradient(145deg, #6a7a8c, #455971);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  opacity: 0.7;
+}
+
+.pagination-button.prev .icon {
+  margin-right: 5px;
+}
+
+.pagination-button.next .icon {
+  margin-left: 5px;
+}
+
+.pagination-info {
+  background-color: rgba(0, 0, 0, 0.4);
+  color: #e0e0e0;
+  padding: 8px 16px;
+  border-radius: 50px;
+  font-weight: 500;
+  margin: 0 15px;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+
+
+@media (max-width: 576px) {
+  .pagination-button {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+  
+  .pagination-info {
+    padding: 6px 10px;
+    font-size: 12px;
+    margin: 0 8px;
+  }
+}

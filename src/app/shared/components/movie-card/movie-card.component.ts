@@ -1,13 +1,32 @@
-import { Component,Input } from '@angular/core';
+import { Component,Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Movie } from '../../../shared/models/movie.model';
-
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatListModule } from '@angular/material/list';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { ActivatedRoute } from '@angular/router';
+import { PageEvent } from '@angular/material/paginator';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-movie-card',
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    MatCardModule,
+    MatButtonModule,
+    MatListModule,
+    MatProgressSpinnerModule,
+    MatChipsModule,
+    MatPaginatorModule
+  ],
   templateUrl: './movie-card.component.html',
-  styleUrls: ['./movie-card.component.scss']
+  styleUrls: ['./movie-card.component.scss'],
+  standalone: true,
+
 })
 export class MovieCardComponent {
   @Input() movie!: Movie; // ! indicates that this property will be initialized later

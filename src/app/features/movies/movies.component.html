@@ -1,3 +1,17 @@
-<div class="container d-flex flex-wrap justify-content-center gap-3 mt-5 px-3" style="max-width: 1200px;">
-  <app-movie-card *ngFor="let movie of filteredMovies" [movie]="movie"></app-movie-card>
+<div class="container">
+  <app-movie-card *ngFor="let movie of movies" [movie]="movie" class="movie-card"></app-movie-card>
+</div>
+
+<div class="pagination-container">
+  <button class="pagination-button prev" [disabled]="currentPage <= 1" (click)="goToPreviousPage()">
+    <span class="arrow arrow-left"></span> Previous
+  </button>
+  
+  <div class="pagination-info">
+    Page {{ currentPage }} out of {{maxPages}}
+  </div>
+  
+  <button class="pagination-button next" [disabled]="currentPage >= maxPages" (click)="goToNextPage()">
+    Next <span class="arrow arrow-right"></span>
+  </button>
 </div>
