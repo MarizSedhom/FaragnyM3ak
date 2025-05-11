@@ -40,6 +40,20 @@ export class MovieService {
       );
   }
 
+  // Get top rated movies
+  getTopRatedMovies(): Observable<Movie[]> {
+    return this.http.get(`${this.apiBaseUrl}/movie/top_rated?api_key=${this.apiKey}&language=en-US&page=1`)
+      .pipe(
+        map((response: any) => {
+          return response.results.slice(0, 10).map((movie: any) => this.transformMovieData(movie));
+        }),
+        catchError(error => {
+          console.error('Error fetching top rated movies:', error);
+          throw error;
+        })
+      );
+  }
+
   // Search movies by query
   searchMovies(query: string): Observable<Movie[]> {
     if (!query || query.trim() === '') {
