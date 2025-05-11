@@ -33,10 +33,14 @@ export class HomeComponent implements OnInit, AfterViewInit {
   currentMovieGroup = 0;
   currentSeriesGroup = 0;
 
+
+
   // Loading states
   isLoadingMovies: boolean = true;
   isLoadingSeries: boolean = true;
+  isLoadingCarousel: boolean = true;
   hasError: boolean = false;
+  hasCarouselError: boolean = false;
 
   constructor(
     private movieService: MovieService,
@@ -44,14 +48,28 @@ export class HomeComponent implements OnInit, AfterViewInit {
   ) {}
 
   ngAfterViewInit(): void {
+    this.initializeCarousel();
+  }
+
+  initializeCarousel(): void {
     const carouselElement = document.querySelector('#carouselExampleIndicators');
-    if (carouselElement) {
+    if (carouselElement && this.images.length > 0 && !this.hasCarouselError) {
       new bootstrap.Carousel(carouselElement, {
         interval: 2000,
         ride: 'carousel',
         pause: false
       });
     }
+  }
+
+  retry(): void {
+    this.loadCarouselImages();
+    this.loadMoviesAndSeries();
+  }
+  retryCarousel(): void {
+    this.isLoadingCarousel = true;
+    this.hasCarouselError = false;
+    this.loadCarouselImages();
   }
 
   ngOnInit(): void {
@@ -100,12 +118,28 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
 
   loadCarouselImages(): void {
-    // Keep the existing carousel images
-    this.images = [
-      { src: 'https://awesomefriday.ca/2014/05/review-x-men-days-of-future-past/x-men-days-of-future-past-banner/', alt: 'First slide' },
-      { src: 'https://lumiere-a.akamaihd.net/v1/images/image_d93db6a1.jpeg?region=0,0,760,328', alt: 'Second slide' },
-      { src: 'https://static1.cbrimages.com/wordpress/wp-content/uploads/2023/02/up-movie-poster.jpg', alt: 'Third slide' }
-    ];
+    // Simulate loading time for carousel images
+    setTimeout(() => {
+      try {
+        // Simulate random error (1 in 5 chance)
+       /* if (Math.random() < 0.2) {
+          throw new Error('Simulated carousel loading error');
+        }*/
+
+        this.images = [
+          { src: 'https://awesomefriday.ca/2014/05/review-x-men-days-of-future-past/x-men-days-of-future-past-banner/', alt: 'First slide' },
+          { src: 'https://lumiere-a.akamaihd.net/v1/images/image_d93db6a1.jpeg?region=0,0,760,328', alt: 'Second slide' },
+          { src: 'https://static1.cbrimages.com/wordpress/wp-content/uploads/2023/02/up-movie-poster.jpg', alt: 'Third slide' }
+        ];
+
+        this.isLoadingCarousel = false;
+        setTimeout(() => this.initializeCarousel(), 0);
+      } catch (error) {
+        console.error('Error loading carousel images:', error);
+        this.hasCarouselError = true;
+        this.isLoadingCarousel = false;
+      }
+    }, 1000); // Simulate 1 second loading time
   }
 
   filterMovies() {

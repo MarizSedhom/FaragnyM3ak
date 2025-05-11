@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Chart, ChartModule } from 'angular-highcharts'; 
+import { Chart, ChartModule } from 'angular-highcharts';
 import { FormsModule } from '@angular/forms';
 import { MovieService } from '../../services/movie.service';
 import { forkJoin } from 'rxjs';
@@ -11,7 +11,7 @@ import { forkJoin } from 'rxjs';
   imports: [
     CommonModule,
     FormsModule,
-    ChartModule 
+    ChartModule
   ],
   templateUrl: './admin.component.html',
   styleUrls: ['./admin.component.scss']

@@ -20,6 +20,18 @@ body {
   overflow-x: hidden;
 }
 
+
+/* ===== Loading Spinner ====*/
+.spinner {
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top: 4px solid #e50914;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
 /* ===== CAROUSEL ===== */
 .carousel {
   margin-top: 16px; // Account for fixed navbar
@@ -94,7 +106,7 @@ h3 {
   font-size: 1.5rem;
   position: relative;
   padding-bottom: 0.5rem;
-  
+
   &::after {
     content: '';
     position: absolute;
@@ -117,13 +129,13 @@ h3 {
 .btn-outline-light {
   border: 1px solid rgba(255, 255, 255, 0.3);
   transition: all 0.3s ease;
-  
+
   &:hover {
     background-color: var(--primary-color);
     border-color: var(--primary-color);
     transform: scale(1.05);
   }
-  
+
   &:disabled {
     opacity: 0.3;
     pointer-events: none;
@@ -142,11 +154,11 @@ h3 {
   .Container {
     padding: 0 1rem;
   }
-  
+
   .carousel img {
     height: 400px !important;
   }
-  
+
   h3 {
     font-size: 1.3rem;
   }
@@ -156,14 +168,14 @@ h3 {
   .navbar-brand span {
     font-size: 1.2rem;
   }
-  
+
   .carousel img {
     height: 300px !important;
   }
-  
+
   footer {
     padding: 1rem 0;
-    
+
     div {
       flex-direction: column;
       gap: 0.5rem;
