@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map,of, catchError } from 'rxjs';
+import { Observable, map, of, catchError, forkJoin } from 'rxjs';
 import { Movie, MovieDetail, RelatedMovie } from '../shared/models/movie.model';
 import { environment } from '../../environments/environment';
 
@@ -12,7 +12,7 @@ export class MovieService {
   private apiKey = environment.ThemovieDB.apiKey;
   private imageBaseUrl = 'https://image.tmdb.org/t/p/';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // Get movie details by ID
   getMovieById(id: number | string): Observable<MovieDetail> {
@@ -24,7 +24,7 @@ export class MovieService {
           throw error;
         })
       );
-  } 
+  }
 
   // Get popular movies
   getPopularMovies(): Observable<Movie[]> {
@@ -72,107 +72,107 @@ export class MovieService {
       );
   }
   //------------------------ admin movies -----------------------------------
-// Get now playing movies
-getNowPlayingMovies(): Observable<{ totalResults: number, movies: Movie[] }> {
-  return this.http.get(`${this.apiBaseUrl}/movie/now_playing?api_key=${this.apiKey}`)
-    .pipe(
-      map((response: any) => {
-        const totalResults = response.total_results;
-        const movies = response.results.map((movie: any) => this.transformMovieData(movie));
-        return { totalResults, movies };
-      }),
-      catchError(error => {
-        console.error('Error fetching now playing movies:', error);
-        return of({ totalResults: 0, movies: [] });
-      })
-    );
-}
+  // Get now playing movies
+  getNowPlayingMovies(): Observable<{ totalResults: number, movies: Movie[] }> {
+    return this.http.get(`${this.apiBaseUrl}/movie/now_playing?api_key=${this.apiKey}`)
+      .pipe(
+        map((response: any) => {
+          const totalResults = response.total_results;
+          const movies = response.results.map((movie: any) => this.transformMovieData(movie));
+          return { totalResults, movies };
+        }),
+        catchError(error => {
+          console.error('Error fetching now playing movies:', error);
+          return of({ totalResults: 0, movies: [] });
+        })
+      );
+  }
 
-// Get top rated movies
-getTopRatedMovies(): Observable<{ totalResults: number, movies: Movie[] }> {
-  return this.http.get(`${this.apiBaseUrl}/movie/top_rated?api_key=${this.apiKey}`)
-    .pipe(
-      map((response: any) => {
-        const totalResults = response.total_results;
-        const movies = response.results.map((movie: any) => this.transformMovieData(movie));
-        return { totalResults, movies };
-      }),
-      catchError(error => {
-        console.error('Error fetching top rated movies:', error);
-        return of({ totalResults: 0, movies: [] });
-      })
-    );
-}
+  // Get top rated movies
+  AdmingetTopRatedMovies(): Observable<{ totalResults: number, movies: Movie[] }> {
+    return this.http.get(`${this.apiBaseUrl}/movie/top_rated?api_key=${this.apiKey}`)
+      .pipe(
+        map((response: any) => {
+          const totalResults = response.total_results;
+          const movies = response.results.map((movie: any) => this.transformMovieData(movie));
+          return { totalResults, movies };
+        }),
+        catchError(error => {
+          console.error('Error fetching top rated movies:', error);
+          return of({ totalResults: 0, movies: [] });
+        })
+      );
+  }
 
-// Get upcoming movies
-getUpcomingMovies(): Observable<{ totalResults: number, movies: Movie[] }> {
-  return this.http.get(`${this.apiBaseUrl}/movie/upcoming?api_key=${this.apiKey}`)
-    .pipe(
-      map((response: any) => {
-        const totalResults = response.total_results;
-        const movies = response.results.map((movie: any) => this.transformMovieData(movie));
-        return { totalResults, movies };
-      }),
-      catchError(error => {
-        console.error('Error fetching upcoming movies:', error);
-        return of({ totalResults: 0, movies: [] });
-      })
-    );
-}
+  // Get upcoming movies
+  getUpcomingMovies(): Observable<{ totalResults: number, movies: Movie[] }> {
+    return this.http.get(`${this.apiBaseUrl}/movie/upcoming?api_key=${this.apiKey}`)
+      .pipe(
+        map((response: any) => {
+          const totalResults = response.total_results;
+          const movies = response.results.map((movie: any) => this.transformMovieData(movie));
+          return { totalResults, movies };
+        }),
+        catchError(error => {
+          console.error('Error fetching upcoming movies:', error);
+          return of({ totalResults: 0, movies: [] });
+        })
+      );
+  }
 
-// Get popular movies
-getPopularMoviestotal(): Observable<{ totalResults: number, movies: Movie[] }> {
-  return this.http.get(`${this.apiBaseUrl}/movie/popular?api_key=${this.apiKey}`)
-    .pipe(
-      map((response: any) => {
-        const totalResults = response.total_results;
-        const movies = response.results.map((movie: any) => this.transformMovieData(movie));
-        return { totalResults, movies };
-      }),
-      catchError(error => {
-        console.error('Error fetching popular movies:', error);
-        return of({ totalResults: 0, movies: [] });
-      })
-    );
-}
+  // Get popular movies
+  getPopularMoviestotal(): Observable<{ totalResults: number, movies: Movie[] }> {
+    return this.http.get(`${this.apiBaseUrl}/movie/popular?api_key=${this.apiKey}`)
+      .pipe(
+        map((response: any) => {
+          const totalResults = response.total_results;
+          const movies = response.results.map((movie: any) => this.transformMovieData(movie));
+          return { totalResults, movies };
+        }),
+        catchError(error => {
+          console.error('Error fetching popular movies:', error);
+          return of({ totalResults: 0, movies: [] });
+        })
+      );
+  }
 
-//Category
-getMovieGenres(): Observable<{ id: number, name: string }[]> {
-  return this.http.get(`${this.apiBaseUrl}/genre/movie/list?api_key=${this.apiKey}&language=en-US`)
-    .pipe(
-      map((response: any) => response.genres),
-      catchError(error => {
-        console.error('Error fetching genres:', error);
-        return of([]);
-      })
-    );
-}
+  //Category
+  getMovieGenres(): Observable<{ id: number, name: string }[]> {
+    return this.http.get(`${this.apiBaseUrl}/genre/movie/list?api_key=${this.apiKey}&language=en-US`)
+      .pipe(
+        map((response: any) => response.genres),
+        catchError(error => {
+          console.error('Error fetching genres:', error);
+          return of([]);
+        })
+      );
+  }
 
-getGenreDistribution(): Observable<{ genre: string, count: number }[]> {
-  return forkJoin({
-    genres: this.getMovieGenres(),
-    movies: this.getNowPlayingMovies()
-  }).pipe(
-    map(({ genres, movies }) => {
-      const genreMap = new Map<number, string>();
-      genres.forEach(g => genreMap.set(g.id, g.name));
+  getGenreDistribution(): Observable<{ genre: string, count: number }[]> {
+    return forkJoin({
+      genres: this.getMovieGenres(),
+      movies: this.getNowPlayingMovies()
+    }).pipe(
+      map(({ genres, movies }) => {
+        const genreMap = new Map<number, string>();
+        genres.forEach(g => genreMap.set(g.id, g.name));
 
-      const genreCounts: { [key: string]: number } = {};
+        const genreCounts: { [key: string]: number } = {};
 
-      movies.movies.forEach(movie => {
-        const movieGenres = (movie as any).genre_ids || [];
-        movieGenres.forEach((genreId: number) => {
-          const name = genreMap.get(genreId);
-          if (name) {
-            genreCounts[name] = (genreCounts[name] || 0) + 1;
-          }
+        movies.movies.forEach(movie => {
+          const movieGenres = (movie as any).genre_ids || [];
+          movieGenres.forEach((genreId: number) => {
+            const name = genreMap.get(genreId);
+            if (name) {
+              genreCounts[name] = (genreCounts[name] || 0) + 1;
+            }
+          });
         });
-      });
 
-      return Object.entries(genreCounts).map(([genre, count]) => ({ genre, count }));
-    })
-  );
-}
+        return Object.entries(genreCounts).map(([genre, count]) => ({ genre, count }));
+      })
+    );
+  }
 
   //------------------------------------------------------------
 

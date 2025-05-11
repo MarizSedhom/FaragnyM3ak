@@ -32,7 +32,7 @@ export class AdminComponent implements OnInit {
   loadMovieCounts(): void {
     forkJoin({
       nowPlaying: this.movieService.getNowPlayingMovies(),
-      topRated: this.movieService.getTopRatedMovies(),
+      topRated: this.movieService.AdmingetTopRatedMovies(),
       upcoming: this.movieService.getUpcomingMovies(),
       popular: this.movieService.getPopularMoviestotal(),
     }).subscribe({

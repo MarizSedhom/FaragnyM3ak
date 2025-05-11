@@ -62,7 +62,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
   loadMoviesAndSeries(): void {
     // Use forkJoin to fetch both movies and series in parallel
     forkJoin({
-      movies: this.movieService.getTopRatedMovies().pipe(
+      movies: this.movieService.AdmingetTopRatedMovies().pipe(
         catchError(error => {
           console.error('Error loading movies:', error);
           this.hasError = true;
@@ -79,7 +79,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     }).subscribe({
       next: (results) => {
         // Process movies
-        this.movies = results.movies;
+        this.movies = Array.isArray(results.movies) ? results.movies : results.movies.movies;
         this.filteredMovies = [...this.movies];
         this.isLoadingMovies = false;
         this.groupMovies();
