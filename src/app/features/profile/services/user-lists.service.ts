@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Firestore, doc, updateDoc, arrayUnion, arrayRemove, getDoc } from '@angular/fire/firestore';
 import { Auth, user } from '@angular/fire/auth';
-import { Observable, from, map } from 'rxjs';
+import { Observable, from, map, of } from 'rxjs';
 
 export interface Review {
     id: string;
@@ -132,9 +132,70 @@ export class UserListsService {
 
         const userRef = doc(this.firestore, 'users', userId);
         const updateOperation = add ? arrayUnion(item) : arrayRemove(item);
-        
+
         return from(updateDoc(userRef, {
             [`${type}.${list}`]: updateOperation
         }));
     }
-} 
+
+    isMovieInFavouriteList(movieId: string): Observable<boolean> {
+        const userId = this.auth.currentUser?.uid;
+        if (!userId) {
+            return of(false);
+        }
+        const userRef = doc(this.firestore, 'users', userId);
+        return from(getDoc(userRef)).pipe(
+            map(doc => {
+                const data = doc.data();
+                const favorites = data?.['movies']?.['favorites'] || [];
+                return favorites.includes(movieId);
+            })
+        );
+    }
+
+   isSeriesInFavouriteList(seriesId: string): Observable<boolean> {
+        const userId = this.auth.currentUser?.uid;
+        if (!userId) {
+            return of(false);
+        }
+        const userRef = doc(this.firestore, 'users', userId);
+        return from(getDoc(userRef)).pipe(
+            map(doc => {
+                const data = doc.data();
+                const favorites = data?.['series']?.['favorites'] || [];
+                return favorites.includes(seriesId);
+            })
+        );
+    }
+
+
+    isMovieInWatchlist(movieId: string): Observable<boolean> {
+        const userId = this.auth.currentUser?.uid;
+        if (!userId) {
+            return of(false);
+        }
+        const userRef = doc(this.firestore, 'users', userId);
+        return from(getDoc(userRef)).pipe(
+            map(doc => {
+                const data = doc.data();
+                const favorites = data?.['movies']?.['watchlist'] || [];
+                return favorites.includes(movieId);
+            })
+        );
+    }
+
+    isSeriesInWatchlist(seriesId: string): Observable<boolean> {
+        const userId = this.auth.currentUser?.uid;
+        if (!userId) {
+            return of(false);
+        }
+        const userRef = doc(this.firestore, 'users', userId);
+        return from(getDoc(userRef)).pipe(
+            map(doc => {
+                const data = doc.data();
+                const favorites = data?.['series']?.['watchlist'] || [];
+                return favorites.includes(seriesId);
+            })
+        );
+    }
+}

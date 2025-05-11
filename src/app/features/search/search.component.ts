@@ -2,11 +2,11 @@ import { HttpClient } from '@angular/common/http';
 import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { MovieCardComponent } from "../../shared/components/movie-card/movie-card.component";
 import { CommonModule } from '@angular/common';
-// import { config } from '../../../assets/app.json';
 import { ActivatedRoute, Router } from '@angular/router';
-import { catchError, forkJoin, map, of, switchMap, tap } from 'rxjs';
+import { catchError, forkJoin, map, of, switchMap, tap, finalize } from 'rxjs';
 import { SeriesCardComponent } from "../../shared/components/series-card/series-card.component";
 import { environment } from '../../../environments/environment';
+
 @Component({
   selector: 'app-search',
   imports: [MovieCardComponent, CommonModule, SeriesCardComponent],
@@ -24,6 +24,13 @@ export class SearchComponent implements OnInit, AfterViewInit {
   @ViewChild("pageNum") pageNumInput!: ElementRef<HTMLInputElement>;
   @ViewChild("movieBTN") movieInput!: ElementRef<HTMLButtonElement>;
   @ViewChild("tvBTN") tvInput!: ElementRef<HTMLButtonElement>;
+
+  // Add loading and error states
+  isLoading: boolean = true;
+  hasError: boolean = false;
+  errorMessage: string = '';
+
+  filteredSearch: any[] = [];
 
   constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute) {
     this.query = (route.snapshot.queryParamMap.get('query') || '').trim();
@@ -58,19 +65,20 @@ export class SearchComponent implements OnInit, AfterViewInit {
     });
   }
 
-  filteredSearch: any[] = [];
-
   ngOnInit(): void {
+    this.loadSearchResults();
+  }
+
+  loadSearchResults(): void {
+    this.isLoading = true;
+    this.hasError = false;
+    this.errorMessage = '';
+
     if (this.type === 'tv') {
       this.fetchTVShows();
-
     } else {
       this.fetchMovies();
     }
-
-
-
-
   }
 
   goTo(page: string) {
@@ -87,6 +95,10 @@ export class SearchComponent implements OnInit, AfterViewInit {
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
       this.router.navigate(['/search'], { queryParams: { query: this.query, type: this.type, page: this.currentPage } });
     });
+  }
+
+  retry(): void {
+    this.loadSearchResults();
   }
 
   // Fetch only Movies
@@ -112,7 +124,12 @@ export class SearchComponent implements OnInit, AfterViewInit {
               map((movieDetails: any) => ({
                 ...movie,
                 runtime: movieDetails.runtime
-              }))
+              })),
+              catchError(error => {
+                console.error(`Error fetching details for movie ${movie.id}:`, error);
+                // Return the movie without runtime if detail fetch fails
+                return of({ ...movie, runtime: null });
+              })
             )
           );
 
@@ -123,12 +140,24 @@ export class SearchComponent implements OnInit, AfterViewInit {
               moviesTotalPages: movies.total_pages
             }))
           );
+        }),
+        catchError(error => {
+          console.error('Error fetching movies:', error);
+          this.hasError = true;
+          this.errorMessage = 'Failed to load movie search results. Please try again later.';
+          return of({
+            transformedResults: [],
+            moviesPage: 1,
+            moviesTotalPages: 0
+          });
+        }),
+        finalize(() => {
+          this.isLoading = false;
         })
       ).subscribe(({ transformedResults, moviesPage, moviesTotalPages }) => {
-        console.log(moviesTotalPages);
         this.filteredSearch = transformedResults;
         this.paginationInfo = { moviesPage, moviesTotalPages };
-        this.totalPages = moviesTotalPages;
+        this.totalPages = moviesTotalPages || 1; // Default to 1 if undefined
       });
   }
 
@@ -155,7 +184,12 @@ export class SearchComponent implements OnInit, AfterViewInit {
               map((tvShowDetails: any) => ({
                 ...tv,
                 seasons: tvShowDetails.seasons
-              }))
+              })),
+              catchError(error => {
+                console.error(`Error fetching details for TV show ${tv.id}:`, error);
+                // Return the TV show without seasons if detail fetch fails
+                return of({ ...tv, seasons: [] });
+              })
             )
           );
 
@@ -166,18 +200,28 @@ export class SearchComponent implements OnInit, AfterViewInit {
               tvShowsTotalPages: tvShows.total_pages
             }))
           );
+        }),
+        catchError(error => {
+          console.error('Error fetching TV shows:', error);
+          this.hasError = true;
+          this.errorMessage = 'Failed to load TV show search results. Please try again later.';
+          return of({
+            transformedResults: [],
+            tvShowsPage: 1,
+            tvShowsTotalPages: 0
+          });
+        }),
+        finalize(() => {
+          this.isLoading = false;
         })
       ).subscribe(({ transformedResults, tvShowsPage, tvShowsTotalPages }) => {
-        console.log(tvShowsTotalPages);
         this.filteredSearch = transformedResults;
         this.paginationInfo = { tvShowsPage, tvShowsTotalPages };
-        this.totalPages = tvShowsTotalPages;
+        this.totalPages = tvShowsTotalPages || 1; // Default to 1 if undefined
       });
   }
 
-
   private transformMovieData(movie: any) {
-    console.log(movie.poster_path);
     return {
       id: movie.id,
       title: movie.title || movie.name || "Unknown Title",
@@ -206,13 +250,12 @@ export class SearchComponent implements OnInit, AfterViewInit {
       imageUrl: tvShow.poster_path != null ? this.getImageUrl(tvShow.poster_path, 'w342') : environment.ThemovieDB.nullImageUrl,
       rating: tvShow.vote_average, // Rating (average score)
       ratingCount: tvShow.vote_count, // Total number of votes
-      seasons: tvShow.seasons.length, // Number of seasons
-      episodes: tvShow.seasons.reduce((total: number, season: any) => total + (season.episode_count || 0), 0), // Total number of episodes
+      seasons: tvShow.seasons ? tvShow.seasons.length : 0, // Number of seasons
+      episodes: tvShow.seasons ? tvShow.seasons.reduce((total: number, season: any) => total + (season.episode_count || 0), 0) : 0, // Total number of episodes
       description: tvShow.overview || 'No description available', // Description of the TV Show
       hasSub: true, // Placeholder for subtitles availability
       hasDub: true, // Placeholder for dubbing availability
       type: 'tv' // Type of content (movie or TV show)
     };
   }
-
 }

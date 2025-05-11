@@ -27,6 +27,7 @@ export class SeriesPreviewComponent implements OnInit {
   error: string | null = null;
   activeTab = 'similar';
   isFavorite = false;
+  isWatchlist = false;
 
   trailerUrl: string | null = null;
   safeTrailerUrl: SafeResourceUrl | null = null;
@@ -49,6 +50,8 @@ export class SeriesPreviewComponent implements OnInit {
     const seriesId = params.get('id');
     if (seriesId) {
       this.loadSeriesData(seriesId); // Pass seriesId directly
+      this.checkFavoriteStatus(seriesId); // Check if already in favorites
+      this.checkWatchlistStatus(seriesId); // Check if already in watchlist
     } else {
       this.error = 'Series ID not found';
       this.loading = false;
@@ -191,14 +194,75 @@ loadSeriesData(seriesId: string): void {
     this.activeTab = tab;
   }
 
-  toggleFavorite(): void {
-    this.isFavorite = !this.isFavorite;
-    // TODO: Implement actual favorite functionality with a service
-    if(this.isFavorite){
-      this.listServices.addSeriesToFavorites(this.series!.id.toString())
+
+    checkFavoriteStatus(seriesId: string): void {
+    this.listServices.isSeriesInFavouriteList(seriesId).subscribe({
+      next: (isFavorite) => {
+        this.isFavorite = isFavorite;
+      },
+      error: (err) => {
+        console.error('Error checking favorite status:', err);
+      }
+    });
+  }
+
+  // New method to check watchlist status
+  checkWatchlistStatus(seriesId: string): void {
+    this.listServices.isSeriesInWatchlist(seriesId).subscribe({
+      next: (isWatchlist) => {
+        this.isWatchlist = isWatchlist;
+      },
+      error: (err) => {
+        console.error('Error checking watchlist status:', err);
+      }
+    });
+  }
+
+ToggleSeriesToWatchlist() {
+    if (!this.series) return;
+
+    const seriesId = this.series.id.toString();
+
+    if (!this.isWatchlist) {
+      this.listServices.addSeriesToWatchlist(seriesId).subscribe({
+        next: () => {
+          this.isWatchlist = true;
+        },
+        error: (err) => {
+          console.error('Error adding to watchlist:', err);
+        }
+      });
+    } else {
+      this.listServices.removeSeriesFromWatchlist(seriesId).subscribe({
+        next: () => {
+          this.isWatchlist = false;
+        },
+        error: (err) => {
+          console.error('Error removing from watchlist:', err);
+        }
+      });
     }
-    else{
-      this.listServices.removeSeriesFromFavorites(this.series!.id.toString())
+  }
+
+toggleFavorite(id: string): void {
+    if (this.isFavorite) {
+      this.listServices.removeSeriesFromFavorites(id).subscribe({
+        next: () => {
+          this.isFavorite = false;
+        },
+        error: (err) => {
+          console.error('Error removing from favorites:', err);
+        }
+      });
+    } else {
+      this.listServices.addSeriesToFavorites(id).subscribe({
+        next: () => {
+          this.isFavorite = true;
+        },
+        error: (err) => {
+          console.error('Error adding to favorites:', err);
+        }
+      });
     }
   }
 }
