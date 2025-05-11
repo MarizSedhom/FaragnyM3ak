@@ -6,6 +6,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { switchMap, of, catchError } from 'rxjs';
 import { MovieCardComponent } from '../../shared/components/movie-card/movie-card.component';
 import { Movie } from '../../shared/models/movie.model';
+import { UserListsService } from '../profile/services/user-lists.service';
 
 @Component({
   selector: 'app-movie-preview',
@@ -15,19 +16,30 @@ import { Movie } from '../../shared/models/movie.model';
   styleUrl: './movie-preview.component.scss'
 })
 export class MoviePreviewComponent implements OnInit {
+  ToggleMovieToWatchlist() {
+    this.isWatchlist = !this.isWatchlist;
+    if(this.isWatchlist){
+      this.listServices.addMovieToWatchlist(this.movie!.id.toString())
+    }
+    else{
+      this.listServices.removeMovieFromWatchlist(this.movie!.id.toString())
+    }
+  }
   movieId: number | null = null;
   movie: MovieDetail | null = null;
   relatedMovies: RelatedMovie[] = [];
   activeTab: string = 'related';
   userRating: number = 0;
   isFavorite: boolean = false;
+  isWatchlist: boolean = false;
   loading: boolean = true;
   error: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
-    private movieService: MovieService
-  ) {}
+    private movieService: MovieService,
+    private listServices: UserListsService
+  ) { }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
@@ -76,7 +88,7 @@ export class MoviePreviewComponent implements OnInit {
     return {
       id: relatedMovie.id,
       title: relatedMovie.title,
-      imageUrl: relatedMovie.imageUrl,
+      imageUrl: relatedMovie.imageUrl || 'https://via.placeholder.com/150',
       rating: 0, // Default values since RelatedMovie doesn't have these properties
       ratingCount: 0,
       duration: 0,
@@ -92,7 +104,12 @@ export class MoviePreviewComponent implements OnInit {
 
   toggleFavorite(): void {
     this.isFavorite = !this.isFavorite;
-    // Here you could add code to save the favorite status
+    if (this.isFavorite) {
+      this.listServices.addMovieToFavorites(this.movie!.id.toString())
+    }
+    else {
+      this.listServices.removeMovieFromFavorites(this.movie!.id.toString())
+    }
   }
 
   setUserRating(rating: number): void {

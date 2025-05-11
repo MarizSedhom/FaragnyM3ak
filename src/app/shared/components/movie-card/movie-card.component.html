@@ -1,4 +1,4 @@
- <div class="card"  (click)="navigateToMovie()">
+<div class="card"  (click)="navigateToMovie()">
   <img [src]="movie.imageUrl" [alt]="movie.title" class="card-image" />
 
   <div class="card-overlay">
@@ -22,6 +22,9 @@
       <div class="action-button">▶</div>
       <div class="action-button" (click)="AddToFavourite(movie.id.toString())">♥</div>
       <div class="action-button" (click)="AddToWatchList(movie.id.toString())">+</div>
+      <div *ngIf="movie.trailerKey" class="action-button trailer-button" (click)="playTrailer($event)">
+        <span class="trailer-icon">▶</span>
+      </div>
     </div>
   </div>
 </div>

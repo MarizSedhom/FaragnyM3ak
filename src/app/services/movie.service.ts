@@ -9,8 +9,8 @@ import { environment } from '../../environments/environment';
 })
 export class MovieService {
   private apiBaseUrl = 'https://api.themoviedb.org/3';
-  private apiKey = environment.ThemovieDB.apiKey;
   private imageBaseUrl = 'https://image.tmdb.org/t/p/';
+  private apiKey = environment.ThemovieDB.apiKey;
 
   constructor(private http: HttpClient) { }
 
@@ -175,6 +175,40 @@ export class MovieService {
   }
 
   //------------------------------------------------------------
+
+  // Get movie trailers
+  getMovieTrailer(movieId: number): Observable<string | null> {
+    return this.http.get(`${this.apiBaseUrl}/movie/${movieId}/videos?api_key=${this.apiKey}&language=en-US`)
+      .pipe(
+        map((response: any) => {
+          const trailers = response.results.filter((video: any) => 
+            video.type === 'Trailer' && video.site === 'YouTube');
+          return trailers.length > 0 ? trailers[0].key : null;
+        }),
+        catchError(error => {
+          console.error(`Error fetching trailer for movie ${movieId}:`, error);
+          return of(null);
+        })
+      );
+  }
+  
+  // Fetch trailers for multiple movies
+  getTrailersForMovies(movies: Movie[]): Observable<Movie[]> {
+    if (!movies || movies.length === 0) {
+      return of([]);
+    }
+    
+    const movieTrailerRequests = movies.map(movie => 
+      this.getMovieTrailer(movie.id).pipe(
+        map(trailerKey => ({
+          ...movie, 
+          trailerKey: trailerKey || undefined
+        }))
+      )
+    );
+    
+    return forkJoin(movieTrailerRequests);
+  }
 
   // Transform basic movie data to match your Movie interface
   private transformMovieData(movie: any): Movie {

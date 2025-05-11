@@ -9,6 +9,7 @@ export interface Movie {
     hasSub: boolean;
     hasDub: boolean;
     genre_ids?: number[];
+    trailerKey?: string; // YouTube video key for the trailer
   }
 
 // Additional interfaces for the preview component
