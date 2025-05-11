@@ -1,0 +1,30 @@
+<div class="media-panel" 
+    cdkDropList 
+    [id]="title.toLowerCase()" 
+    [cdkDropListData]="items" 
+    (cdkDropListDropped)="drop.emit($event)">
+
+    <!-- <h2 class="panel-title">{{title}}</h2> -->
+
+    <div class="media-list">
+        <app-media-card
+            *ngFor="let item of items; trackBy: trackById"
+            [media]="item"
+            cdkDrag
+            [cdkDragData]="item"
+            (favoriteToggled)="favoriteToggled.emit(item.id)"
+            (watchedToggled)="watchedToggled.emit(item.id)"
+            (episodeToggled)="onEpisodeToggled($event)">
+            
+            <!-- Optional: Add a placeholder to show where the card will be dropped -->
+            <div *cdkDragPlaceholder class="card-placeholder">
+                <div class="placeholder-inner"></div>
+            </div>
+        </app-media-card>
+        
+        <!-- Empty state message when no items -->
+        <div class="empty-message" *ngIf="items?.length === 0">
+            No items in this list. Drag items here to add them.
+        </div>
+    </div>
+</div>

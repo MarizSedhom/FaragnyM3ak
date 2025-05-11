@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Movie } from '../../shared/models/movie.model';
 import { MovieCardComponent } from '../../shared/components/movie-card/movie-card.component';
 import { Series } from '../../shared/models/series.model';
 import { SeriesCardComponent } from '../../shared/components/series-card/series-card.component';
+declare var bootstrap: any;
+
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -249,7 +251,7 @@ export class HomeComponent implements OnInit {
       hasSub: true,
       hasDub: true
     }
-  
+
   ];
 
   searchQuery: string = '';
@@ -260,15 +262,24 @@ export class HomeComponent implements OnInit {
   currentMovieGroup = 0;
   currentSeriesGroup = 0;
 
-
+  ngAfterViewInit(): void {
+    const carouselElement = document.querySelector('#carouselExampleIndicators');
+    if (carouselElement) {
+      new bootstrap.Carousel(carouselElement, {
+        interval: 2000,
+        ride: 'carousel',
+        pause: false
+      });
+    }
+  }
   ngOnInit(): void {
     this.loadCarouselImages();
-    this.filteredMovies = [...this.movies]; 
-    this.filteredSeries = [...this.series]; 
-    this.groupMovies();    
-    this.groupSeries();                 
+    this.filteredMovies = [...this.movies];
+    this.filteredSeries = [...this.series];
+    this.groupMovies();
+    this.groupSeries();
   }
-  
+
 
   loadCarouselImages(): void {
     this.images = [
@@ -278,8 +289,7 @@ export class HomeComponent implements OnInit {
     ];
   }
 
-  filterMovies() 
-  {
+  filterMovies() {
     if (!this.searchQuery) {
       this.filteredMovies = [...this.movies];
     } else {
@@ -287,30 +297,29 @@ export class HomeComponent implements OnInit {
         movie.title.toLowerCase().includes(this.searchQuery.toLowerCase())
       );
     }
-  
-    this.currentMovieGroup = 0; 
-    this.groupMovies();    
+
+    this.currentMovieGroup = 0;
+    this.groupMovies();
   }
 
-  filterSeries() 
-  {
+  filterSeries() {
     if (!this.searchQuery) {
       this.filteredSeries = [...this.series];
     } else {
-      this.filteredSeries = this.series.filter(series=>
+      this.filteredSeries = this.series.filter(series =>
         series.title.toLowerCase().includes(this.searchQuery.toLowerCase())
       );
     }
-  
-    this.currentSeriesGroup = 0; 
-    this.groupMovies();    
+
+    this.currentSeriesGroup = 0;
+    this.groupMovies();
   }
-  
-  
+
+
   groupMovies(): void {
     const groupSize = 5;
     this.movieGroups = [];
-  
+
     for (let i = 0; i < this.filteredMovies.length; i += groupSize) {
       this.movieGroups.push(this.filteredMovies.slice(i, i + groupSize));
     }
@@ -319,22 +328,20 @@ export class HomeComponent implements OnInit {
   groupSeries(): void {
     const groupSize = 5;
     this.seriesGroups = [];
-  
+
     for (let i = 0; i < this.filteredSeries.length; i += groupSize) {
       this.seriesGroups.push(this.filteredSeries.slice(i, i + groupSize));
     }
   }
-  
 
-  nextMovieGroup(): void 
-  {
+
+  nextMovieGroup(): void {
     if (this.currentMovieGroup < this.movieGroups.length - 1) {
       this.currentMovieGroup++;
     }
   }
 
-  prevMovieGroup(): void 
-  {
+  prevMovieGroup(): void {
     if (this.currentMovieGroup > 0) {
       this.currentMovieGroup--;
     }
@@ -351,5 +358,5 @@ export class HomeComponent implements OnInit {
       this.currentSeriesGroup--;
     }
   }
-  
+
 }

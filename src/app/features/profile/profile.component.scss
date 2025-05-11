@@ -1,0 +1,369 @@
+
+/* Main Container */
+.profile-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  color: #f1f1f1;
+  margin-top: 10px;
+  // background-color: #141414;
+  font-family: 'Arial', sans-serif;
+}
+
+/* Profile Header */
+.profile-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.profile-info {
+  display: flex;
+  align-items: center;
+}
+
+.profile-pic {
+  width: 80px;
+  height: 80px;
+  background-color: #333;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20px;
+}
+
+.user-icon {
+  width: 50px;
+  height: 50px;
+  fill: #e5e5e5;
+}
+
+.profile-title {
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Section Styling */
+.media-section, .collection-section {
+  margin-bottom: 40px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.section-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.section-icon {
+  width: 20px;
+  height: 20px;
+  fill: #e5e5e5;
+  margin-right: 8px;
+}
+
+/* Buttons */
+.btn {
+  background: transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-sm {
+  padding: 5px 10px;
+  font-size: 14px;
+}
+
+.btn-outline-light {
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  color: #e5e5e5;
+}
+
+.btn-outline-light:hover:not([disabled]) {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.btn[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.me-2 {
+  margin-right: 8px;
+}
+
+/* Scroll Containers */
+.scroll-container {
+  display: flex;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  padding: 10px 0;
+  scrollbar-width: thin;
+  scrollbar-color: #555 #141414;
+}
+
+.scroll-container::-webkit-scrollbar {
+  height: 6px;
+}
+
+.scroll-container::-webkit-scrollbar-track {
+  background: #141414;
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+  background-color: #555;
+  border-radius: 6px;
+}
+
+/* Continue Watching Cards */
+.continue-card {
+  position: relative;
+  min-width: 240px;
+  margin-right: 15px;
+  border-radius: 4px;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+
+.continue-card:hover {
+  transform: scale(1.05);
+}
+
+.card-image {
+  position: relative;
+  width: 100%;
+  height: 135px;
+}
+
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.play-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 2;
+}
+
+.continue-card:hover .play-icon {
+  opacity: 1;
+}
+
+.progress-container {
+  position: absolute;
+  bottom: 30px;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: #e50914; /* Netflix red */
+}
+
+.time-left {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  font-size: 12px;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 2px 6px;
+  border-radius: 2px;
+}
+
+.media-title {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 40px 10px 10px 10px;
+  margin: 0;
+  font-size: 14px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0) 100%);
+  color: #fff;
+}
+
+.episode {
+  font-size: 12px;
+  opacity: 0.8;
+  margin-left: 5px;
+}
+
+/* Collections Section */
+.collection-title {
+  margin-bottom: 15px;
+}
+
+.filter-tabs {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.filter-tabs button {
+  background: transparent;
+  border: none;
+  color: #aaa;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.filter-tabs button:hover {
+  color: #fff;
+}
+
+.filter-tabs button.active {
+  color: #fff;
+}
+
+.filter-tabs button.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background-color: #e50914; /* Netflix red */
+}
+
+.collections-container {
+  background-color: #1a1a1a;
+  border-radius: 4px;
+  padding: 20px;
+}
+
+.card-body {
+  padding: 20px;
+}
+
+/* UPDATED: Lists container to display side by side */
+.lists-container {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+}
+
+/* UPDATED: Media section within lists container */
+.lists-container .media-section {
+  flex: 1;
+  min-width: 0; /* Prevents flex items from overflowing */
+  width: calc(50% - 10px);
+}
+
+/* UPDATED: Ensure each scroll container stays within its parent */
+.lists-container .scroll-container {
+  width: 100%;
+}
+
+/* Media Items Container */
+.media-items-container {
+  display: flex;
+  width: 100%;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .profile-pic {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .user-icon {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .profile-title {
+    font-size: 22px;
+  }
+  
+  .section-title {
+    font-size: 18px;
+  }
+  
+  .continue-card {
+    min-width: 180px;
+  }
+  
+  /* UPDATED: Switch back to column on smaller screens */
+  .lists-container {
+    flex-direction: column;
+    gap: 30px;
+  }
+  
+  /* UPDATED: Full width on smaller screens */
+  .lists-container .media-section {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-container {
+    padding: 10px;
+  }
+  
+  .profile-pic {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+  }
+  
+  .user-icon {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .profile-title {
+    font-size: 20px;
+  }
+  
+  .continue-card {
+    min-width: 150px;
+  }
+  
+  .filter-tabs button {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+  
+  .collections-container {
+    padding: 10px;
+  }
+  
+  .card-body {
+    padding: 10px;
+  }
+}

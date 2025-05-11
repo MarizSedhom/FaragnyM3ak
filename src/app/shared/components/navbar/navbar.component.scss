@@ -1,103 +1,309 @@
+// .navbar {
+//   background: linear-gradient(to right, #1a2b3c, #2d4b66);
+//   backdrop-filter: blur(5px);
+//   padding: 0 1rem;
+//   height: 30px;
+//   transition: all 0.3s ease;
+// }
 
-  
-  .vertical-nav {
-    position: fixed;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    padding-left: 2rem;
-    z-index: 100; 
-  }
-  
-  .circle-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background-color: transparent;
-    color: white;
-    font-size: 1.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    position: relative;
-    z-index: 2; 
-  }
-  
-  .icon-label {
-    position: absolute;
-    left: 80px; 
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 1rem;
-    color: white; 
-    opacity: 0;
-    transform: translateX(-10px) translateY(-50%);
-    transition: all 0.3s ease;
-    white-space: nowrap;
-    z-index: 3;
-    pointer-events: none;
-  }
-  
-  .icon-container {
-    position: relative;
-  }
+// .navbar-brand {
+//   text-decoration: none;
+//   display: flex;
+//   align-items: center;
+// }
 
-  .icon-container::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 0;
-    height: 60px;
-    border-radius: 999px;
-    z-index: 1; 
-    transition: all 0.3s ease;
-  }
+// .logo {
+//   width: 20px;
+//   height: 20px;
+//   object-fit: cover;
+//   border-radius: 10px; 
+// }
+
+// .brand-text {
+//   color: #cccccc;
+//   font-family: 'Netflix Sans', sans-serif;
+//   font-weight: 300;
+//   letter-spacing: 0.5px;
+//   font-size: 0.9rem;
+//   border-radius: 3px;
+//   height: 22px;
+//   min-width: 100px;
+// }
+
+//   .vertical-nav {
+//     position: fixed;
+//     left: 0;
+//     top: 50%;
+//     transform: translateY(-50%);
+//     display: flex;
+//     flex-direction: column;
+//     gap: 1.5rem;
+//     padding-left: 2rem;
+//     z-index: 100; 
+//   }
   
-  .icon-container:hover::after {
-    width: 200px;
-    opacity: 0.7;
-  }
+//   .circle-icon {
+//     width: 60px;
+//     height: 60px;
+//     border-radius: 50%;
+//     background-color: transparent;
+//     color: white;
+//     font-size: 1.5rem;
+//     display: flex;
+//     align-items: center;
+//     justify-content: center;
+//     text-decoration: none;
+//     transition: all 0.3s ease;
+//     position: relative;
+//     z-index: 2; 
+//   }
   
-  .icon-container:hover .icon-label {
+//   .icon-label {
+//     position: absolute;
+//     left: 80px; 
+//     top: 50%;
+//     transform: translateY(-50%);
+//     font-size: 1rem;
+//     color: white; 
+//     opacity: 0;
+//     transform: translateX(-10px) translateY(-50%);
+//     transition: all 0.3s ease;
+//     white-space: nowrap;
+//     z-index: 3;
+//     pointer-events: none;
+//   }
+  
+//   .icon-container {
+//     position: relative;
+//   }
+
+//   .icon-container::after {
+//     content: '';
+//     position: absolute;
+//     left: 0;
+//     top: 50%;
+//     transform: translateY(-50%);
+//     width: 0;
+//     height: 60px;
+//     border-radius: 999px;
+//     z-index: 1; 
+//     transition: all 0.3s ease;
+//   }
+  
+//   .icon-container:hover::after {
+//     width: 200px;
+//     opacity: 0.7;
+//   }
+  
+//   .icon-container:hover .icon-label {
+//     opacity: 1;
+//     transform: translateX(10px) translateY(-50%);
+//   }
+
+//   .vertical-nav .icon-container.active::after {
+//     width: 0;
+//     opacity: 0;
+//   }
+  
+//   .vertical-nav .icon-container.active .circle-icon {
+//     background-color: #007bff;
+//     box-shadow: 
+//       0 0 20px rgba(0, 123, 255, 0.4),
+//       0 0 40px rgba(0, 123, 255, 0.2);
+//   }
+
+//   .vertical-nav .icon-container:not(.active) {
+//     .circle-icon {
+//       background-color: transparent;
+//       box-shadow: 0 0 1px rgba(255, 255, 255, 0.5),
+//                   0 0 2px rgba(255, 255, 255, 0.3);
+//     }
+
+//     &::after {
+//       background-color: #1a2b3c;
+//     }
+
+//     &:hover .circle-icon {
+//       background-color: rgba(26, 43, 60, 0.5);
+//     }
+
+//     &:hover::after {
+//       background-color: #1a2b3c;
+//     }
+//   }
+
+.navbar {
+  background: linear-gradient(to right, #1a2b3c, #2d4b66);
+  backdrop-filter: blur(5px);
+  padding: 0 1rem;
+  height: 30px;
+  transition: all 0.3s ease;
+}
+
+.navbar-brand {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  width: 20px;
+  height: 20px;
+  object-fit: cover;
+  border-radius: 10px; 
+}
+
+.brand-text {
+  color: #cccccc;
+  font-family: 'Netflix Sans', sans-serif;
+  font-weight: 300;
+  letter-spacing: 0.5px;
+  font-size: 0.9rem;
+  border-radius: 3px;
+  height: 22px;
+  min-width: 100px;
+}
+
+.vertical-nav {
+  position: fixed;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding-left: 2rem;
+  z-index: 100; 
+}
+
+.circle-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: transparent;
+  color: white;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 2; 
+}
+
+.icon-label {
+  position: absolute;
+  left: 80px; 
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1rem;
+  color: white; 
+  opacity: 0;
+  transform: translateX(-10px) translateY(-50%);
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.icon-container {
+  position: relative;
+  cursor: pointer;
+}
+
+.icon-container::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 60px;
+  border-radius: 999px;
+  z-index: 1; 
+  transition: all 0.3s ease;
+}
+
+.icon-container:hover::after {
+  width: 200px;
+  opacity: 0.7;
+}
+
+.icon-container:hover .icon-label {
+  opacity: 1;
+  transform: translateX(10px) translateY(-50%);
+}
+
+.vertical-nav .icon-container.active::after {
+  width: 0;
+  opacity: 0;
+}
+
+.vertical-nav .icon-container.active .circle-icon {
+  background-color: #007bff;
+  box-shadow: 
+    0 0 20px rgba(0, 123, 255, 0.4),
+    0 0 40px rgba(0, 123, 255, 0.2);
+}
+
+.vertical-nav .icon-container:not(.active) .circle-icon {
+  background-color: transparent;
+  box-shadow: 0 0 1px rgba(255, 255, 255, 0.5),
+              0 0 2px rgba(255, 255, 255, 0.3);
+}
+
+.vertical-nav .icon-container:not(.active)::after {
+  background-color: #1a2b3c;
+}
+
+.vertical-nav .icon-container:not(.active):hover .circle-icon {
+  background-color: rgba(26, 43, 60, 0.5);
+}
+
+.vertical-nav .icon-container:not(.active):hover::after {
+  background-color: #1a2b3c;
+}
+
+/* Inline search styles */
+#search-container {
+  position: relative;
+  cursor: pointer;
+}
+
+.inline-search {
+  position: absolute;
+  left: 80px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.search-input {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 20px;
+  padding: 8px 15px;
+  color: white;
+  width: 0;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+#search-container.expanded {
+  .inline-search {
     opacity: 1;
-    transform: translateX(10px) translateY(-50%);
+    visibility: visible;
   }
 
-  .vertical-nav .icon-container.active::after {
-    width: 0;
-    opacity: 0;
+  .search-input {
+    width: 200px;
   }
-  
-  .vertical-nav .icon-container.active .circle-icon {
-    background-color: #007bff;
-    box-shadow: 
-      0 0 20px rgba(0, 123, 255, 0.4),
-      0 0 40px rgba(0, 123, 255, 0.2);
-  }
+}
 
-  .vertical-nav .icon-container:not(.active) {
-    .circle-icon {
-      background-color: transparent;
-      box-shadow: 0 0 1px rgba(255, 255, 255, 0.5),
-                  0 0 2px rgba(255, 255, 255, 0.3);
-    }
-
-    &::after {
-      background-color: #1a2b3c;
-    }
-
-    &:hover .circle-icon {
-      background-color: rgba(26, 43, 60, 0.5);
-    }
-
-    &:hover::after {
-      background-color: #1a2b3c;
-    }
-  }
+.search-input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}

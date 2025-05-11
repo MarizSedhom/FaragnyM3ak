@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, forkJoin, map, switchMap,of, catchError } from 'rxjs';
+import { Observable, map,of, catchError } from 'rxjs';
 import { Movie, MovieDetail, RelatedMovie } from '../shared/models/movie.model';
 import { environment } from '../../environments/environment';
 
@@ -9,7 +9,7 @@ import { environment } from '../../environments/environment';
 })
 export class MovieService {
   private apiBaseUrl = 'https://api.themoviedb.org/3';
-  private apiKey = environment.apiKey;
+  private apiKey = environment.ThemovieDB.apiKey;
   private imageBaseUrl = 'https://image.tmdb.org/t/p/';
 
   constructor(private http: HttpClient) {}

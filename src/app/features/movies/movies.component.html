@@ -1,11 +1,3 @@
-<div class="search-container">
-  <input type="text" 
-         class="search-bar" 
-         placeholder="Search movie by name..." 
-         [(ngModel)]="searchQuery"
-         (input)="filterMovies()">
-</div>
-
-<div class="container">
+<div class="container d-flex flex-wrap justify-content-center gap-3 mt-5 px-3" style="max-width: 1200px;">
   <app-movie-card *ngFor="let movie of filteredMovies" [movie]="movie"></app-movie-card>
 </div>
