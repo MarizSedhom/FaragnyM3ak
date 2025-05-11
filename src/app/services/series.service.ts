@@ -28,7 +28,6 @@ export class SeriesService {
       );
   }
 
-
   getTopRatedSeries(): Observable<Series[]> {
     return this.http.get(`${this.apiBaseUrl}/tv/top_rated?api_key=${this.apiKey}&language=en-US&page=1`)
       .pipe(

@@ -1,55 +1,60 @@
-/**
- * Import function triggers from their respective submodules:
- *
- * import {onCall} from "firebase-functions/v2/https";
- * import {onDocumentWritten} from "firebase-functions/v2/firestore";
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
- */
+// import * as functions from "firebase-functions";
+// import * as admin from "firebase-admin";
+// import Stripe from "stripe";
 
-import * as functions from 'firebase-functions';
-import * as admin from 'firebase-admin';
-import Stripe from 'stripe';
+// admin.initializeApp();
 
-admin.initializeApp();
+// const stripe = new Stripe(functions.config().stripe.secret, {
+//   apiVersion: "2025-04-30.basil",
+// });
 
-const stripe = new Stripe(functions.config().stripe.secret, {
-  apiVersion: '2023-10-16',
-});
+// export const createPaymentIntent = functions.https.onRequest(
+//   async (req, res) => {
+//     // Set CORS headers first
+//     res.set("Access-Control-Allow-Origin", "http://localhost:4200");
+//     res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+//     res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+//     res.set("Access-Control-Max-Age", "3600");
 
-export const createPaymentIntent = functions.https.onRequest(async (req, res) => {
-  // Enable CORS
-  res.set('Access-Control-Allow-Origin', '*');
-  res.set('Access-Control-Allow-Methods', 'GET, POST');
-  res.set('Access-Control-Allow-Headers', 'Content-Type');
+//     // Handle preflight OPTIONS request
+//     if (req.method === "OPTIONS") {
+//       // Return success immediately for preflight
+//       res.status(204).end();
+//       return;
+//     }
 
-  // Handle preflight requests
-  if (req.method === 'OPTIONS') {
-    res.status(204).send('');
-    return;
-  }
+//     if (req.method !== "POST") {
+//       res.status(405).send("Method Not Allowed");
+//       return;
+//     }
 
-  if (req.method !== 'POST') {
-    res.status(405).send('Method Not Allowed');
-    return;
-  }
+//     try {
+//       // Ensure request body is parsed correctly
+//       const {amount} = typeof req.body === "string" ?
+//         JSON.parse(req.body) :
+//         req.body;
 
-  try {
-    const { amount } = req.body;
+//       if (!amount) {
+//         res.status(400).json({error: "Amount is required"});
+//         return;
+//       }
 
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: amount,
-      currency: 'usd',
-      automatic_payment_methods: {
-        enabled: true,
-      },
-    });
+//       const paymentIntent = await stripe.paymentIntents.create({
+//         amount: amount,
+//         currency: "usd",
+//         automatic_payment_methods: {
+//           enabled: true,
+//         },
+//       });
 
-    res.json({
-      clientSecret: paymentIntent.client_secret,
-    });
-  } catch (error: any) {
-    console.error('Error creating payment intent:', error);
-    res.status(500).json({ error: error.message });
-  }
-});
+//       res.status(200).json({
+//         clientSecret: paymentIntent.client_secret,
+//       });
+//     } catch (error: unknown) {
+//       console.error("Error creating payment intent:", error);
+//       res.status(500).json({
+//         error: error instanceof Error ? error.message : "Unknown error",
+//       });
+//     }
+//   }
+// );

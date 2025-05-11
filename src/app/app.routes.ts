@@ -34,11 +34,11 @@ export const routes: Routes = [
         loadComponent: () => import('./features/series/series.component').then(m => m.SeriesComponent),
         canActivate: [AuthGuard]
     },
-    {
-        path: 'services',
-        loadComponent: () => import('./services/services/services.component').then(m => m.ServicesComponent),
-        canActivate: [AuthGuard]
-    },
+    // {
+    //     path: 'services',
+    //     loadComponent: () => import('./services/services/services.component').then(m => m.ServicesComponent),
+    //     canActivate: [AuthGuard]
+    // },
     {
         path: 'watch',
         loadComponent: () => import('./features/watch/watch.component').then(m => m.WatchComponent),
@@ -53,10 +53,6 @@ export const routes: Routes = [
       path: 'search',
       loadComponent: () => import('./features/search/search.component').then(m => m.SearchComponent),
       canActivate: [AuthGuard]
-    },
-    {
-        path: 'payment',
-        loadComponent: () => import('./features/payment/payment.component').then(m => m.PaymentComponent)
     },
     {
       path: 'login',
