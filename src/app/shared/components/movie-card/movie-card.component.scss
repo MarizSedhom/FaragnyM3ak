@@ -94,31 +94,18 @@
   display: flex;
   gap: 15px;
   margin-top: 10px;
+  
 }
 
 .action-button {
-  background-color: white;
+  // background-color: white;
   padding: 5px 10px;
-  border-radius: 50%;
+  border-radius: 1px;
   color: #ff6b00;
   cursor: pointer;
-  transition: all 0.2s ease;
-  
   &:hover {
-    transform: scale(1.1);
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    background-color: #ff6b00;
+    color: white;
+    border-radius: 5px;
   }
-}
-
-.trailer-button {
-  background-color: #ff0000;
-  color: white;
-  
-  &:hover {
-    background-color: #cc0000;
-  }
-}
-
-.trailer-icon {
-  font-size: 12px;
 }

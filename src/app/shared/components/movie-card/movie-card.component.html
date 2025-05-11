@@ -1,30 +1,29 @@
-<div class="card"  (click)="navigateToMovie()">
-  <img [src]="movie.imageUrl" [alt]="movie.title" class="card-image" />
+<div class="card">
 
+  <img [src]="movie.imageUrl" [alt]="movie.title" class="card-image" (click)="navigateToMovie()"/>
   <div class="card-overlay">
-    <div class="card-title">{{ movie.title }}</div>
+    <div class="card-content" (click)="navigateToMovie()">
 
-    <div class="card-rating">
-      <span class="star">★</span> {{ formatRating(movie.rating) }} ({{ formatCount(movie.ratingCount) }})
-    </div>
+      <div class="card-title">{{ movie.title }}</div>
 
-    <div class="card-info">
-      {{ movie.duration }} min
-    </div>
-
-    <div class="card-subtitle text-white">
-      {{ movie.hasSub ? 'Sub' : '' }}{{ movie.hasSub && movie.hasDub ? ' | ' : '' }}{{ movie.hasDub ? 'Dub' : '' }}
-    </div>
-
-    <div class="card-description">{{ movie.description }}</div>
-
-    <div class="action-buttons">
-      <div class="action-button">▶</div>
-      <div class="action-button" (click)="AddToFavourite(movie.id.toString())">♥</div>
-      <div class="action-button" (click)="AddToWatchList(movie.id.toString())">+</div>
-      <div *ngIf="movie.trailerKey" class="action-button trailer-button" (click)="playTrailer($event)">
-        <span class="trailer-icon">▶</span>
+      <div class="card-rating">
+        <span class="star">★</span> {{ formatRating(movie.rating) }} ({{ formatCount(movie.ratingCount) }})
       </div>
+
+      <div class="card-info">
+        {{ movie.duration }} min
+      </div>
+
+      <div class="card-subtitle text-white">
+        {{ movie.hasSub ? 'Sub' : '' }}{{ movie.hasSub && movie.hasDub ? ' | ' : '' }}{{ movie.hasDub ? 'Dub' : '' }}
+      </div>
+      <div class="card-description">{{ movie.description }}</div>
+
+    </div>
+
+    <div class="action-buttons d-flex justify-content-center gap-2">
+      <div class="action-button" (click)="toggleFavorite(movie.id.toString())">♥</div>
+      <div class="action-button" (click)="ToggleToWatchList(movie.id.toString())">+</div>
     </div>
   </div>
 </div>

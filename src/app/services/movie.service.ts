@@ -8,8 +8,8 @@ import { environment } from '../../environments/environment';
   providedIn: 'root'
 })
 export class MovieService {
-  private apiBaseUrl = 'https://api.themoviedb.org/3';
-  private imageBaseUrl = 'https://image.tmdb.org/t/p/';
+  private apiBaseUrl = environment.ThemovieDB.apiBaseUrl;
+  private imageBaseUrl = environment.ThemovieDB.imageBaseUrl;
   private apiKey = environment.ThemovieDB.apiKey;
 
   constructor(private http: HttpClient) { }
@@ -300,7 +300,7 @@ export class MovieService {
   // Get full image URL from path
   private getImageUrl(path: string | null, size: string): string {
     if (!path) {
-      return 'assets/images/no-image.png'; // Fallback image
+      return environment.ThemovieDB.nullImageUrl;
     }
     return `${this.imageBaseUrl}${size}${path}`;
   }

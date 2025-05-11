@@ -2,22 +2,23 @@ import { HttpClient } from '@angular/common/http';
 import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { MovieCardComponent } from "../../shared/components/movie-card/movie-card.component";
 import { CommonModule } from '@angular/common';
-import { config } from '../../../../assets/app.json';
+// import { config } from '../../../assets/app.json';
 import { ActivatedRoute, Router } from '@angular/router';
 import { catchError, forkJoin, map, of, switchMap, tap } from 'rxjs';
 import { SeriesCardComponent } from "../../shared/components/series-card/series-card.component";
+import { environment } from '../../../environments/environment';
 @Component({
   selector: 'app-search',
   imports: [MovieCardComponent, CommonModule, SeriesCardComponent],
   templateUrl: './search.component.html',
   styleUrl: './search.component.scss'
 })
-export class SearchComponent implements OnInit,AfterViewInit {
+export class SearchComponent implements OnInit, AfterViewInit {
 
   query: string = '';
   type: string = 'movie';
   private imageBaseUrl = 'https://image.tmdb.org/t/p/';
-  paginationInfo : any  ;
+  paginationInfo: any;
   currentPage: number = 1;
   totalPages: number = 100;
   @ViewChild("pageNum") pageNumInput!: ElementRef<HTMLInputElement>;
@@ -72,17 +73,14 @@ export class SearchComponent implements OnInit,AfterViewInit {
 
   }
 
-  goTo(page: string)
-  {
-    if(page === 'movie')
-      {
+  goTo(page: string) {
+    if (page === 'movie') {
       this.type = 'movie';
-      }
-      else if (page=== 'tv')
-      {
-        this.type = 'tv';
-      }
-      this.navigateSearch();
+    }
+    else if (page === 'tv') {
+      this.type = 'tv';
+    }
+    this.navigateSearch();
   }
 
   navigateSearch() {
@@ -93,7 +91,7 @@ export class SearchComponent implements OnInit,AfterViewInit {
 
   // Fetch only Movies
   fetchMovies(): void {
-    this.http.get(`${config.apiBaseUrl}/search/movie?query=${this.query}&api_key=${config.key}&page=${this.currentPage}`)
+    this.http.get(`${environment.ThemovieDB.apiBaseUrl}/search/movie?query=${this.query}&api_key=${environment.ThemovieDB.apiKey}&page=${this.currentPage}`)
       .pipe(
         map((response: any) => ({
           data: response.results,
@@ -110,7 +108,7 @@ export class SearchComponent implements OnInit,AfterViewInit {
           }
 
           const movieDetailsRequests = movies.data.map((movie: any) =>
-            this.http.get(`${config.apiBaseUrl}/movie/${movie.id}?api_key=${config.key}`).pipe(
+            this.http.get(`${environment.ThemovieDB.apiBaseUrl}/movie/${movie.id}?api_key=${environment.ThemovieDB.apiKey}`).pipe(
               map((movieDetails: any) => ({
                 ...movie,
                 runtime: movieDetails.runtime
@@ -136,7 +134,7 @@ export class SearchComponent implements OnInit,AfterViewInit {
 
   // Fetch only TV Shows
   fetchTVShows(): void {
-    this.http.get(`${config.apiBaseUrl}/search/tv?query=${this.query}&api_key=${config.key}&page=${this.currentPage}`)
+    this.http.get(`${environment.ThemovieDB.apiBaseUrl}/search/tv?query=${this.query}&api_key=${environment.ThemovieDB.apiKey}&page=${this.currentPage}`)
       .pipe(
         map((response: any) => ({
           data: response.results,
@@ -153,7 +151,7 @@ export class SearchComponent implements OnInit,AfterViewInit {
           }
 
           const tvShowDetailsRequests = tvShows.data.map((tv: any) =>
-            this.http.get(`${config.apiBaseUrl}/tv/${tv.id}?api_key=${config.key}`).pipe(
+            this.http.get(`${environment.ThemovieDB.apiBaseUrl}/tv/${tv.id}?api_key=${environment.ThemovieDB.apiKey}`).pipe(
               map((tvShowDetails: any) => ({
                 ...tv,
                 seasons: tvShowDetails.seasons
@@ -178,48 +176,43 @@ export class SearchComponent implements OnInit,AfterViewInit {
   }
 
 
-
-
-
-
-
-
   private transformMovieData(movie: any) {
+    console.log(movie.poster_path);
     return {
       id: movie.id,
       title: movie.title || movie.name || "Unknown Title",
-        imageUrl: movie.poster_path ? this.getImageUrl(movie.poster_path, 'w342') : "https://viterbi-web.usc.edu/~zexunyao/itp301/Assignment_07/img.jpeg" ,
-        rating: movie.vote_average, // TMDb uses 10-point scale
-        ratingCount: movie.vote_count,
-        duration: movie.runtime, // Not available in basic movie results, would need additional API call
-        description: movie.overview || 'No description available', // Fallback if no overview is provided
-        hasSub: true, // Default values since TMDb doesn't provide this info
-        hasDub: true, // Placeholder for dubbing availability
-        type: 'movie' // Type of content (movie or TV show)
-      };
-    }
+      imageUrl: movie.poster_path ? this.getImageUrl(movie.poster_path, 'w342') : environment.ThemovieDB.nullImageUrl,
+      rating: movie.vote_average, // TMDb uses 10-point scale
+      ratingCount: movie.vote_count,
+      duration: movie.runtime, // Not available in basic movie results, would need additional API call
+      description: movie.overview || 'No description available', // Fallback if no overview is provided
+      hasSub: true, // Default values since TMDb doesn't provide this info
+      hasDub: true, // Placeholder for dubbing availability
+      type: 'movie' // Type of content (movie or TV show)
+    };
+  }
 
-    private getImageUrl(path: string | null, size: string): string {
-      if (!path) {
-        return 'assets/images/no-image.png'; // Fallback image
-      }
-      return `${this.imageBaseUrl}${size}${path}`;
+  private getImageUrl(path: string | null, size: string): string {
+    if (!path) {
+      return 'assets/images/no-image.png'; // Fallback image
     }
+    return `${this.imageBaseUrl}${size}${path}`;
+  }
 
-    transformTvShowData(tvShow: any) {
-      return {
-        id: tvShow.id, // TV Show ID
-        title: tvShow.name, // TV Show title
-        imageUrl: tvShow.poster_path ? this.getImageUrl(tvShow.poster_path, 'w342') : "https://viterbi-web.usc.edu/~zexunyao/itp301/Assignment_07/img.jpeg" ,
-        rating: tvShow.vote_average, // Rating (average score)
-        ratingCount: tvShow.vote_count, // Total number of votes
-        seasons: tvShow.seasons.length, // Number of seasons
-        episodes: tvShow.seasons.reduce((total: number, season: any) => total + (season.episode_count || 0), 0), // Total number of episodes
-        description: tvShow.overview || 'No description available', // Description of the TV Show
-        hasSub: true, // Placeholder for subtitles availability
-        hasDub: true, // Placeholder for dubbing availability
-        type: 'tv' // Type of content (movie or TV show)
-      };
-    }
+  transformTvShowData(tvShow: any) {
+    return {
+      id: tvShow.id, // TV Show ID
+      title: tvShow.name, // TV Show title
+      imageUrl: tvShow.poster_path != null ? this.getImageUrl(tvShow.poster_path, 'w342') : environment.ThemovieDB.nullImageUrl,
+      rating: tvShow.vote_average, // Rating (average score)
+      ratingCount: tvShow.vote_count, // Total number of votes
+      seasons: tvShow.seasons.length, // Number of seasons
+      episodes: tvShow.seasons.reduce((total: number, season: any) => total + (season.episode_count || 0), 0), // Total number of episodes
+      description: tvShow.overview || 'No description available', // Description of the TV Show
+      hasSub: true, // Placeholder for subtitles availability
+      hasDub: true, // Placeholder for dubbing availability
+      type: 'tv' // Type of content (movie or TV show)
+    };
+  }
 
 }

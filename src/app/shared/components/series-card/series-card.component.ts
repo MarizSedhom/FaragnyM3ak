@@ -1,7 +1,7 @@
-import { Component,Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Series } from '../../models/series.model';
 import { Router } from '@angular/router';
-import{UserListsService} from'../../../features/profile/services/user-lists.service';
+import { UserListsService } from '../../../features/profile/services/user-lists.service';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -13,15 +13,22 @@ import { CommonModule } from '@angular/common';
 export class SeriesCardComponent {
   @Input() series!: Series; // ! indicates that this property will be initialized later
 
-  constructor(private router: Router, private listServices:UserListsService) {}
+  constructor(private router: Router, private listServices: UserListsService) { }
 
-AddToWatchList(id:string):void{
-  this.listServices.addSeriesToWatchlist(id);
-}
-AddToFavourite(id:string):void{
-  this.listServices.addSeriesToFavorites(id);
-}
+  ToggleToWatchList(id: string): void {
+    //TODO: must check if the series is already in the watchlist
+    this.listServices.addSeriesToWatchlist(id);
+    //TODO: must remove the series from the watchlist if it is already in the watchlist
+    this.listServices.removeSeriesFromWatchlist(id);
+  }
 
+  ToggleToFavourite(id: string): void {
+    //TODO: must check if the series is already in the favorites list
+    this.listServices.addSeriesToFavorites(id);
+    //TODO: must remove the series from the favorites list if it is already in the favorites list
+    this.listServices.removeSeriesFromFavorites(id);
+  }
+  
   navigateToSeries(): void {
     this.router.navigate(['/series-preview', this.series.id]);
   }

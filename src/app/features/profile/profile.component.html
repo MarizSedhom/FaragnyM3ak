@@ -12,39 +12,20 @@
   </div>
 
   <!--Continue Watching Section-->
-  <section class="media-section">
+  <section class="section">
     <div class="section-header">
-      <h2 class="section-title">Continue Watching</h2>
-      <div>
-        <button class="btn btn-sm btn-outline-light me-2" 
-                (click)="prevContinue()" 
-                [disabled]="!canGoBack('continue')">‹</button>
-        <button class="btn btn-sm btn-outline-light" 
-                (click)="nextContinue()"
-                [disabled]="!canGoForward('continue')">›</button>
+      <h2>Continue Watching</h2>
+      <div class="section-controls">
+        <button (click)="prevContinue()" [disabled]="!canGoBack('continue')">❮</button>
+        <button (click)="nextContinue()" [disabled]="!canGoForward('continue')">❯</button>
       </div>
     </div>
-
-    <div class="scroll-container" #continueScroll id="continueSection">
-      <div *ngFor="let item of continueWatching" class="continue-card">
-        <div class="play-icon">
-          <svg width="40" height="40" viewBox="0 0 24 24">
-            <path fill="white" d="M8 5v14l11-7z"/>
-          </svg>
-        </div>
-          
-        <div class="card-image">
-          <img [src]="item.posterUrl" [alt]="item.title">
-
-          <!--The progress bar-->
-          <div class="progress-container">
-            <div class="progress-bar" [style.width.%]="getProgress(item)"></div>
-          </div>
-          <div class="time-left">{{ getTimeLeft(item) }}m left</div>
-          <h3 class="media-title">{{ item.title }}
-            <span *ngIf="item.type ==='series'" class="episode">S{{getCurrentSeason(item)}}E{{ getCurrentEpisode(item)}}</span>
-          </h3>
-        </div>
+    <div class="section-content" #continueScroll>
+      <div class="cards-container">
+        <ng-container *ngFor="let item of continueWatching">
+          <app-movie-card *ngIf="isMovie(item)" [movie]="item"></app-movie-card>
+          <app-series-card *ngIf="isSeries(item)" [series]="item"></app-series-card>
+        </ng-container>
       </div>
     </div>
   </section>
@@ -60,66 +41,39 @@
     <div class="collections-container card-body">
       <div class="lists-container" cdkDropListGroup>
         <!--Watchlist-->
-        <section class="media-section">
+        <section class="section">
           <div class="section-header">
-            <h3 class="section-heading">
-              <svg class="section-icon" viewBox="0 0 24 24">
-                <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/>
-              </svg>
-              Your Watchlist
-            </h3>
-            <div>
-              <button class="btn btn-sm btn-outline-light me-2" 
-                      (click)="prevWatchlist()" 
-                      [disabled]="!canGoBack('watchlist')">‹</button>
-              <button class="btn btn-sm btn-outline-light" 
-                      (click)="nextWatchlist()"
-                      [disabled]="!canGoForward('watchlist')">›</button>
+            <h2>Watchlist</h2>
+            <div class="section-controls">
+              <button (click)="prevWatchlist()" [disabled]="!canGoBack('watchlist')">❮</button>
+              <button (click)="nextWatchlist()" [disabled]="!canGoForward('watchlist')">❯</button>
             </div>
           </div>
-          <div class="scroll-container" #watchlistScroll id="watchlistSection">
-            <div class="media-items-container">
-              <app-media-panel 
-                  title="WatchList" 
-                  id="watchlist"
-                  [items]="watchList" 
-                  (favoriteToggled)="handleFavoriteToggle($event)"
-                  (episodeToggled)="handleEpisodeToggle($event)"
-                  (drop)="onDrop($event)">
-              </app-media-panel>
+          <div class="section-content" #watchlistScroll>
+            <div class="cards-container">
+              <ng-container *ngFor="let item of watchList">
+                <app-movie-card *ngIf="isMovie(item)" [movie]="item"></app-movie-card>
+                <app-series-card *ngIf="isSeries(item)" [series]="item"></app-series-card>
+              </ng-container>
             </div>
           </div>
         </section>
   
         <!--Favorites-->
-        <section class="media-section">
+        <section class="section">
           <div class="section-header">
-            <h3 class="section-heading">
-              <svg class="section-icon" viewBox="0 0 24 24">
-                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-              </svg>
-              Favorite Titles
-            </h3>
-            <div>
-              <button class="btn btn-sm btn-outline-light me-2" 
-                      (click)="prevFavorites()" 
-                      [disabled]="!canGoBack('favorites')">‹</button>
-              <button class="btn btn-sm btn-outline-light" 
-                      (click)="nextFavorites()"
-                      [disabled]="!canGoForward('favorites')">›</button>
+            <h2>Favorites</h2>
+            <div class="section-controls">
+              <button (click)="prevFavorites()" [disabled]="!canGoBack('favorites')">❮</button>
+              <button (click)="nextFavorites()" [disabled]="!canGoForward('favorites')">❯</button>
             </div>
           </div>
-          <div class="scroll-container" #favoritesScroll id="favoritesSection">
-            <div class="media-items-container">
-              <app-media-panel
-                  title="Favorites" 
-                  [items]="favorites"
-                  id="favorites"
-                  (favoriteToggled)="handleFavoriteToggle($event)"
-                  (watchedToggled)="handleWatchedToggle($event)"
-                  (episodeToggled)="handleEpisodeToggle($event)"
-                  (drop)="onDrop($event)">
-              </app-media-panel>
+          <div class="section-content" #favoritesScroll>
+            <div class="cards-container">
+              <ng-container *ngFor="let item of favorites">
+                <app-movie-card *ngIf="isMovie(item)" [movie]="item"></app-movie-card>
+                <app-series-card *ngIf="isSeries(item)" [series]="item"></app-series-card>
+              </ng-container>
             </div>
           </div>
         </section>

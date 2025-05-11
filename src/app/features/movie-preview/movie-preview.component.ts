@@ -7,6 +7,7 @@ import { switchMap, of, catchError } from 'rxjs';
 import { MovieCardComponent } from '../../shared/components/movie-card/movie-card.component';
 import { Movie } from '../../shared/models/movie.model';
 import { UserListsService } from '../profile/services/user-lists.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-movie-preview',
@@ -88,7 +89,7 @@ export class MoviePreviewComponent implements OnInit {
     return {
       id: relatedMovie.id,
       title: relatedMovie.title,
-      imageUrl: relatedMovie.imageUrl || 'https://via.placeholder.com/150',
+      imageUrl: relatedMovie.imageUrl || environment.ThemovieDB.nullImageUrl,
       rating: 0, // Default values since RelatedMovie doesn't have these properties
       ratingCount: 0,
       duration: 0,

@@ -67,6 +67,7 @@ export class MediaCardComponent {
       episodeId: episode.id
     });
   }
+  
   markMovieWatched(){
    if(this.media.type === 'movie'){
     this.media.watched = !this.media.watched;

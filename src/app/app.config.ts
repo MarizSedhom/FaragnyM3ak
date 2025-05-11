@@ -1,6 +1,6 @@
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http'; // ✅ Import this
+import { provideHttpClient } from '@angular/common/http';
 
 import { routes } from './app.routes';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
@@ -14,7 +14,7 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
  
     provideRouter(routes),
-    provideHttpClient() // ✅ Add this to enable HttpClient injection
+    provideHttpClient() 
   ,
   provideFirebaseApp(() => initializeApp({
     projectId: environment.FireBase.projectId,
