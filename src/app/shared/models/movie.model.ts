@@ -1,16 +1,26 @@
 export interface Movie {
-    id: number;
-    title: string;
-    imageUrl: string;
-    rating: number;
-    ratingCount: number;
-    duration: number; // Duration in minutes
-    description: string;
-    hasSub: boolean;
-    hasDub: boolean;
+  id: number;
+  title: string;
+  imageUrl: string;
+  description: string;
+  rating: number;
+  ratingCount: number;
+  duration: number;
+  hasSub: boolean;
+  hasDub: boolean;
     genre_ids?: number[];
     trailerKey?: string; // YouTube video key for the trailer
-  }
+
+}
+
+export interface MovieResponse {
+  page : number
+  results : Movie[];
+  total_pages : number;
+  total_results : number;
+}
+
+
 
 // Additional interfaces for the preview component
 export interface MovieDetail extends Movie {

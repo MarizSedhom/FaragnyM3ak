@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map, of, catchError, forkJoin, switchMap } from 'rxjs';
-import { Movie, MovieDetail, RelatedMovie, MovieCast } from '../shared/models/movie.model';
+import { Observable, map, of, catchError, forkJoin, switchMap  } from 'rxjs';
+import { Movie, MovieDetail, MovieResponse, RelatedMovie, MovieCast } from '../shared/models/movie.model';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -45,6 +45,40 @@ export class MovieService {
       );
   }
 
+
+  getPopularMoviesWithPagination(page: number = 1): Observable<MovieResponse> {
+    return this.http.get(`${this.apiBaseUrl}/movie/popular?api_key=${this.apiKey}&page=${page}`)
+      .pipe(
+        map((response: any) => ({
+          results: response.results.map((movie: any) => this.transformMovieData(movie)),
+          total_pages: response.total_pages,
+          total_results: response.total_results,
+          page: response.page
+        })),
+        catchError(error => {
+          console.error('Error fetching popular movies:', error);
+          throw error;
+        })
+      );
+  }
+
+
+  // getPopularMoviesWithPagination(page: number = 1): Observable<MovieResponse> {
+  //   return this.http.get(`${this.apiBaseUrl}/movie/popular?api_key=${this.apiKey}&page=${page}`)
+  //     .pipe(
+  //       map((response: any) => ({
+  //         results: response.results.map((movie: any) => this.transformMovieData(movie)),
+  //         total_pages: response.total_pages,
+  //         total_results: response.total_results,
+  //         page: response.page
+  //       })),
+  //       catchError(error => {
+  //         console.error('Error fetching popular movies:', error);
+  //         throw error;
+  //       })
+  //     );
+  // }
+
   // Get popular movies
   getPopularMovies(): Observable<Movie[]> {
     return this.http.get(`${this.apiBaseUrl}/movie/popular?api_key=${this.apiKey}`)
@@ -79,6 +113,37 @@ export class MovieService {
           throw error;
         })
       );
+  }
+  getCertainMoviesWithPagination(page: number = 1, selectedGenresString: string,category: string): Observable<MovieResponse> {
+    if (selectedGenresString != "") {
+      return this.http.get(`${this.apiBaseUrl}/discover/movie?api_key=${this.apiKey}&with_genres=${selectedGenresString}&page=${page}`)
+      .pipe(
+          map((response: any) => ({
+            results: response.results.map((movie: any) => this.transformMovieData(movie)),
+            total_pages: response.total_pages,
+            total_results: response.total_results,
+            page: response.page
+          })),
+          catchError(error => {
+            console.error('Error fetching now playing movies:', error);
+            throw error;
+          })
+        );
+    }
+    else
+      return this.http.get(`${this.apiBaseUrl}/movie/${category}?api_key=${this.apiKey}&page=${page}}`)
+        .pipe(
+          map((response: any) => ({
+            results: response.results.map((movie: any) => this.transformMovieData(movie)),
+            total_pages: response.total_pages,
+            total_results: response.total_results,
+            page: response.page
+          })),
+          catchError(error => {
+            console.error('Error fetching now playing movies:', error);
+            throw error;
+          })
+        );
   }
 
   // Search movies by query
@@ -213,6 +278,28 @@ export class MovieService {
       })
     );
   }
+
+ getMoviesByDateRange(startDate: string, endDate: string): Observable<any[]> {
+    const baseUrl = `${this.apiBaseUrl}/discover/movie?primary_release_date.gte=${startDate}&primary_release_date.lte=${endDate}&api_key=${this.apiKey}&page=1`;
+
+    return this.http.get<any>(baseUrl).pipe(
+      switchMap(response => {
+        const totalPages = response.total_pages;
+        const requests = [];
+
+        for (let page = 1; page <= totalPages; page++) {
+          const pageUrl = `${this.apiBaseUrl}/discover/movie?primary_release_date.gte=${startDate}&primary_release_date.lte=${endDate}&api_key=${this.apiKey}&page=${page}`;
+          requests.push(this.http.get<any>(pageUrl));
+        }
+
+        return forkJoin(requests).pipe(
+          map(responses => responses.flatMap(res => res.results))
+        );
+      })
+    );
+  }
+
+
 
   //------------------------------------------------------------
 

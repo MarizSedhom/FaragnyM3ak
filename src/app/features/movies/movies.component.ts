@@ -1,150 +1,193 @@
 // movies.component.ts
-import { Component, NgModule } from '@angular/core';
+import { Component, NgModule,Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Movie } from '../../shared/models/movie.model';
 import { MovieCardComponent } from '../../shared/components/movie-card/movie-card.component';
+
+
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatListModule } from '@angular/material/list';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MovieService } from '../../services/movie.service';
+import { ActivatedRoute } from '@angular/router';
+import { PageEvent } from '@angular/material/paginator';
+import { RouterModule } from '@angular/router';
+
 @Component({
   standalone: true,
   selector: 'app-movies',
-  imports: [CommonModule, MovieCardComponent, FormsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    MatCardModule,
+    MatButtonModule,
+    MatListModule,
+    MatProgressSpinnerModule,
+    MatChipsModule,
+    MatPaginatorModule,
+    MovieCardComponent
+],
   templateUrl: './movies.component.html',
   styleUrls: ['./movies.component.scss']
 })
 
-export class MoviesComponent {
 
-  movies: Movie[] = [
-    {
-      id: 1,
-      title: 'The Shawshank Redemption',
-      imageUrl: 'https://cdn.bizzmedia.ca/media/5c232e34f86e85de5f613f9e816e0270.jpg/400/584',
-      rating: 4.9,
-      ratingCount: 250.7,
-      duration: 142, // 142 minutes
-      description: 'Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.',
-      hasSub: true,
-      hasDub: true
-    },
-    {
-      id: 2,
-      title: 'The Godfather',
-      imageUrl: 'https://m.media-amazon.com/images/I/61k7Mx2IjzL._AC_UF894,1000_QL80_.jpg',
-      rating: 4.8,
-      ratingCount: 189.2,
-      duration: 175, // 175 minutes
-      description: 'The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant son.',
-      hasSub: true,
-      hasDub: true
-    },
-    {
-      id: 3,
-      title: 'The Dark Knight',
-      imageUrl: 'https://m.media-amazon.com/images/I/51rf820GM-L._AC_SL1050_.jpg',
-      rating: 4.7,
-      ratingCount: 234.5,
-      duration: 152, // 152 minutes
-      description: 'When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice.',
-      hasSub: true,
-      hasDub: false
-    },
-    {
-      id: 4,
-      title: 'Pulp Fiction',
-      imageUrl: 'https://i.ebayimg.com/00/s/MTYwMFgxMDcx/z/bLYAAOSwffNjoG1q/$_57.JPG?set_id=8800005007',
-      rating: 4.6,
-      ratingCount: 167.8,
-      duration: 154, // 154 minutes
-      description: 'The lives of two mob hitmen, a boxer, a gangster\'s wife, and a pair of diner bandits intertwine in four tales of violence and redemption.',
-      hasSub: true,
-      hasDub: true
-    },
-    {
-      id: 5,
-      title: 'Forrest Gump',
-      imageUrl: 'https://m.media-amazon.com/images/I/61gJ0U3mAiL._AC_UF894,1000_QL80_.jpg',
-      rating: 4.5,
-      ratingCount: 212.1,
-      duration: 142, // 142 minutes
-      description: 'The presidencies of Kennedy and Johnson, the Vietnam War, the Watergate scandal and other historical events unfold through the perspective of an Alabama man named Forrest Gump.',
-      hasSub: true,
-      hasDub: false
-    },
-    {
-      id: 6,
-      title: 'Inception',
-      imageUrl: 'https://m.media-amazon.com/images/M/MV5BMTM0MjUzNjkwMl5BMl5BanBnXkFtZTcwNjY0OTk1Mw@@._V1_.jpg',
-      rating: 4.6,
-      ratingCount: 198.3,
-      duration: 148, // 148 minutes
-      description: 'A thief who steals corporate secrets through the use of dream-sharing technology is given his inverse task of planting an idea into the mind of a C.E.O.',
-      hasSub: true,
-      hasDub: true
-    },
-    {
-      id: 7,
-      title: 'The Lord of the Rings: The Fellowship of the Ring',
-      imageUrl: 'https://m.media-amazon.com/images/I/71TZ8BmoZqL._AC_SL1000_.jpg',
-      rating: 4.7,
-      ratingCount: 221.9,
-      duration: 178, // 178 minutes
-      description: 'A meek Hobbit from the Shire and eight companions set out on a journey to destroy the powerful One Ring and save Middle-earth from the Dark Lord Sauron.',
-      hasSub: true,
-      hasDub: true
-    },
-    {
-      id: 8,
-      title: 'Fight Club',
-      imageUrl: 'https://www.tallengestore.com/cdn/shop/products/Fight_Club_-_Brad_Pitt_-_Soap_-_Hollywood_Cult_Classic_English_Movie_Poster_c927cfc8-3f3a-499e-80b3-6890e2b44e43.jpg?v=1579090339',
-      rating: 4.5,
-      ratingCount: 175.6,
-      duration: 139, // 139 minutes
-      description: 'An insomniac office worker and a devil-may-care soap maker form an underground fight club that evolves into something much, much more.',
-      hasSub: true,
-      hasDub: false
-    },
-    {
-      id: 9,
-      title: 'Spirited Away',
-      imageUrl: 'https://m.media-amazon.com/images/I/61ON14PVzoL.jpg',
-      rating: 4.8,
-      ratingCount: 155.2,
-      duration: 125, // 125 minutes
-      description: 'During her family\'s move to the suburbs, a sullen 10-year-old girl wanders into a world ruled by gods, witches, and spirits, and where humans are changed into beasts.',
-      hasSub: true,
-      hasDub: true
-    },
-    {
-      id: 10,
-      title: 'The Matrix',
-      imageUrl: 'https://m.media-amazon.com/images/M/MV5BN2NmN2VhMTQtMDNiOS00NDlhLTliMjgtODE2ZTY0ODQyNDRhXkEyXkFqcGc@._V1_.jpg',
-      rating: 4.6,
-      ratingCount: 188.9,
-      duration: 136, // 136 minutes
-      description: 'A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.',
-      hasSub: true,
-      hasDub: true
-    }
+export class MoviesComponent implements OnInit {
+    genres = [
+    { id: 28, name: 'Action' },
+    { id: 12, name: 'Adventure' },
+    { id: 16, name: 'Animation' },
+    { id: 35, name: 'Comedy' },
+    { id: 80, name: 'Crime' },
+    { id: 99, name: 'Documentary' },
+    { id: 18, name: 'Drama' },
+    { id: 10751, name: 'Family' },
+    { id: 14, name: 'Fantasy' },
+    { id: 36, name: 'History' },
+    { id: 27, name: 'Horror' },
+    { id: 10402, name: 'Music' },
+    { id: 9648, name: 'Mystery' },
+    { id: 10749, name: 'Romance' },
+    { id: 878, name: 'Science Fiction' },
+    { id: 10770, name: 'TV Movie' },
+    { id: 53, name: 'Thriller' },
+    { id: 10752, name: 'War' },
+    { id: 37, name: 'Western' }
   ];
-  searchQuery: string = '';
-  filteredMovies: Movie[] = [];
+  movies: Movie[] = [];
+  currentPage = 1;
+  maxPages = 1;
+  totalMovies = 0;
+  isInViewport = false;
+  pageSize = 20;
+  selectedGenres: number[] = [];
+  selectedGenresString = "";
+  loading = false;
+  category = "now_playing";
 
-  constructor(private route: Router) {
-    this.filteredMovies = [...this.movies]; // Initializing with all movies
+
+  constructor(private movieService: MovieService, private route: ActivatedRoute)  {}
+
+  ngOnInit(): void {
+      this.loadMovie();
+      // Add event listeners to filter-category buttons
+      document.querySelectorAll('.filter-category-button').forEach(button => {
+        button.addEventListener('click', () => {
+          // Remove "active" class from all buttons
+          document.querySelectorAll('.filter-category-button').forEach(btn => 
+            btn.classList.remove('active')
+          );
+
+          // Add "active" class to the clicked button
+          button.classList.add('active');
+        });
+      });
   }
 
-  filterMovies() {
-    if (!this.searchQuery) {
-      this.filteredMovies = [...this.movies];
-      return;
+clearGenres(): void
+{
+  this.selectedGenres = [];
+  this.selectedGenresString = "";
+  // Clear all checkboxes
+  const checkboxes = document.querySelectorAll('.genre-checkbox input') as NodeListOf<HTMLInputElement>;
+  checkboxes.forEach(checkbox => checkbox.checked = false);
+  this.filterMovies(this.category);
+}
+
+// Toggle genre selection
+toggleGenre(genreId: number, event: Event) {
+  const isChecked = (event.target as HTMLInputElement).checked; 
+  if (isChecked) {
+    this.selectedGenres.push(genreId);
+  } else {
+    this.selectedGenres = this.selectedGenres.filter(id => id !== genreId);
+  }
+  this.filterMovies(this.category);
+}
+
+// Get comma-separated string of selected genres
+getSelectedGenresString(): string {
+  return this.selectedGenres.join('%2C');
+}
+
+// // Example: Log selected genres when a button is clicked
+// logSelectedGenres() {
+//   console.log('Selected Genre IDs:', this.getSelectedGenresString());
+// }
+
+loadMovie(): void {
+  this.loading = true;
+  this.movieService.getCertainMoviesWithPagination(this.currentPage,this.selectedGenresString, "now_playing").subscribe({
+    next: (response) => {
+      this.movies = response.results;
+      this.totalMovies = response.total_results;
+      this.pageSize = 20;
+      this.maxPages = Math.ceil(this.totalMovies / this.pageSize);
+      this.loading = false;
+    },
+    error: (error) => {
+      console.error('Error fetching movies:', error);
+      this.loading = false;
     }
-
-    this.filteredMovies = this.movies.filter(movie => 
-      movie.title.toLowerCase().includes(this.searchQuery.toLowerCase())
-    );
-  }
-
+  });
+}
+filterMovies(category: string): void {
+    this.category = category;
+    this.loading = true;
+    this.currentPage = 1; // Reset to the first page when changing category
+    this.maxPages = 1; // Reset max pages
+    this.totalMovies = 0; // Reset total movies count
+    this.movies = []; // Clear the current movies list
+    this.pageSize = 20; // Reset page size
+    this.isInViewport = false; // Reset viewport status
+    this.selectedGenresString = this.getSelectedGenresString();
+    this.movieService.getCertainMoviesWithPagination(this.currentPage,this.selectedGenresString,category).subscribe({
+      next: (response) => {
+        this.movies = response.results;
+        this.totalMovies = response.total_results;
+        this.pageSize = 20;
+        this.maxPages = Math.ceil(this.totalMovies / this.pageSize);
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error fetching series:', error);
+        this.loading = false;
+      }
+    });
 }
 
 
+
+goToPreviousPage(): void {
+  if (this.currentPage > 1) {
+    this.currentPage--;
+    this.loadMovie();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+goToNextPage(): void {
+  if (this.currentPage < this.maxPages) {
+    this.currentPage++;
+    this.loadMovie();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+  onPageChange(event : PageEvent) : void {
+    this.pageSize = event.pageSize;
+    this.currentPage = event.pageIndex;
+    this.loadMovie();
+    window.scrollTo({top:0, behavior: 'smooth'}); 
+  }
+
+  onScroll(): void {
+      this.loadMovie();
+  }
+}
