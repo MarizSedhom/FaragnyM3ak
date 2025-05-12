@@ -1,167 +1,107 @@
-// .navbar {
-//   background: linear-gradient(to right, #1a2b3c, #2d4b66);
-//   backdrop-filter: blur(5px);
-//   padding: 0 1rem;
-//   height: 30px;
-//   transition: all 0.3s ease;
-// }
-
-// .navbar-brand {
-//   text-decoration: none;
-//   display: flex;
-//   align-items: center;
-// }
-
-// .logo {
-//   width: 20px;
-//   height: 20px;
-//   object-fit: cover;
-//   border-radius: 10px; 
-// }
-
-// .brand-text {
-//   color: #cccccc;
-//   font-family: 'Netflix Sans', sans-serif;
-//   font-weight: 300;
-//   letter-spacing: 0.5px;
-//   font-size: 0.9rem;
-//   border-radius: 3px;
-//   height: 22px;
-//   min-width: 100px;
-// }
-
-//   .vertical-nav {
-//     position: fixed;
-//     left: 0;
-//     top: 50%;
-//     transform: translateY(-50%);
-//     display: flex;
-//     flex-direction: column;
-//     gap: 1.5rem;
-//     padding-left: 2rem;
-//     z-index: 100; 
-//   }
-  
-//   .circle-icon {
-//     width: 60px;
-//     height: 60px;
-//     border-radius: 50%;
-//     background-color: transparent;
-//     color: white;
-//     font-size: 1.5rem;
-//     display: flex;
-//     align-items: center;
-//     justify-content: center;
-//     text-decoration: none;
-//     transition: all 0.3s ease;
-//     position: relative;
-//     z-index: 2; 
-//   }
-  
-//   .icon-label {
-//     position: absolute;
-//     left: 80px; 
-//     top: 50%;
-//     transform: translateY(-50%);
-//     font-size: 1rem;
-//     color: white; 
-//     opacity: 0;
-//     transform: translateX(-10px) translateY(-50%);
-//     transition: all 0.3s ease;
-//     white-space: nowrap;
-//     z-index: 3;
-//     pointer-events: none;
-//   }
-  
-//   .icon-container {
-//     position: relative;
-//   }
-
-//   .icon-container::after {
-//     content: '';
-//     position: absolute;
-//     left: 0;
-//     top: 50%;
-//     transform: translateY(-50%);
-//     width: 0;
-//     height: 60px;
-//     border-radius: 999px;
-//     z-index: 1; 
-//     transition: all 0.3s ease;
-//   }
-  
-//   .icon-container:hover::after {
-//     width: 200px;
-//     opacity: 0.7;
-//   }
-  
-//   .icon-container:hover .icon-label {
-//     opacity: 1;
-//     transform: translateX(10px) translateY(-50%);
-//   }
-
-//   .vertical-nav .icon-container.active::after {
-//     width: 0;
-//     opacity: 0;
-//   }
-  
-//   .vertical-nav .icon-container.active .circle-icon {
-//     background-color: #007bff;
-//     box-shadow: 
-//       0 0 20px rgba(0, 123, 255, 0.4),
-//       0 0 40px rgba(0, 123, 255, 0.2);
-//   }
-
-//   .vertical-nav .icon-container:not(.active) {
-//     .circle-icon {
-//       background-color: transparent;
-//       box-shadow: 0 0 1px rgba(255, 255, 255, 0.5),
-//                   0 0 2px rgba(255, 255, 255, 0.3);
-//     }
-
-//     &::after {
-//       background-color: #1a2b3c;
-//     }
-
-//     &:hover .circle-icon {
-//       background-color: rgba(26, 43, 60, 0.5);
-//     }
-
-//     &:hover::after {
-//       background-color: #1a2b3c;
-//     }
-//   }
-
 .navbar {
-  background: linear-gradient(to right, #1a2b3c, #2d4b66);
-  backdrop-filter: blur(5px);
-  padding: 0 1rem;
-  height: 30px;
-  transition: all 0.3s ease;
+  background: rgba(26, 43, 60, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 0.8rem 0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .navbar-brand {
   text-decoration: none;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: scale(1.02);
+  }
+
+  .logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    object-fit: cover;
+  }
+
+  .brand-text {
+    color: #fff;
+    font-size: 1.4rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    margin-left: 0.5rem;
+    background: linear-gradient(45deg, #fff, #a8c7fa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+.auth-buttons {
   display: flex;
+  gap: 1rem;
   align-items: center;
 }
 
-.logo {
-  width: 20px;
-  height: 20px;
-  object-fit: cover;
-  border-radius: 10px; 
+.auth-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+
+  i {
+    font-size: 1.1rem;
+  }
+
+  &.login-btn {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-1px);
+    }
+  }
+
+  &.register-btn {
+    background: linear-gradient(45deg, #4a90e2, #5c6bc0);
+    color: #fff;
+    border: none;
+
+    &:hover {
+      background: linear-gradient(45deg, #5c6bc0, #4a90e2);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+    }
+  }
+
+  &.logout-btn {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-1px);
+    }
+  }
 }
 
-.brand-text {
-  color: #cccccc;
-  font-family: 'Netflix Sans', sans-serif;
-  font-weight: 300;
-  letter-spacing: 0.5px;
-  font-size: 0.9rem;
-  border-radius: 3px;
-  height: 22px;
-  min-width: 100px;
+// Responsive adjustments
+@media (max-width: 576px) {
+  .navbar-brand {
+    .brand-text {
+      font-size: 1.2rem;
+    }
+  }
+
+  .auth-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
 }
 
 .vertical-nav {

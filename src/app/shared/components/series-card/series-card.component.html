@@ -1,5 +1,5 @@
 <div class="card">
-  <img [src]="series.imageUrl" [alt]="series.title" class="card-image" />
+  <img [src]="series.imageUrl" [alt]="series.title" class="card-image" (click)="navigateToSeries()" />
 
   <div class="card-overlay">
     <div class="card-content" (click)="navigateToSeries()">
