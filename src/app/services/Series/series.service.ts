@@ -50,64 +50,95 @@ export class SeriesService {
       return `${this.imageBaseUrl}${size}${path}`;
     }
     
-      getPopularSeriesWithPagination(page: number = 1): Observable<SeriesResponse> {
-        return this.http.get(`${this.apiBaseUrl}/tv/popular?api_key=${this.apiKey}&page=${page}`)
+      getCertainSeriesWithPagination(page: number = 1, selectedGenresString: string,category: string): Observable<SeriesResponse> {
+        if (selectedGenresString != "") {
+          return this.http.get(`${this.apiBaseUrl}/discover/tv?api_key=${this.apiKey}&with_genres=${selectedGenresString}&page=${page}`)
           .pipe(
-            map((response: any) => ({
-              results: response.results.map((series: any) => this.transformSeriesData(series)),
-              total_pages: response.total_pages,
-              total_results: response.total_results,
-              page: response.page
-            })),
-            catchError(error => {
-              console.error('Error fetching popular series:', error);
-              throw error;
-            })
-          );
+              map((response: any) => ({
+                results: response.results.map((movie: any) => this.transformSeriesData(movie)),
+                total_pages: response.total_pages,
+                total_results: response.total_results,
+                page: response.page
+              })),
+              catchError(error => {
+                console.error('Error fetching now playing movies:', error);
+                throw error;
+              })
+            );
+        }
+        else
+          return this.http.get(`${this.apiBaseUrl}/tv/${category}?api_key=${this.apiKey}&page=${page}}`)
+            .pipe(
+              map((response: any) => ({
+                results: response.results.map((movie: any) => this.transformSeriesData(movie)),
+                total_pages: response.total_pages,
+                total_results: response.total_results,
+                page: response.page
+              })),
+              catchError(error => {
+                console.error('Error fetching now playing movies:', error);
+                throw error;
+              })
+            );
       }
-      getAiringTodaySeriesWithPagination(page: number = 1): Observable<SeriesResponse> {
-        return this.http.get(`${this.apiBaseUrl}/tv/airing_today?api_key=${this.apiKey}&page=${page}`)
-          .pipe(
-            map((response: any) => ({
-              results: response.results.map((series: any) => this.transformSeriesData(series)),
-              total_pages: response.total_pages,
-              total_results: response.total_results,
-              page: response.page
-            })),
-            catchError(error => {
-              console.error('Error fetching airing today series:', error);
-              throw error;
-            })
-          );
-      }
-      getOnTheAirSeriesWithPagination(page: number = 1): Observable<SeriesResponse> {
-        return this.http.get(`${this.apiBaseUrl}/tv/on_the_air?api_key=${this.apiKey}&page=${page}`)
-          .pipe(
-            map((response: any) => ({
-              results: response.results.map((series: any) => this.transformSeriesData(series)),
-              total_pages: response.total_pages,
-              total_results: response.total_results,
-              page: response.page
-            })),
-            catchError(error => {
-              console.error('Error fetching on-the-air series:', error);
-              throw error;
-            })
-          );
-      }
-      getTopRatedSeriesWithPagination(page: number = 1): Observable<SeriesResponse> {
-        return this.http.get(`${this.apiBaseUrl}/tv/top_rated?api_key=${this.apiKey}&page=${page}`)
-          .pipe(
-            map((response: any) => ({
-              results: response.results.map((series: any) => this.transformSeriesData(series)),
-              total_pages: response.total_pages,
-              total_results: response.total_results,
-              page: response.page
-            })),
-            catchError(error => {
-              console.error('Error fetching top-rated series:', error);
-              throw error;
-            })
-          );
-      }
+      // getPopularSeriesWithPagination(page: number = 1): Observable<SeriesResponse> {
+      //   return this.http.get(`${this.apiBaseUrl}/tv/popular?api_key=${this.apiKey}&page=${page}`)
+      //     .pipe(
+      //       map((response: any) => ({
+      //         results: response.results.map((series: any) => this.transformSeriesData(series)),
+      //         total_pages: response.total_pages,
+      //         total_results: response.total_results,
+      //         page: response.page
+      //       })),
+      //       catchError(error => {
+      //         console.error('Error fetching popular series:', error);
+      //         throw error;
+      //       })
+      //     );
+      // }
+      // getAiringTodaySeriesWithPagination(page: number = 1): Observable<SeriesResponse> {
+      //   return this.http.get(`${this.apiBaseUrl}/tv/airing_today?api_key=${this.apiKey}&page=${page}`)
+      //     .pipe(
+      //       map((response: any) => ({
+      //         results: response.results.map((series: any) => this.transformSeriesData(series)),
+      //         total_pages: response.total_pages,
+      //         total_results: response.total_results,
+      //         page: response.page
+      //       })),
+      //       catchError(error => {
+      //         console.error('Error fetching airing today series:', error);
+      //         throw error;
+      //       })
+      //     );
+      // }
+      // getOnTheAirSeriesWithPagination(page: number = 1): Observable<SeriesResponse> {
+      //   return this.http.get(`${this.apiBaseUrl}/tv/on_the_air?api_key=${this.apiKey}&page=${page}`)
+      //     .pipe(
+      //       map((response: any) => ({
+      //         results: response.results.map((series: any) => this.transformSeriesData(series)),
+      //         total_pages: response.total_pages,
+      //         total_results: response.total_results,
+      //         page: response.page
+      //       })),
+      //       catchError(error => {
+      //         console.error('Error fetching on-the-air series:', error);
+      //         throw error;
+      //       })
+      //     );
+      // }
+      // getTopRatedSeriesWithPagination(page: number = 1): Observable<SeriesResponse> {
+      //   return this.http.get(`${this.apiBaseUrl}/tv/top_rated?api_key=${this.apiKey}&page=${page}`)
+      //     .pipe(
+      //       map((response: any) => ({
+      //         results: response.results.map((series: any) => this.transformSeriesData(series)),
+      //         total_pages: response.total_pages,
+      //         total_results: response.total_results,
+      //         page: response.page
+      //       })),
+      //       catchError(error => {
+      //         console.error('Error fetching top-rated series:', error);
+      //         throw error;
+      //       })
+      //     );
+      // }
 }
