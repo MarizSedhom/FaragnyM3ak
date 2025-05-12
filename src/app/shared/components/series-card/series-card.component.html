@@ -1,27 +1,32 @@
-<div class="card" (click)="navigateToSeries()">
+<div class="card">
   <img [src]="series.imageUrl" [alt]="series.title" class="card-image" />
 
   <div class="card-overlay">
-    <div class="card-title">{{ series.title }}</div>
+    <div class="card-content" (click)="navigateToSeries()">
 
-    <div class="card-rating">
-      <span class="star">★</span> {{ formatRating(series.rating) }} ({{ formatCount(series.ratingCount) }})
+      <div class="card-title">{{ series.title }}</div>
+
+      <div class="card-rating">
+        <span class="star">★</span> {{ formatRating(series.rating) }} ({{ formatCount(series.ratingCount) }})
+      </div>
+
+      <div class="card-info">
+        {{ series.seasons }} Seasons | {{ series.episodes }} Episodes
+      </div>
+
+      <div class="card-subtitle">
+        {{ series.hasSub ? 'Sub' : '' }}{{ series.hasSub && series.hasDub ? ' | ' : '' }}{{ series.hasDub ? 'Dub' : ''}}
+      </div>
+
+      <div class="card-description">{{ series.description }}</div>
     </div>
-
-    <div class="card-info">
-      {{ series.seasons }} Seasons | {{ series.episodes }} Episodes
-    </div>
-
-    <div class="card-subtitle">
-      {{ series.hasSub ? 'Sub' : '' }}{{ series.hasSub && series.hasDub ? ' | ' : '' }}{{ series.hasDub ? 'Dub' : '' }}
-    </div>
-
-    <div class="card-description">{{ series.description }}</div>
-
-    <div class="action-buttons">
-      <div class="action-button" >▶</div>
-      <div class="action-button" (click)="toggleFavorite(series.id.toString())">♥</div>
-      <div class="action-button" (click)="ToggleSeriesToWatchlist()">+</div>
+    <div class="action-buttons d-flex justify-content-center gap-2">
+      <div class="action-button" (click)="toggleFavorite(series.id.toString())">
+        {{ isFavorite ? '❤️' : '♥' }}
+      </div>
+      <div class="action-button" (click)="ToggleSeriesToWatchlist()">
+        {{ isWatchlist ? '✔️' : '+' }}
+      </div>
     </div>
   </div>
 </div>

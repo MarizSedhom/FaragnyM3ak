@@ -97,6 +97,13 @@
 }
 
 .action-button {
+  padding: 5px 10px;
+  border-radius: 1px;
   color: #ff6b00;
   cursor: pointer;
+  &:hover {
+    background-color: #ff6b00;
+    color: white;
+    border-radius: 5px;
+  }
 }

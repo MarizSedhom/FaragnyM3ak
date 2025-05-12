@@ -69,9 +69,6 @@ export class MovieCardComponent {
     });
   }
 
-  /////////////////////////////////////////////////////////////////////////
-
-
   navigateToMovie(): void {
     this.router.navigate(['/movie-preview', this.movie.id]);
   }

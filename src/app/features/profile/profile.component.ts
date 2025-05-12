@@ -14,7 +14,7 @@ import { Movie } from '../../shared/models/movie.model';
 import { Series } from '../../shared/models/series.model';
 
 export type MediaItem = (Movie & { type: 'movie', isFavorite: boolean, watched: boolean, progress: number, timeLeft: number })
-                      | (Series & { type: 'series', isFavorite: boolean, watched: boolean, progress: number, timeLeft: number });
+  | (Series & { type: 'series', isFavorite: boolean, watched: boolean, progress: number, timeLeft: number });
 
 @Component({
   selector: 'app-profile',
@@ -86,7 +86,7 @@ export class ProfileComponent implements OnInit {
 
   private loadUserData() {
     this.isLoading = true;
-    
+
     // Get user lists from Firestore
     this.userListsService.getUserLists().pipe(
       switchMap(lists => {
@@ -95,7 +95,7 @@ export class ProfileComponent implements OnInit {
         this.moviesWatchlist = lists.movies?.watchlist || [];
         this.moviesTracking = lists.movies?.tracking || [];
         this.moviesReviews = lists.movies?.reviews || [];
-        
+
         this.seriesFavorites = lists.series?.favorites || [];
         this.seriesWatchlist = lists.series?.watchlist || [];
         this.seriesTracking = lists.series?.tracking || [];
@@ -151,8 +151,8 @@ export class ProfileComponent implements OnInit {
           )
         );
 
-        console.log("movieRequests",movieRequests);
-        console.log("seriesRequests",seriesRequests);
+        console.log("movieRequests", movieRequests);
+        console.log("seriesRequests", seriesRequests);
         // Combine all requests
         return forkJoin([...movieRequests, ...seriesRequests]);
       })
@@ -248,21 +248,21 @@ export class ProfileComponent implements OnInit {
   }
 
   get continueWatching(): MediaItem[] {
-    return this.mediaItems.filter(item => {
-      if (item.type === 'movie') {
-        return (item.progress || 0) > 1 && (item.progress || 0) < 100;
-      }
-
-      // For series, this would need to be expanded with series-specific logic
-      return false;
-    });
+    const seen = new Set();
+    return this.mediaItems.filter(item => (
+      (item.type === 'movie' && this.moviesTracking.includes(item.id.toString())) ||
+      (item.type === 'series' && this.seriesTracking.includes(item.id.toString()))
+    )
+      &&
+      !seen.has(item.id) && seen.add(item.id)
+    );
   }
 
   // Type guard functions to use in template
   isMovie(item: MediaItem): item is (Movie & { type: 'movie', isFavorite: boolean, watched: boolean, progress: number, timeLeft: number }) {
     return item.type === 'movie';
   }
-  
+
   isSeries(item: MediaItem): item is (Series & { type: 'series', isFavorite: boolean, watched: boolean, progress: number, timeLeft: number }) {
     return item.type === 'series';
   }
@@ -276,7 +276,7 @@ export class ProfileComponent implements OnInit {
   }
 
   private getScrollContainer(section: string): HTMLElement | null {
-    switch(section) {
+    switch (section) {
       case 'continue': return this.continueScroll?.nativeElement;
       case 'watchlist': return this.watchlistScroll?.nativeElement;
       case 'favorites': return this.favoritesScroll?.nativeElement;
@@ -315,5 +315,5 @@ export class ProfileComponent implements OnInit {
 
     return currentIndex < maxPages - 1;
   }
-  
+
 }

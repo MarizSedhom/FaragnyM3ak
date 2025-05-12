@@ -17,12 +17,11 @@
       <div class="card-subtitle text-white">
         {{ movie.hasSub ? 'Sub' : '' }}{{ movie.hasSub && movie.hasDub ? ' | ' : '' }}{{ movie.hasDub ? 'Dub' : '' }}
       </div>
+
       <div class="card-description">{{ movie.description }}</div>
-
     </div>
-
+    
     <div class="action-buttons d-flex justify-content-center gap-2">
-      <!-- Favorite Button: show ♥ if not favorite, show ❤️ if already favorite -->
       <!-- Favorite Toggle -->
       <div class="action-button" (click)="toggleFavorite()">
         {{ isFavorite ? '❤️' : '♥' }}
@@ -32,8 +31,5 @@
       <div class="action-button" (click)="toggleWatchlist()">
         {{ isWatchlist ? '✔️' : '+' }}
       </div>
-
-
     </div>
   </div>
-</div>

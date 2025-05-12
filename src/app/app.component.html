@@ -1,3 +1,4 @@
-
-<app-navbar *ngIf="authService.isAuthenticated() && !isFullScreenRoute()"></app-navbar>
-<router-outlet></router-outlet>
+<div style="background: linear-gradient(to right, #1a2b3c, #2d4b66); /* Gradient background */">
+    <app-navbar *ngIf="authService.isAuthenticated() && !isFullScreenRoute()"></app-navbar>
+    <router-outlet></router-outlet>
+</div>
