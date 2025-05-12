@@ -155,13 +155,12 @@ export class ProfileComponent implements OnInit {
         console.log("movieRequests", movieRequests);
         console.log("seriesRequests", seriesRequests);
         // Combine all requests
+        this.isLoading = false;
         return forkJoin([...movieRequests, ...seriesRequests]);
+
       })
     ).subscribe(results => {
       this.mediaItems = results.filter(item => item !== null) as MediaItem[];
-      this.isLoading = false;
-      console.log('WatchList:', this.watchList);
-
     });
   }
 

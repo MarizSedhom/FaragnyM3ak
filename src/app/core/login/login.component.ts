@@ -70,9 +70,14 @@ export class LoginComponent implements OnInit {
     this.isSubmitted = true;
     if (this.myFormVali.valid) {
       this.isLoading = true;
-      const rawForm = this.myFormVali.getRawValue()
+      const rawForm = this.myFormVali.getRawValue();
 
-      this.authService.login(rawForm.email!, rawForm.password!)
+      if (!rawForm.email || !rawForm.password) {
+        this.isLoading = false;
+        return;
+      }
+
+      this.authService.login(rawForm.email, rawForm.password)
         .subscribe({
           next: () => { 
             console.log("Login successful. Navigating...");
@@ -81,13 +86,13 @@ export class LoginComponent implements OnInit {
           error: (e) => { 
             this.erroMessage = e.code; 
             this.isLoading = false;
-            console.log(rawForm.password!, rawForm.email!);
           },
           complete: () => {
             this.isLoading = false;
           }
         });
     } else {
+      this.isLoading = false;
       console.log("Invalid Inputs");
     }
   }
