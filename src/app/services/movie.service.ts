@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map, of, catchError, forkJoin } from 'rxjs';
+import { Observable, map, of, catchError, forkJoin, switchMap  } from 'rxjs';
 import { Movie, MovieDetail, MovieResponse, RelatedMovie, MovieCast } from '../shared/models/movie.model';
 import { environment } from '../../environments/environment';
 
@@ -257,6 +257,30 @@ export class MovieService {
       })
     );
   }
+
+ getMoviesByDateRange(startDate: string, endDate: string): Observable<any[]> {
+    const baseUrl = `${this.apiBaseUrl}/discover/movie?primary_release_date.gte=${startDate}&primary_release_date.lte=${endDate}&api_key=${this.apiKey}&page=1`;
+
+    return this.http.get<any>(baseUrl).pipe(
+      switchMap(response => {
+        const totalPages = response.total_pages;
+        const requests = [];
+
+        for (let page = 1; page <= totalPages; page++) {
+          const pageUrl = `${this.apiBaseUrl}/discover/movie?primary_release_date.gte=${startDate}&primary_release_date.lte=${endDate}&api_key=${this.apiKey}&page=${page}`;
+          requests.push(this.http.get<any>(pageUrl));
+        }
+
+        return forkJoin(requests).pipe(
+          map(responses => responses.flatMap(res => res.results))
+        );
+      })
+    );
+  }
+
+
+
+  //------------------------------------------------------------
 
   // Get movie trailers
   getMovieTrailer(movieId: number): Observable<string | null> {
