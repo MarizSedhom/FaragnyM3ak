@@ -1,9 +1,7 @@
+import { CommonModule } from '@angular/common';
 import { Component, ElementRef, ViewChild, HostListener, AfterViewInit } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/auth/Service/authService';
-import { CommonModule } from '@angular/common';
-import { AuthService } from '../../../core/auth/Service/authService';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-navbar',
@@ -20,7 +18,7 @@ export class NavbarComponent implements AfterViewInit {
 
 
 
-  constructor(private router: Router, private authService: AuthService) {
+  constructor(private router: Router, public authService: AuthService) {
     this.authService.currentUser$.subscribe(user => {
       this.userEmail = user?.email ?? null;
     });
