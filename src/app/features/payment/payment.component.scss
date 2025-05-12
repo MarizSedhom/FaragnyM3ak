@@ -1,0 +1,65 @@
+.payment-container {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 20px;
+      padding-top: 100px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .pricing-info {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .price {
+      font-size: 2em;
+      color: #6772e5;
+      margin: 10px 0;
+    }
+    .features {
+      list-style: none;
+      padding: 0;
+      margin: 20px 0;
+    }
+    .features li {
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    #card-element {
+      padding: 12px;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      background: #f8f9fa;
+    }
+    .error-message {
+      color: #dc3545;
+      font-size: 0.9em;
+      margin-top: 8px;
+    }
+    button {
+      width: 100%;
+      background-color: #6772e5;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1.1em;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #5469d4;
+    }
+    button:disabled {
+      background-color: #a5a5a5;
+      cursor: not-allowed;
+    }
+    .terms {
+      text-align: center;
+      font-size: 0.8em;
+      color: #666;
+      margin-top: 20px;
+    }
