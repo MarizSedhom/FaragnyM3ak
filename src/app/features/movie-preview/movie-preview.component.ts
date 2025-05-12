@@ -234,12 +234,12 @@ export class MoviePreviewComponent implements OnInit {
     this.listServices.addMovieToTracking(this.movieId.toString()).subscribe({
       next: () => {
         // Navigate to the watch page (assuming /watch/:watchid route)
-        window.location.href = `/watch?watchid=${this.movieId}`;
+        window.location.href = `/watch?watchid=${this.movieId}&type=movie`;
       },
       error: (err) => {
         console.error('Error marking as watched:', err);
         // Still navigate even if marking as watched fails
-        window.location.href = `/watch?watchid=${this.movieId}`;
+        window.location.href = `/watch?watchid=${this.movieId}&type=movie`;
       }
     });
   }
