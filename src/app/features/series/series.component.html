@@ -1,79 +1,78 @@
-  <div class="header-container">
-    <div class="page-title">
-      <h1>Series</h1>
+<div class="header-container">
+  <div class="page-title">
+    <h1>Series</h1>
+  </div>
+
+  <div class="navigation-container">
+    <!-- Category filter buttons -->
+    <div class="filter-category-container">
+      <button class="filter-category-button active" (click)="filterSeries('airing_today')">Airing today</button>
+      <button class="filter-category-button" (click)="filterSeries('on_the_air')">On The Air</button>
+      <button class="filter-category-button" (click)="filterSeries('popular')">Popular</button>
+      <button class="filter-category-button" (click)="filterSeries('top_rated')">Top Rated</button>
     </div>
 
-    <div class="navigation-container">
-      <!-- Category filter buttons -->
-      <div class="filter-category-container">
-        <button class="filter-category-button active" (click)="filterSeries('airing_today')">Airing today</button>
-        <button class="filter-category-button" (click)="filterSeries('on_the_air')">On The Air</button>
-        <button class="filter-category-button" (click)="filterSeries('popular')">Popular</button>
-        <button class="filter-category-button" (click)="filterSeries('top_rated')">Top Rated</button>
-      </div>
-
-      <!-- Sort button -->
-      <!-- <button class="control-button">
+    <!-- Sort button -->
+    <!-- <button class="control-button">
         <svg viewBox="0 0 24 24">
           <path d="M3 18h6v-2H3v2zM3 6v2h18V6H3zm0 7h12v-2H3v2z"/>
         </svg>
         <span>Sort</span>
       </button> -->
 
-      <!-- Filter button -->
-      <!-- <button class="control-button">
+    <!-- Filter button -->
+    <!-- <button class="control-button">
         <svg viewBox="0 0 24 24">
           <path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/>
         </svg>
         <span>Filter</span>
       </button> -->
 
-      <!-- View toggle button -->
-      <!-- <button class="control-button icon-button">
+    <!-- View toggle button -->
+    <!-- <button class="control-button icon-button">
         <svg viewBox="0 0 24 24">
           <path d="M3 3v8h8V3H3zm6 6H5V5h4v4zm-6 4v8h8v-8H3zm6 6H5v-4h4v4zm4-16v8h8V3h-8zm6 6h-4V5h4v4zm-6 4v8h8v-8h-8zm6 6h-4v-4h4v4z"/>
         </svg>
       </button> -->
-    </div>
   </div>
+</div>
 
-<div class="main-content-wrapper">
+<div class="main-content-wrapper ">
   <div class="container">
-    <app-series-card *ngFor="let series of series" [series]="series"  class="series-card"></app-series-card>
+    <app-series-card *ngFor="let series of series" [series]="series" class="series-card"></app-series-card>
   </div>
 
-    <div class="genre-filter-sidebar">
-      <div class="genre-filter-box">
-        <div class="genre-filter-header">
-          <h3>Genres</h3>
-          <button class="clear-filters" (click)="clearGenres()">Clear</button>
+  <div class="genre-filter-sidebar">
+    <div class="genre-filter-box">
+      <div class="genre-filter-header">
+        <h3>Genres</h3>
+        <button class="clear-filters" (click)="clearGenres()">Clear</button>
 
-        </div>
-        <label *ngFor="let genre of genres" class="genre-checkbox">
-          <input type="checkbox" [value]="genre.id" (change)="toggleGenre(genre.id, $event)" >
-          <span>{{ genre.name }}</span>
-          <!-- <input type="checkbox" [value]="10759">
+      </div>
+      <label *ngFor="let genre of genres" class="genre-checkbox">
+        <input type="checkbox" [value]="genre.id" (change)="toggleGenre(genre.id, $event)">
+        <span>{{ genre.name }}</span>
+        <!-- <input type="checkbox" [value]="10759">
           <span>Action & Adventure</span> -->
-        </label>
-        <!-- <p *ngIf="selectedGenres.length > 0">
+      </label>
+      <!-- <p *ngIf="selectedGenres.length > 0">
           Selected Genres: {{ getSelectedGenresString() }}
         </p> -->
     </div>
 
-</div>
+  </div>
 
   <div class="pagination-container">
-  <button class="pagination-button prev" [disabled]="currentPage <= 1" (click)="goToPreviousPage()">
-    <span class="arrow arrow-left"></span> Previous
-  </button>
-  
-  <div class="pagination-info">
-    Page {{ currentPage }} out of {{maxPages}}
-  </div>
-  
-  <button class="pagination-button next" [disabled]="currentPage >= maxPages" (click)="goToNextPage()">
-    Next <span class="arrow arrow-right"></span>
-  </button>
+    <button class="pagination-button prev" [disabled]="currentPage <= 1" (click)="goToPreviousPage()">
+      <span class="arrow arrow-left"></span> Previous
+    </button>
+
+    <div class="pagination-info">
+      Page {{ currentPage }} out of {{maxPages}}
+    </div>
+
+    <button class="pagination-button next" [disabled]="currentPage >= maxPages" (click)="goToNextPage()">
+      Next <span class="arrow arrow-right"></span>
+    </button>
   </div>
 </div>
-  
