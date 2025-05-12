@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map, of, catchError, forkJoin } from 'rxjs';
+import { Observable, map, of, catchError, forkJoin, switchMap } from 'rxjs';
 import { Series, SeriesCast } from '../shared/models/series.model';
 
 @Injectable({
@@ -14,7 +14,7 @@ export class SeriesService {
 
   constructor(private http: HttpClient) { }
 
-   // Get series by ID - needed for the SeriesPreviewComponent
+  // Get series by ID - needed for the SeriesPreviewComponent
   getSeriesById(id: string): Observable<Series> {
     return this.http.get(`${this.apiBaseUrl}/tv/${id}?api_key=${this.apiKey}&append_to_response=created_by,networks,reviews`)
       .pipe(
@@ -32,7 +32,16 @@ export class SeriesService {
     return this.http.get(`${this.apiBaseUrl}/tv/top_rated?api_key=${this.apiKey}&language=en-US&page=1`)
       .pipe(
         map((response: any) => {
-          return response.results.slice(0, 10).map((series: any) => this.transformSeriesData(series));
+          return response.results.slice(0, 10);
+        }),
+        switchMap((series: any[]) => {
+          // Fetch full details for each series to get seasons and episodes count
+          const detailRequests = series.map((s: any) =>
+            this.getSeriesById(s.id.toString()).pipe(
+              catchError(() => of(this.transformSeriesData(s)))
+            )
+          );
+          return forkJoin(detailRequests);
         }),
         catchError(error => {
           console.error('Error fetching top rated series:', error);
@@ -41,12 +50,21 @@ export class SeriesService {
       );
   }
 
-  // Get popular series
+  // Get popular series with full details
   getPopularSeries(): Observable<Series[]> {
     return this.http.get(`${this.apiBaseUrl}/tv/popular?api_key=${this.apiKey}`)
       .pipe(
         map((response: any) => {
-          return response.results.map((series: any) => this.transformSeriesData(series));
+          return response.results;
+        }),
+        switchMap((series: any[]) => {
+          // Fetch full details for each series to get seasons and episodes count
+          const detailRequests = series.map((s: any) =>
+            this.getSeriesById(s.id.toString()).pipe(
+              catchError(() => of(this.transformSeriesData(s)))
+            )
+          );
+          return forkJoin(detailRequests);
         }),
         catchError(error => {
           console.error('Error fetching popular series:', error);
@@ -55,12 +73,24 @@ export class SeriesService {
       );
   }
 
-  // Get similar series
+  // Get similar series with full details
   getSimilarSeries(id: string): Observable<Series[]> {
     return this.http.get(`${this.apiBaseUrl}/tv/${id}/similar?api_key=${this.apiKey}`)
       .pipe(
         map((response: any) => {
-          return response.results.slice(0, 6).map((series: any) => this.transformSeriesData(series));
+          return response.results.slice(0, 6);
+        }),
+        switchMap((series: any[]) => {
+          if (series.length === 0) {
+            return of([]);
+          }
+          // Fetch full details for each similar series
+          const detailRequests = series.map((s: any) =>
+            this.getSeriesById(s.id.toString()).pipe(
+              catchError(() => of(this.transformSeriesData(s)))
+            )
+          );
+          return forkJoin(detailRequests);
         }),
         catchError(error => {
           console.error(`Error fetching similar series for ID ${id}:`, error);
@@ -182,6 +212,16 @@ export class SeriesService {
     );
   }
 
+  // Get total episode count for a series
+  getTotalEpisodeCount(seriesId: string, numberOfSeasons: number): Observable<number> {
+    return this.getAllSeasonEpisodeCounts(seriesId, numberOfSeasons).pipe(
+      map(episodeCounts => {
+        return Object.values(episodeCounts).reduce((sum, count) => sum + count, 0);
+      }),
+      catchError(() => of(0))
+    );
+  }
+
   // Transform basic series data to match your Series interface
   private transformSeriesData(series: any): Series {
     return {
@@ -233,7 +273,7 @@ export class SeriesService {
   // Helper to get image URL
   private getImageUrl(path: string | null, size: string): string {
     if (!path) {
-      return 'assets/images/no-image.png'; // Fallback image
+      return environment.ThemovieDB.nullImageUrl || 'assets/images/no-image.png'; // Fallback image
     }
     return `${this.imageBaseUrl}${size}${path}`;
   }

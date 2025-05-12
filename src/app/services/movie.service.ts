@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map, of, catchError, forkJoin } from 'rxjs';
+import { Observable, map, of, catchError, forkJoin, switchMap } from 'rxjs';
 import { Movie, MovieDetail, RelatedMovie, MovieCast } from '../shared/models/movie.model';
 import { environment } from '../../environments/environment';
 
@@ -59,13 +59,21 @@ export class MovieService {
       );
   }
 
-  // Get top rated movies
+  // Get top rated movies WITH duration
   getTopRatedMovies(): Observable<Movie[]> {
     return this.http.get(`${this.apiBaseUrl}/movie/top_rated?api_key=${this.apiKey}&language=en-US&page=1`)
       .pipe(
         map((response: any) => {
-          return response.results.slice(0, 10).map((movie: any) => this.transformMovieData(movie));
+          const topMovies = response.results.slice(0, 10);
+          // Get movie details for each top rated movie to include duration
+          const detailRequests = topMovies.map((movie: any) =>
+            this.getMovieById(movie.id).pipe(
+              catchError(() => of(this.transformMovieData(movie)))
+            )
+          );
+          return detailRequests;
         }),
+        switchMap((requests: Observable<MovieDetail | Movie>[]) => forkJoin(requests)),
         catchError(error => {
           console.error('Error fetching top rated movies:', error);
           throw error;
@@ -107,14 +115,27 @@ export class MovieService {
       );
   }
 
-  // Get top rated movies
+  // Get top rated movies WITH duration
   AdmingetTopRatedMovies(): Observable<{ totalResults: number, movies: Movie[] }> {
     return this.http.get(`${this.apiBaseUrl}/movie/top_rated?api_key=${this.apiKey}`)
       .pipe(
         map((response: any) => {
           const totalResults = response.total_results;
-          const movies = response.results.map((movie: any) => this.transformMovieData(movie));
-          return { totalResults, movies };
+          const topMovies = response.results.slice(0, 10);
+
+          // Create an array of observables to fetch movie details for each movie
+          const detailRequests = topMovies.map((movie: any) =>
+            this.getMovieById(movie.id).pipe(
+              catchError(() => of(this.transformMovieData(movie)))
+            )
+          );
+
+          return { totalResults, detailRequests };
+        }),
+        switchMap((data: { totalResults: number, detailRequests: Observable<MovieDetail | Movie>[] }) => {
+          return forkJoin(data.detailRequests).pipe(
+            map((movies) => ({ totalResults: data.totalResults, movies }))
+          );
         }),
         catchError(error => {
           console.error('Error fetching top rated movies:', error);
@@ -237,7 +258,7 @@ export class MovieService {
       imageUrl: this.getImageUrl(movie.poster_path, 'w342'),
       rating: movie.vote_average, // TMDb uses 10-point scale
       ratingCount: movie.vote_count,
-      duration: 0, // Not available in basic movie results, would need additional API call
+      duration: movie.runtime || 0, // Not available in basic movie results, set to 0
       description: movie.overview,
       hasSub: true, // Default values since TMDb doesn't provide this info
       hasDub: false,  // Default values since TMDb doesn't provide this info
