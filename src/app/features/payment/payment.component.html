@@ -1,0 +1,24 @@
+<div class="payment-container">
+    <div class=" m-5">
+      <h2>Subscribe to Premium</h2>
+      <div class="pricing-info">
+        <h3>Premium Plan</h3>
+        <p class="price">$9.99/month</p>
+        <ul class="features">
+          <li>Unlimited access to all movies</li>
+          <li>HD streaming quality</li>
+          <li>No advertisements</li>
+          <li>Multiple device support</li>
+        </ul>
+      </div>
+      <div class="form-group">
+        <label for="card-element">Credit or debit card</label>
+        <div id="card-element" #cardElement></div>
+        <div id="card-errors" role="alert" class="error-message"></div>
+      </div>
+      <button (click)="handlePayment()" [disabled]="isProcessing">
+        {{ isProcessing ? 'Processing...' : 'Subscribe Now' }}
+      </button>
+      <p class="terms">By subscribing, you agree to our Terms of Service and Privacy Policy</p>
+    </div>
+</div>

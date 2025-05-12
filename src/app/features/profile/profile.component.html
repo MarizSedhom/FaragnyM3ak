@@ -29,8 +29,14 @@
     <div class="section-content" #continueScroll>
       <div class="cards-container">
         <ng-container *ngFor="let item of continueWatching">
-          <app-movie-card *ngIf="isMovie(item)" [movie]="item"></app-movie-card>
-          <app-series-card *ngIf="isSeries(item)" [series]="item"></app-series-card>
+          <app-movie-card *ngIf="isMovie(item)" 
+            [movie]="item"
+            (statusChange)="updateMovieStatus($event.movieId, $event.isFavorite, $event.isWatchlist)">
+          </app-movie-card>
+          <app-series-card *ngIf="isSeries(item)" 
+            [series]="item"
+            (statusChange)="updateSeriesStatus($event.seriesId, $event.isFavorite, $event.isWatchlist)">
+          </app-series-card>
         </ng-container>
       </div>
     </div>
@@ -54,8 +60,14 @@
           <div class="section-content" #watchlistScroll>
             <div class="cards-container">
               <ng-container *ngFor="let item of watchList">
-                <app-movie-card *ngIf="isMovie(item)" [movie]="item"></app-movie-card>
-                <app-series-card *ngIf="isSeries(item)" [series]="item"></app-series-card>
+                <app-movie-card *ngIf="isMovie(item)" 
+                  [movie]="item"
+                  (statusChange)="updateMovieStatus($event.movieId, $event.isFavorite, $event.isWatchlist)">
+                </app-movie-card>
+                <app-series-card *ngIf="isSeries(item)" 
+                  [series]="item"
+                  (statusChange)="updateSeriesStatus($event.seriesId, $event.isFavorite, $event.isWatchlist)">
+                </app-series-card>
               </ng-container>
             </div>
           </div>
@@ -69,8 +81,14 @@
           <div class="section-content" #favoritesScroll>
             <div class="cards-container">
               <ng-container *ngFor="let item of favorites">
-                <app-movie-card *ngIf="isMovie(item)" [movie]="item"></app-movie-card>
-                <app-series-card *ngIf="isSeries(item)" [series]="item"></app-series-card>
+                <app-movie-card *ngIf="isMovie(item)" 
+                  [movie]="item"
+                  (statusChange)="updateMovieStatus($event.movieId, $event.isFavorite, $event.isWatchlist)">
+                </app-movie-card>
+                <app-series-card *ngIf="isSeries(item)" 
+                  [series]="item"
+                  (statusChange)="updateSeriesStatus($event.seriesId, $event.isFavorite, $event.isWatchlist)">
+                </app-series-card>
               </ng-container>
             </div>
           </div>

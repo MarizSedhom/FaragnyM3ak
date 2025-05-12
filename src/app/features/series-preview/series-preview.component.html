@@ -18,7 +18,7 @@
       <div class="poster-section">
         <img [src]="series.imageUrl" alt="{{ series.title }}" class="poster-img">
         <div class="action-buttons">
-          <button class="primary-btn"><i class="play-icon">▶</i> Play Now</button>
+          <button class="primary-btn" (click)="navigateToWatch()"><i class="play-icon">▶</i> Play Now</button>
           <button class="secondary-btn" [class.listed]="isWatchlist" (click)="ToggleSeriesToWatchlist()">
             <i class="add-icon">{{ isWatchlist ? '-' : '+' }}</i> {{ isWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist' }}
           </button>

@@ -21,10 +21,10 @@
       <div class="card-description">{{ series.description }}</div>
     </div>
     <div class="action-buttons d-flex justify-content-center gap-2">
-      <div class="action-button" (click)="toggleFavorite(series.id.toString())">
+      <div class="action-button" (click)="toggleFavorite($event)">
         {{ isFavorite ? '❤️' : '♥' }}
       </div>
-      <div class="action-button" (click)="ToggleSeriesToWatchlist()">
+      <div class="action-button" (click)="toggleWatchlist($event)">
         {{ isWatchlist ? '✔️' : '+' }}
       </div>
     </div>

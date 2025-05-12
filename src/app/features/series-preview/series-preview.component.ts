@@ -28,6 +28,8 @@ export class SeriesPreviewComponent implements OnInit {
   activeTab = 'similar';
   isFavorite = false;
   isWatchlist = false;
+  seriesID : string | null = null;
+  hasWatchableVideo : boolean = false;
 
   trailerUrl: string | null = null;
   safeTrailerUrl: SafeResourceUrl | null = null;
@@ -48,6 +50,7 @@ export class SeriesPreviewComponent implements OnInit {
   // Listen to changes in the route parameter (id)
   this.route.paramMap.subscribe(params => {
     const seriesId = params.get('id');
+    this.seriesID = seriesId;
     if (seriesId) {
       this.loadSeriesData(seriesId); // Pass seriesId directly
       this.checkFavoriteStatus(seriesId); // Check if already in favorites
@@ -74,8 +77,10 @@ loadSeriesData(seriesId: string): void {
       this.similarSeries = data.similar;
       this.seriesCast = data.cast;
 
+
       // Trailer
       this.trailerUrl = data.trailer;
+      this.hasWatchableVideo = !!data.trailer;
       if (this.trailerUrl) {
         this.safeTrailerUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
           `https://www.youtube.com/embed/${this.trailerUrl}`
@@ -264,5 +269,21 @@ toggleFavorite(id: string): void {
         }
       });
     }
+  }
+
+  navigateToWatch(): void {
+    if (!this.hasWatchableVideo) return;
+    // Mark as watched
+    this.listServices.addSeriesToTracking(this.seriesID!.toString()).subscribe({
+      next: () => {
+        // Navigate to the watch page (assuming /watch/:watchid route)
+        window.location.href = `/watch?watchid=${this.seriesID}&type=tv`;
+      },
+      error: (err) => {
+        console.error('Error marking as watched:', err);
+        // Still navigate even if marking as watched fails
+        window.location.href = `/watch?watchid=${this.seriesID}&type=tv`;
+      }
+    });
   }
 }

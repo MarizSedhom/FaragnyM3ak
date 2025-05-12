@@ -74,6 +74,7 @@ export class WatchComponent implements OnInit, OnDestroy, AfterViewInit {
   SliderUpdateEvent: any;
   lastClick = 0;
   watchID: string | null;
+  type: string | null ;
   currentVideo: string | null = null;
 
   // ViewChild references to DOM elements
@@ -94,7 +95,11 @@ export class WatchComponent implements OnInit, OnDestroy, AfterViewInit {
     private http: HttpClient
   ) {
     // Get watchID from URL parameters with fallback to default
-    this.watchID = this.route.snapshot.queryParamMap.get('watchid') || "324544";
+    this.type = this.route.snapshot.queryParamMap.get('type')?.toLowerCase() || "movie";
+    if(this.type != "movie" && this.type != "tv") this.type = "movie"
+    this.watchID = this.route.snapshot.queryParamMap.get('watchid')
+    || (this.type == "movie" ? "324544" : "209867");
+
   }
 
   /**
@@ -168,7 +173,7 @@ export class WatchComponent implements OnInit, OnDestroy, AfterViewInit {
    * Fetches movie data and related YouTube videos
    */
   fetchAllData(): void {
-    this.http.get(`${environment.ThemovieDB.apiKey}/movie/${this.watchID}?api_key=${environment.ThemovieDB.apiKey}&append_to_response=videos`)
+    this.http.get(`${environment.ThemovieDB.apiBaseUrl}/${this.type}/${this.watchID}?api_key=${environment.ThemovieDB.apiKey}&append_to_response=videos`)
       .subscribe({
         next: (movieData: any) => {
           // Filter only YouTube videos
