@@ -16,7 +16,7 @@ export class SeriesService {
 
    // Get series by ID - needed for the SeriesPreviewComponent
   getSeriesById(id: string): Observable<Series> {
-    return this.http.get(`${this.apiBaseUrl}/tv/${id}?api_key=${this.apiKey}&append_to_response=created_by,networks`)
+    return this.http.get(`${this.apiBaseUrl}/tv/${id}?api_key=${this.apiKey}&append_to_response=created_by,networks,reviews`)
       .pipe(
         map((response: any) => {
           return this.transformSeriesDetails(response);
@@ -55,8 +55,6 @@ export class SeriesService {
       );
   }
 
-
-
   // Get similar series
   getSimilarSeries(id: string): Observable<Series[]> {
     return this.http.get(`${this.apiBaseUrl}/tv/${id}/similar?api_key=${this.apiKey}`)
@@ -85,6 +83,29 @@ export class SeriesService {
         }),
         catchError(error => {
           console.error(`Error fetching cast for series ID ${id}:`, error);
+          return of([]);
+        })
+      );
+  }
+
+  // Get series reviews
+  getSeriesReviews(id: string): Observable<any[]> {
+    return this.http.get(`${this.apiBaseUrl}/tv/${id}/reviews?api_key=${this.apiKey}`)
+      .pipe(
+        map((response: any) => {
+          return response.results.map((review: any) => ({
+            user: review.author,
+            stars: Math.round(review.author_details.rating / 2), // Convert from 10-point to 5-point scale
+            comment: review.content,
+            date: new Date(review.created_at).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
+            })
+          }));
+        }),
+        catchError(error => {
+          console.error(`Error fetching reviews for series ID ${id}:`, error);
           return of([]);
         })
       );
@@ -188,11 +209,24 @@ export class SeriesService {
   private transformSeriesDetails(series: any): Series {
     const basicData = this.transformSeriesData(series);
 
+    // Transform reviews if available
+    const reviews = series.reviews?.results.map((review: any) => ({
+      user: review.author,
+      stars: Math.round(review.author_details.rating / 2), // Convert from 10-point to 5-point scale
+      comment: review.content,
+      date: new Date(review.created_at).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      })
+    })) || [];
+
     // Add additional details available only in the detailed endpoint
     return {
       ...basicData,
       creators: series.created_by ? series.created_by.map((creator: any) => creator.name) : [],
-      networks: series.networks ? series.networks.map((network: any) => network.name) : []
+      networks: series.networks ? series.networks.map((network: any) => network.name) : [],
+      reviews: reviews
     };
   }
 
@@ -228,5 +262,3 @@ export class SeriesService {
     return genreIds.map(id => genreMap[id] || 'Unknown');
   }
 }
-
-

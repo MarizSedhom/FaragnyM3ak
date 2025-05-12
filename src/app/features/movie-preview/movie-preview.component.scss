@@ -510,6 +510,10 @@
     background-color: #f40612;
   }
 }
+.your-review-badge{
+  color: #a1a1a1;
+  font-size: 13px;
+}
 
 // Details Tab
 .detail-grid {
@@ -542,4 +546,55 @@
 
 .detail-value {
   color: white;
+}
+
+// Cast
+.cast-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 20px;
+}
+
+.cast-card {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: translateY(-5px);
+  }
+}
+
+.cast-image {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+}
+
+.cast-info {
+  padding: 12px;
+}
+
+.actor-name {
+  margin: 0 0 5px 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.character-name {
+  margin: 0;
+  font-size: 14px;
+  opacity: 0.8;
 }

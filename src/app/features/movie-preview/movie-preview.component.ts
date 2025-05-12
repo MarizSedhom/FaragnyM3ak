@@ -1,18 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import { MovieService, MovieDetail, RelatedMovie } from '../../services/movie.service';
+import { MovieService, MovieDetail, RelatedMovie ,MovieCast} from '../../services/movie.service';
 import { HttpClientModule } from '@angular/common/http';
-import { switchMap, of, catchError } from 'rxjs';
+import { switchMap, of, catchError, forkJoin } from 'rxjs';
 import { MovieCardComponent } from '../../shared/components/movie-card/movie-card.component';
 import { Movie } from '../../shared/models/movie.model';
-import { UserListsService } from '../profile/services/user-lists.service';
+import { UserListsService, UserReview } from '../profile/services/user-lists.service';
 import { environment } from '../../../environments/environment';
+import { FormsModule } from '@angular/forms';
+
 
 @Component({
   selector: 'app-movie-preview',
   standalone: true,
-  imports: [CommonModule, HttpClientModule, MovieCardComponent],
+  imports: [CommonModule, HttpClientModule, MovieCardComponent, FormsModule],
   templateUrl: './movie-preview.component.html',
   styleUrl: './movie-preview.component.scss'
 })
@@ -21,8 +23,12 @@ export class MoviePreviewComponent implements OnInit {
   movieId: number | null = null;
   movie: MovieDetail | null = null;
   relatedMovies: RelatedMovie[] = [];
+  movieCast: MovieCast[] = []; // New property to store cast data
   activeTab: string = 'related';
   userRating: number = 0;
+  userReviewComment: string = '';
+  userHasReview: boolean = false;
+  userReview: UserReview | null = null;
   isFavorite: boolean = false;
   isWatchlist: boolean = false;
   loading: boolean = true;
@@ -30,6 +36,7 @@ export class MoviePreviewComponent implements OnInit {
   movieVideos: any = null; // Store all videos for the movie
   hasWatchableVideo: boolean = false;
   mainVideoKey: string | null = null;
+  reviewSubmitting: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -46,6 +53,8 @@ export class MoviePreviewComponent implements OnInit {
         this.checkFavoriteStatus(this.movieId.toString()); // Check if already in favorites
         this.checkWatchlistStatus(this.movieId.toString()); // Check if already in watchlist
         this.loadMovieVideos(); // Fetch all videos for the movie
+        this.loadMovieCast(); // New method to fetch cast data
+        this.checkUserReview(); // Check if the user has already reviewed this movie
       }
     });
   }
@@ -80,6 +89,26 @@ export class MoviePreviewComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  // New method to load movie cast data
+  loadMovieCast(): void {
+    if (!this.movieId) return;
+
+    this.movieService.getMovieCast(this.movieId).pipe(
+      catchError(error => {
+        console.error('Error loading movie cast:', error);
+        return of([]);
+      })
+    ).subscribe(cast => {
+      this.movieCast = cast;
+    });
+  }
+
+  // Format cast members for display (similar to series component)
+  formatCast(cast: MovieCast[]): string {
+    if (!cast || cast.length === 0) return 'No cast information';
+    return cast.map(actor => actor.name).join(', ');
   }
 
   // Convert RelatedMovie to Movie format for movie-card component
@@ -120,6 +149,28 @@ export class MoviePreviewComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error checking watchlist status:', err);
+      }
+    });
+  }
+
+  // New method to check if user has already reviewed this movie
+  checkUserReview(): void {
+    if (!this.movieId) return;
+
+    this.listServices.getUserMovieReview(this.movieId.toString()).subscribe({
+      next: (review) => {
+        if (review) {
+          this.userHasReview = true;
+          this.userReview = review;
+          this.userRating = review.rating;
+          this.userReviewComment = review.comment;
+        } else {
+          this.userHasReview = false;
+          this.userReview = null;
+        }
+      },
+      error: (err) => {
+        console.error('Error checking user review:', err);
       }
     });
   }
@@ -174,7 +225,75 @@ export class MoviePreviewComponent implements OnInit {
 
   setUserRating(rating: number): void {
     this.userRating = rating;
-    // Here you could add code to save the user rating
+  }
+
+  // Scroll to review form when edit button is clicked
+  editReview(): void {
+    this.switchTab('reviews');
+
+    // Make sure we're in the reviews tab before scrolling
+    setTimeout(() => {
+      const reviewForm = document.getElementById('review-form');
+      if (reviewForm) {
+        reviewForm.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
+  }
+
+  // Modified to submit the user's review
+  submitReview(): void {
+    if (!this.movieId || !this.userRating) return;
+
+    this.reviewSubmitting = true;
+
+    const review = {
+      rating: this.userRating,
+      comment: this.userReviewComment
+    };
+
+    // Choose whether to update or add a new review
+    const observable = this.userHasReview
+      ? this.listServices.updateMovieReview(this.movieId.toString(), review)
+      : this.listServices.addMovieReview(this.movieId.toString(), review);
+
+    observable.subscribe({
+      next: () => {
+        // After submitting, refresh the user's review data
+        this.checkUserReview();
+        this.reviewSubmitting = false;
+
+        // Optionally reload the movie to see the updated reviews
+        this.loadMovieData();
+      },
+      error: (err) => {
+        console.error('Error submitting review:', err);
+        this.reviewSubmitting = false;
+      }
+    });
+  }
+
+  // Delete the user's review
+  deleteReview(): void {
+    if (!this.movieId || !this.userHasReview) return;
+
+    this.reviewSubmitting = true;
+
+    this.listServices.removeMovieReview(this.movieId.toString()).subscribe({
+      next: () => {
+        this.userHasReview = false;
+        this.userReview = null;
+        this.userRating = 0;
+        this.userReviewComment = '';
+        this.reviewSubmitting = false;
+
+        // Optionally reload the movie to see the updated reviews
+        this.loadMovieData();
+      },
+      error: (err) => {
+        console.error('Error deleting review:', err);
+        this.reviewSubmitting = false;
+      }
+    });
   }
 
   getStarsArray(count: number): any[] {
@@ -190,6 +309,47 @@ export class MoviePreviewComponent implements OnInit {
     if (!dateString) return '';
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  }
+
+  // Fixed formatting for user reviews date
+  formatUserReviewDate(dateInput: any): string {
+    if (!dateInput) return '';
+
+    // Handle both string dates and Firestore timestamps
+    let date;
+    if (typeof dateInput === 'string') {
+      date = new Date(dateInput);
+    } else if (dateInput.toDate && typeof dateInput.toDate === 'function') {
+      // Handle Firestore timestamp
+      date = dateInput.toDate();
+    } else if (dateInput.seconds) {
+      // Handle Firestore timestamp in seconds format
+      date = new Date(dateInput.seconds * 1000);
+    } else if (dateInput instanceof Date) {
+      date = dateInput;
+    } else {
+      return 'Invalid date';
+    }
+
+    // Check if the date is valid
+    if (isNaN(date.getTime())) {
+      return 'Invalid date';
+    }
+
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  }
+
+  formatReviewDate(date: Date): string {
+    if (!date) return '';
+    return new Date(date).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'

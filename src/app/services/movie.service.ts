@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map, of, catchError, forkJoin } from 'rxjs';
-import { Movie, MovieDetail, RelatedMovie } from '../shared/models/movie.model';
+import { Movie, MovieDetail, RelatedMovie, MovieCast } from '../shared/models/movie.model';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -22,6 +22,25 @@ export class MovieService {
         catchError(error => {
           console.error('Error fetching movie:', error);
           throw error;
+        })
+      );
+  }
+
+  // Get movie cast members
+  getMovieCast(id: string | number): Observable<MovieCast[]> {
+    return this.http.get(`${this.apiBaseUrl}/movie/${id}/credits?api_key=${this.apiKey}`)
+      .pipe(
+        map((response: any) => {
+          return response.cast.slice(0, 12).map((actor: any) => ({
+            id: actor.id,
+            name: actor.name,
+            character: actor.character,
+            profilePath: this.getImageUrl(actor.profile_path, 'w185')
+          }));
+        }),
+        catchError(error => {
+          console.error(`Error fetching cast for movie ID ${id}:`, error);
+          return of([]);
         })
       );
   }
@@ -181,7 +200,7 @@ export class MovieService {
     return this.http.get(`${this.apiBaseUrl}/movie/${movieId}/videos?api_key=${this.apiKey}&language=en-US`)
       .pipe(
         map((response: any) => {
-          const trailers = response.results.filter((video: any) => 
+          const trailers = response.results.filter((video: any) =>
             video.type === 'Trailer' && video.site === 'YouTube');
           return trailers.length > 0 ? trailers[0].key : null;
         }),
@@ -191,22 +210,22 @@ export class MovieService {
         })
       );
   }
-  
+
   // Fetch trailers for multiple movies
   getTrailersForMovies(movies: Movie[]): Observable<Movie[]> {
     if (!movies || movies.length === 0) {
       return of([]);
     }
-    
-    const movieTrailerRequests = movies.map(movie => 
+
+    const movieTrailerRequests = movies.map(movie =>
       this.getMovieTrailer(movie.id).pipe(
         map(trailerKey => ({
-          ...movie, 
+          ...movie,
           trailerKey: trailerKey || undefined
         }))
       )
     );
-    
+
     return forkJoin(movieTrailerRequests);
   }
 
@@ -234,10 +253,15 @@ export class MovieService {
       .map((person: any) => person.name)
       .join(', ') || '';
 
-    // Extract cast
+    // Extract cast with full details
     const cast = movie.credits?.cast
-      ?.slice(0, 10)
-      .map((person: any) => person.name) || [];
+      ?.slice(0, 12)
+      .map((person: any) => ({
+        id: person.id,
+        name: person.name,
+        character: person.character,
+        profilePath: this.getImageUrl(person.profile_path, 'w185')
+      })) || [];
 
     // Transform reviews
     const reviews = movie.reviews?.results.map((review: any) => ({
@@ -272,7 +296,7 @@ export class MovieService {
       releaseDate: movie.release_date,
       genres: movie.genres.map((g: any) => g.name),
       director: director,
-      cast: cast,
+      cast: cast, // Now includes full cast details
       reviews: reviews,
       related: related
     };
@@ -316,5 +340,4 @@ export class MovieService {
     );
   }
 }
-export type { RelatedMovie, MovieDetail };
-
+export type { RelatedMovie, MovieDetail, MovieCast };

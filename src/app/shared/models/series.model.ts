@@ -19,6 +19,13 @@ export interface Series {
   networks?: string[];
   creators?: string[];
   popularity?: number;
+  reviews?: Review[];
+}
+export interface Review {
+  user: string;
+  stars: number;
+  comment: string;
+  date: string;
 }
 
 export interface SeriesCast {

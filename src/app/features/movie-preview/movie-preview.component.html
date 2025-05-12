@@ -68,6 +68,7 @@
     <div class="tab-container">
       <div class="tabs">
         <button class="tab-btn" [class.active]="activeTab === 'related'" (click)="switchTab('related')">More Like This</button>
+        <button class="tab-btn" [class.active]="activeTab === 'cast'" (click)="switchTab('cast')">Cast</button>
         <button class="tab-btn" [class.active]="activeTab === 'reviews'" (click)="switchTab('reviews')">Reviews</button>
         <button class="tab-btn" [class.active]="activeTab === 'details'" (click)="switchTab('details')">Details</button>
       </div>
@@ -88,9 +89,50 @@
         </div>
       </div>
 
+      <!-- New Cast Tab -->
+      <div class="tab-content" *ngIf="activeTab === 'cast'">
+        <h2 class="section-title">Cast Members</h2>
+        <div class="cast-container">
+          <div *ngFor="let actor of movieCast" class="cast-card">
+            <div class="cast-image">
+              <img [src]="actor.profilePath" [alt]="actor.name">
+            </div>
+            <div class="cast-info">
+              <h3 class="actor-name">{{ actor.name }}</h3>
+              <p class="character-name">{{ actor.character }}</p>
+            </div>
+          </div>
+
+          <!-- No cast members message -->
+          <div class="no-content" *ngIf="!movieCast || !movieCast.length">
+            <p>No cast information available</p>
+          </div>
+        </div>
+      </div>
+
       <div class="tab-content" *ngIf="activeTab === 'reviews'">
         <!-- <h2 class="section-title">User Reviews</h2> -->
         <div class="reviews-container">
+          <!-- Show user's own review at the top if they have one -->
+          <div *ngIf="userHasReview && userReview" class="review-card user-review">
+            <div class="review-header">
+              <div class="user-avatar">{{ userReview.username?.charAt(0) || 'Y' }}</div>
+              <div class="user-info">
+                <div class="username">{{ userReview.username || 'You' }} <span class="your-review-badge">Your Review</span></div>
+                <div class="star-rating">
+                  <span *ngFor="let star of getStarsArray(userReview.rating)" class="star">⭐</span>
+                  <span class="review-date">{{ formatUserReviewDate(userReview.createdAt) }}</span>
+                </div>
+              </div>
+            </div>
+            <p class="review-text">{{ userReview.comment }}</p>
+            <div class="review-actions">
+              <button class="review-action-btn" (click)="deleteReview()"><i class="delete-icon">🗑️</i> Delete</button>
+              <button class="review-action-btn" (click)="editReview()"><i class="edit-icon">✏️</i> Edit</button>
+            </div>
+          </div>
+
+          <!-- Show other reviews -->
           <div *ngFor="let review of movie.reviews" class="review-card">
             <div class="review-header">
               <div class="user-avatar">{{ review.user.charAt(0) }}</div>
@@ -110,12 +152,13 @@
           </div>
 
           <!-- No reviews message -->
-          <div class="no-content" *ngIf="!movie.reviews || !movie.reviews.length">
+          <div class="no-content" *ngIf="(!movie.reviews || !movie.reviews.length) && !userHasReview">
             <p>No reviews yet. Be the first to review this movie!</p>
           </div>
 
-          <div class="add-review">
-            <h3>Add Your Review</h3>
+          <!-- Review form -->
+          <div class="add-review" id="review-form">
+            <h3>{{ userHasReview ? 'Edit Your Review' : 'Add Your Review' }}</h3>
             <div class="rating-input">
               <span>Your Rating:</span>
               <div class="star-selector">
@@ -124,8 +167,11 @@
                 </span>
               </div>
             </div>
-            <textarea placeholder="Write your review here..." class="review-textarea"></textarea>
-            <button class="submit-review-btn">Submit Review</button>
+            <textarea [(ngModel)]="userReviewComment" placeholder="Write your review here..." class="review-textarea"></textarea>
+            <button class="submit-review-btn" [disabled]="!userRating || reviewSubmitting" (click)="submitReview()">
+              <span *ngIf="!reviewSubmitting">{{ userHasReview ? 'Update Review' : 'Submit Review' }}</span>
+              <span *ngIf="reviewSubmitting">Submitting...</span>
+            </button>
           </div>
         </div>
       </div>

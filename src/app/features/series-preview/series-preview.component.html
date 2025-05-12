@@ -79,6 +79,7 @@
         <button class="tab-btn" [class.active]="activeTab === 'similar'" (click)="switchTab('similar')">More Like This</button>
         <button class="tab-btn" [class.active]="activeTab === 'cast'" (click)="switchTab('cast')">Cast</button>
         <button class="tab-btn" [class.active]="activeTab === 'seasons'" (click)="switchTab('seasons')">Seasons</button>
+        <button class="tab-btn" [class.active]="activeTab === 'reviews'" (click)="switchTab('reviews')">Reviews</button>
         <button class="tab-btn" [class.active]="activeTab === 'details'" (click)="switchTab('details')">Details</button>
       </div>
 
@@ -145,6 +146,73 @@
         </div>
       </div>
 
+      <!-- Reviews Tab - New Section -->
+      <div class="tab-content" *ngIf="activeTab === 'reviews'">
+        <h2 class="section-title">User Reviews</h2>
+        <div class="reviews-container">
+          <!-- Show user's own review at the top if they have one -->
+          <div *ngIf="userHasReview && userReview" class="review-card user-review">
+            <div class="review-header">
+              <div class="user-avatar">{{ userReview.username?.charAt(0) || 'Y' }}</div>
+              <div class="user-info">
+                <div class="username">{{ userReview.username || 'You' }} <span class="your-review-badge">Your Review</span></div>
+                <div class="star-rating">
+                  <span *ngFor="let star of getStarsArray(userReview.rating)" class="star">⭐</span>
+                  <span class="review-date">{{ formatUserReviewDate(userReview.createdAt) }}</span>
+                </div>
+              </div>
+            </div>
+            <p class="review-text">{{ userReview.comment }}</p>
+            <div class="review-actions">
+              <button class="review-action-btn" (click)="deleteReview()"><i class="delete-icon">🗑️</i> Delete</button>
+              <button class="review-action-btn" (click)="editReview()"><i class="edit-icon">✏️</i> Edit</button>
+            </div>
+          </div>
+
+          <!-- Show other reviews -->
+          <div *ngFor="let review of series.reviews" class="review-card">
+            <div class="review-header">
+              <div class="user-avatar">{{ review.user.charAt(0) }}</div>
+              <div class="user-info">
+                <div class="username">{{ review.user }}</div>
+                <div class="star-rating">
+                  <span *ngFor="let star of getStarsArray(review.stars)" class="star">⭐</span>
+                  <span class="review-date">{{ review.date }}</span>
+                </div>
+              </div>
+            </div>
+            <p class="review-text">{{ review.comment }}</p>
+            <div class="review-actions">
+              <button class="review-action-btn"><i class="thumbs-up-icon">👍</i> Helpful</button>
+              <button class="review-action-btn"><i class="reply-icon">↩️</i> Reply</button>
+            </div>
+          </div>
+
+          <!-- No reviews message -->
+          <div class="no-content" *ngIf="(!series.reviews || !series.reviews.length) && !userHasReview">
+            <p>No reviews yet. Be the first to review this series!</p>
+          </div>
+
+          <!-- Review form -->
+          <div class="add-review" id="review-form">
+            <h3>{{ userHasReview ? 'Edit Your Review' : 'Add Your Review' }}</h3>
+            <div class="rating-input">
+              <span>Your Rating:</span>
+              <div class="star-selector">
+                <span *ngFor="let i of [1,2,3,4,5]" class="selectable-star" (click)="setUserRating(i)">
+                  {{ userRating >= i ? '⭐' : '☆' }}
+                </span>
+              </div>
+            </div>
+            <textarea [(ngModel)]="userReviewComment" placeholder="Write your review here..." class="review-textarea"></textarea>
+            <button class="submit-review-btn" [disabled]="!userRating || reviewSubmitting" (click)="submitReview()">
+              <span *ngIf="!reviewSubmitting">{{ userHasReview ? 'Update Review' : 'Submit Review' }}</span>
+              <span *ngIf="reviewSubmitting">Submitting...</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div class="tab-content" *ngIf="activeTab === 'details'">
         <h2 class="section-title">Series Details</h2>
         <div class="detail-grid">
@@ -201,4 +269,3 @@
     </div>
   </div>
 </div>
-
