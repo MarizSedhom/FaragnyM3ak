@@ -78,9 +78,10 @@ export class PaymentComponent implements OnInit {
 
     if (result.paymentIntent?.status === 'succeeded') {
       console.log('Payment successful:', result.paymentIntent);
-      this.router.navigate(['/register'], {
-        queryParams: { payment: 'success' }
-      });
+      // Process the payment
+      await this.paymentService.processPayment(paymentIntent.client_secret, 999);
+      // Redirect to home page
+      this.router.navigate(['/']);
     }
   } catch (error: any) {
     console.error('Payment error:', error);

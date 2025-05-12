@@ -16,8 +16,10 @@
         <div id="card-element" #cardElement></div>
         <div id="card-errors" role="alert" class="error-message"></div>
       </div>
-      <button (click)="handlePayment()" [disabled]="isProcessing">
-        {{ isProcessing ? 'Processing...' : 'Subscribe Now' }}
+      <button (click)="handlePayment()" [disabled]="isProcessing" class="payment-button">
+        <span *ngIf="!isProcessing">Subscribe Now</span>
+        <span *ngIf="isProcessing" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+        <i class="bi" [class.bi-credit-card]="!isProcessing" [class.bi-arrow-repeat]="isProcessing"></i>
       </button>
       <p class="terms">By subscribing, you agree to our Terms of Service and Privacy Policy</p>
     </div>

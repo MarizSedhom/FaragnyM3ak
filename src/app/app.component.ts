@@ -26,8 +26,10 @@ export class AppComponent {
     })
   }
 
-  isFullScreenRoute() {
-    const fullScreenRoutes = ['/login', '/register'];
-    return fullScreenRoutes.includes(this.router.url);
+  isFullScreenRoute(): boolean {
+    const currentRoute = this.router.url;
+    return currentRoute === '/login' || 
+           currentRoute === '/register' || 
+           currentRoute === '/pay';
   }
 }

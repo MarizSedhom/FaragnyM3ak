@@ -1,17 +1,19 @@
 import { Component, inject } from '@angular/core';
 import { FormGroup, FormControl, Validators, ValidationErrors, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
 // import { authGuard } from '../auth/auth.guard';
 import { AuthService } from '../auth/Service/authService';
 
 @Component({
   selector: 'app-register',
-  imports: [ReactiveFormsModule, RouterModule],
+  imports: [ReactiveFormsModule, RouterModule, CommonModule],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss'
 })
 export class RegisterComponent {
   isSubmitted = false;
+  isLoading = false;
   erroMessage: string | null = null;
   showPassword = false;
   showConfirmPassword = false;
@@ -98,16 +100,23 @@ export class RegisterComponent {
   onSubmit(): void {
     this.isSubmitted = true;
     if (this.registrationForm.valid) {
-
+      this.isLoading = true;
       const rawForm = this.registrationForm.getRawValue()
 
       this.authService.register(rawForm.email!, rawForm.password!, rawForm.username!)
         .subscribe({
           next: () => {
-            console.log("Registration successful. Navigating..."); this.router.navigateByUrl('/profile') },
-          error: (e) => { this.erroMessage = e.code }
+            console.log("Registration successful. Navigating to payment...");
+            this.router.navigateByUrl('/pay');
+          },
+          error: (e) => { 
+            this.erroMessage = e.code;
+            this.isLoading = false;
+          },
+          complete: () => {
+            this.isLoading = false;
+          }
         });
-
     } else {
       console.log("Invalid Inputs");
     }

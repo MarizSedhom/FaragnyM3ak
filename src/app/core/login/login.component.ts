@@ -2,26 +2,21 @@ import { Component, inject, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../auth/Service/authService';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, RouterModule],
+  imports: [ReactiveFormsModule, RouterModule, CommonModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })
 export class LoginComponent implements OnInit {
   authService = inject(AuthService);
 
+  isSubmitted = false;
+  isLoading = false;
   erroMessage: string | null = null;
   constructor(private router: Router, private auth: AuthService) { }
-
-  protected isSubmitted: boolean = false;
-  ngOnInit(): void {
-    // if(this.auth.isAuthed)
-    // {
-    //   this.router.navigate(["/"])
-    // }
-  }
 
   protected images: string[] = [
     "https://media.themoviedb.org/t/p/w440_and_h660_face/vxMeUZ46wMYijcPSYxPCrD1ZHgx.jpg",
@@ -65,26 +60,42 @@ export class LoginComponent implements OnInit {
   ];
 
   myFormVali = new FormGroup({
-    email: new FormControl(null, [Validators.required]),
-    password: new FormControl(null, [Validators.required]),
-    remember: new FormControl(false),
-  })
+    email: new FormControl('', [Validators.required, Validators.email]),
+    password: new FormControl('', [Validators.required]),
+    remember: new FormControl(false)
+  });
 
   // Form submission handler
   onSubmit(): void {
     this.isSubmitted = true;
     if (this.myFormVali.valid) {
+      this.isLoading = true;
       const rawForm = this.myFormVali.getRawValue()
 
       this.authService.login(rawForm.email!, rawForm.password!)
         .subscribe({
           next: () => { 
-            console.log("Registration successful. Navigating...");this.router.navigateByUrl('/profile') },
-          error: (e) => { this.erroMessage = e.code; console.log(rawForm.password!, rawForm.email!) }
+            console.log("Login successful. Navigating...");
+            this.router.navigateByUrl('/profile');
+          },
+          error: (e) => { 
+            this.erroMessage = e.code; 
+            this.isLoading = false;
+            console.log(rawForm.password!, rawForm.email!);
+          },
+          complete: () => {
+            this.isLoading = false;
+          }
         });
-
     } else {
       console.log("Invalid Inputs");
     }
+  }
+
+  ngOnInit(): void {
+    // if(this.auth.isAuthed)
+    // {
+    //   this.router.navigate(["/"])
+    // }
   }
 }

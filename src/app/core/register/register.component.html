@@ -149,9 +149,10 @@
           }
         </div>
 
-        <button type="submit" class="register-button">
-          <span>Create Account</span>
-          <i class="bi bi-person-plus"></i>
+        <button type="submit" class="register-button" [disabled]="isLoading">
+          <span *ngIf="!isLoading">Create Account</span>
+          <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+          <i class="bi" [class.bi-person-plus]="!isLoading" [class.bi-arrow-repeat]="isLoading"></i>
         </button>
 
         <div class="additional-links">

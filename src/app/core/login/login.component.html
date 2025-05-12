@@ -55,9 +55,10 @@
           </label>
         </div>
 
-        <button type="submit" class="login-button">
-          <span>Sign In</span>
-          <i class="bi bi-box-arrow-in-right"></i>
+        <button type="submit" class="login-button" [disabled]="isLoading">
+          <span *ngIf="!isLoading">Sign In</span>
+          <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+          <i class="bi" [class.bi-box-arrow-in-right]="!isLoading" [class.bi-arrow-repeat]="isLoading"></i>
         </button>
 
         <div class="additional-links">
