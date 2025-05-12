@@ -229,17 +229,17 @@ export class MoviePreviewComponent implements OnInit {
   }
 
   navigateToWatch(): void {
-    if (!this.hasWatchableVideo || !this.mainVideoKey || !this.movieId) return;
+    if (!this.hasWatchableVideo || !this.movieId || !this.movieId) return;
     // Mark as watched
     this.listServices.addMovieToTracking(this.movieId.toString()).subscribe({
       next: () => {
         // Navigate to the watch page (assuming /watch/:watchid route)
-        window.location.href = `/watch?watchid=${this.mainVideoKey}`;
+        window.location.href = `/watch?watchid=${this.movieId}`;
       },
       error: (err) => {
         console.error('Error marking as watched:', err);
         // Still navigate even if marking as watched fails
-        window.location.href = `/watch/${this.mainVideoKey}`;
+        window.location.href = `/watch?watchid=${this.movieId}`;
       }
     });
   }
