@@ -1,27 +1,58 @@
 :host {
-    // display: grid; /* Changed from 'block' to 'grid' */
-    background: linear-gradient(to right, #1a2b3c, #2d4b66); /* Gradient background */
-    min-height: 100vh; /* Optional: Ensure full viewport height */
+  background: linear-gradient(to right, #1a2b3c, #2d4b66);
+  min-height: 100vh;
 }
 
 /* Make sure the body is using flexbox */
 body {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh; /* Ensure the body takes up at least the full height */
-  }
-  
-  /* Allow the content area to grow and fill the remaining space */
-  .page-content {
-    flex-grow: 1;
-  }
-  
-  /* Footer will always be at the bottom of the page */
-  // footer {
-  //   position: relative;
-  //   bottom: 0;
-  //   width: 100%;
-  //   background-color: rgba(0, 0, 0, 0.4);
-  //   backdrop-filter: blur(5px);
-  // }
-  
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.page-content {
+  flex-grow: 1;
+}
+
+:root {
+  /* Base color definitions */
+  --color-light-1: #ededf5;  /* Very light purple/gray */
+  --color-light-2: #d9d2cc;  /* Light warm gray */
+  --color-medium-1: #a79c98; /* Medium warm gray */
+  --color-dark-1: #184241;   /* Dark teal */
+  --color-dark-2: #072628;   /* Very dark teal */
+  --color-dark-3: #091e1f;   /* Very dark blue-green */
+
+  /* Light theme */
+  --light-bg-primary: var(--color-light-1);
+  --light-bg-secondary: var(--color-light-2);
+  --light-text-primary: var(--color-dark-3);
+  --light-text-secondary: var(--color-dark-1);
+  --light-accent: var(--color-dark-2);
+  --light-surface: var(--color-medium-1);
+
+  /* Dark theme */
+  --dark-bg-primary: var(--color-dark-3);
+  --dark-bg-secondary: var(--color-dark-2);
+  --dark-text-primary: var(--color-light-1);
+  --dark-text-secondary: var(--color-light-2);
+  --dark-accent: var(--color-medium-1);
+  --dark-surface: var(--color-dark-1);
+
+  /* Default theme (dark) */
+  --bg-primary: var(--dark-bg-primary);
+  --bg-secondary: var(--dark-bg-secondary);
+  --text-primary: var(--dark-text-primary);
+  --text-secondary: var(--dark-text-secondary);
+  --accent: var(--dark-accent);
+  --surface: var(--dark-surface);
+}
+
+[data-theme="light"] {
+  --bg-primary: var(--light-bg-primary);
+  --bg-secondary: var(--light-bg-secondary);
+  --text-primary: var(--light-text-primary);
+  --text-secondary: var(--light-text-secondary);
+  --accent: var(--light-accent);
+  --surface: var(--light-surface);
+}
