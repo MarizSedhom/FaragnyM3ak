@@ -1,4 +1,10 @@
-<div class="profile-container">
+<!-- Loading state -->
+<div class="loading-container" *ngIf="isLoading">
+  <div class="spinner"></div>
+  <p>Loading Profile details...</p>
+</div>
+
+<div class="profile-container" *ngIf="!isLoading">
   <!--Profile Header-->
   <div class="profile-header">
     <div class="profile-info">
@@ -54,7 +60,7 @@
             </div>
           </div>
         </section>
-  
+
         <!--Favorites-->
         <section class="section">
           <div class="section-header">

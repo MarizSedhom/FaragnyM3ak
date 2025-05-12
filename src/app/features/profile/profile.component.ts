@@ -52,6 +52,7 @@ export class ProfileComponent implements OnInit {
   movie: Movie[] = [];
   series: Series[] = [];
 
+
   // Scroll container references
   @ViewChild('continueScroll') continueScroll!: ElementRef;
   @ViewChild('watchlistScroll') watchlistScroll!: ElementRef;

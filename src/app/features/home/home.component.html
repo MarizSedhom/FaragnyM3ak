@@ -1,11 +1,11 @@
 <!-- Dynamic Slide -->
 <div class="w-100">
   <!-- Loading State for Carousel -->
-  <div *ngIf="isLoadingCarousel" class="text-center py-5 bg-dark">
-    <div class="spinner-border text-light" role="status">
+  <div *ngIf="isLoadingCarousel" class="loading-container text-center py-5 ">
+    <div class="spinner" role="status">
       <span class="visually-hidden">Loading...</span>
     </div>
-    <p class="mt-2 text-light">Loading featured content...</p>
+    <p class="mt-2 ">Loading featured content...</p>
   </div>
 
   <!-- Error State for Carousel -->

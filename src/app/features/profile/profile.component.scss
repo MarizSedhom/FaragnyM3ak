@@ -104,7 +104,7 @@
   padding: 1rem 0;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE and Edge */
-  
+
   &::-webkit-scrollbar {
     display: none; /* Chrome, Safari, Opera */
   }
@@ -337,30 +337,30 @@
     width: 60px;
     height: 60px;
   }
-  
+
   .user-icon {
     width: 40px;
     height: 40px;
   }
-  
+
   .profile-title {
     font-size: 22px;
   }
-  
+
   .section-title {
     font-size: 18px;
   }
-  
+
   .continue-card {
     min-width: 180px;
   }
-  
+
   /* UPDATED: Switch back to column on smaller screens */
   .lists-container {
     flex-direction: column;
     gap: 30px;
   }
-  
+
   /* UPDATED: Full width on smaller screens */
   .lists-container .media-section {
     width: 100%;
@@ -371,35 +371,35 @@
   .profile-container {
     padding: 10px;
   }
-  
+
   .profile-pic {
     width: 50px;
     height: 50px;
     margin-right: 10px;
   }
-  
+
   .user-icon {
     width: 30px;
     height: 30px;
   }
-  
+
   .profile-title {
     font-size: 20px;
   }
-  
+
   .continue-card {
     min-width: 150px;
   }
-  
+
   .filter-tabs button {
     padding: 8px 12px;
     font-size: 14px;
   }
-  
+
   .collections-container {
     padding: 10px;
   }
-  
+
   .card-body {
     padding: 10px;
   }
@@ -429,12 +429,12 @@
   scrollbar-width: thin;
   -ms-overflow-style: none; /* IE and Edge */
   width: 100%;
-  
+
   &::-webkit-scrollbar {
     height: 4px;
     background: rgba(255, 255, 255, 0.05);
   }
-  
+
   &::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.2);
     border-radius: 4px;
@@ -451,7 +451,7 @@
 }
 
 /* Media card styles for consistent sizing */
-app-movie-card, 
+app-movie-card,
 app-series-card {
   min-width: 160px;
   flex-shrink: 0;
@@ -464,10 +464,38 @@ app-series-card {
     flex-direction: column;
     gap: 30px;
   }
-  
+
   /* Full width on smaller screens */
   .lists-container .media-section,
   .lists-container .section {
     width: 100%;
   }
+}
+
+
+/* Loading State Styles */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #141414;
+  color: #ffffff;
+  text-align: center;
+}
+
+.spinner {
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top: 4px solid #e50914; /* Netflix red */
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
