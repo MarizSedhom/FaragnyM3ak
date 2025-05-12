@@ -15,8 +15,8 @@
 
   <!-- Nav bar -->
   <nav class="navbar fixed-top">
-    <div class="container d-flex justify-content-center align-items-center">
-      <a class="navbar-brand d-flex align-items-center" href="#">
+    <div class="container d-flex justify-content-between align-items-center">
+      <a class="navbar-brand d-flex align-items-center" routerLink="/">
         <img
           src="https://media.istockphoto.com/id/1642381175/vector/cinema.jpg?s=612x612&w=0&k=20&c=owIct55daWlWRwPbTYLI9Y1IsrgYiqJcpvvgycvxBhE="
           alt="Logo" class="logo me-2" />
@@ -24,6 +24,24 @@
           FaragnyMaak
         </span>
       </a>
+
+      <!-- Auth buttons -->
+      <div class="auth-buttons">
+        <!-- Show these buttons when user is not authenticated -->
+        <ng-container *ngIf="!authService.isAuthenticated()">
+          <a routerLink="/login" class="auth-btn login-btn">
+            <i class="bi bi-box-arrow-in-right me-1"></i>Login
+          </a>
+          <a routerLink="/register" class="auth-btn register-btn">
+            <i class="bi bi-person-plus me-1"></i>Register
+          </a>
+        </ng-container>
+
+        <!-- Show logout button when user is authenticated -->
+        <button *ngIf="authService.isAuthenticated()" class="auth-btn logout-btn" (click)="logout()">
+          <i class="bi bi-box-arrow-right me-1"></i>Logout
+        </button>
+      </div>
     </div>
   </nav>
 
@@ -36,11 +54,20 @@
       <span class="icon-label text-white">Home</span>
     </a>
 
-    <a routerLink="/profile" routerLinkActive="active" class="icon-container position-relative d-block">
+    <!-- Profile link - only show when authenticated -->
+    <a *ngIf="authService.isAuthenticated()" routerLink="/profile" routerLinkActive="active" class="icon-container position-relative d-block">
       <span class="circle-icon d-flex align-items-center justify-content-center">
         <i class="bi bi-person-fill"></i>
       </span>
       <span class="icon-label text-white">Profile</span>
+    </a>
+
+    <!-- Login/Register links - only show when not authenticated -->
+    <a *ngIf="!authService.isAuthenticated()" routerLink="/login" routerLinkActive="active" class="icon-container position-relative d-block">
+      <span class="circle-icon d-flex align-items-center justify-content-center">
+        <i class="bi bi-box-arrow-in-right"></i>
+      </span>
+      <span class="icon-label text-white">Login</span>
     </a>
 
     <a routerLink="/movie" routerLinkActive="active" class="icon-container position-relative d-block">

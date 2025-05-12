@@ -1,9 +1,11 @@
 import { Component, ElementRef, ViewChild, HostListener, AfterViewInit } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterModule } from '@angular/router';
+import { AuthService } from '../../../core/auth/Service/authService';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-navbar',
-  imports: [RouterLink, RouterLinkActive,RouterModule],
+  imports: [RouterLink, RouterLinkActive, RouterModule, CommonModule],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
   standalone: true
@@ -12,7 +14,15 @@ export class NavbarComponent implements AfterViewInit {
   @ViewChild('searchContainer') searchContainer!: ElementRef;
   @ViewChild('searchInput') searchInput!: ElementRef;
 
-  constructor(private router : Router) {}
+  constructor(
+    private router: Router,
+    public authService: AuthService
+  ) {}
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
+  }
 
   ngAfterViewInit() {
     // Initialize search functionality after view is initialized

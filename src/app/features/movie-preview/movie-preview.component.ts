@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MovieService, MovieDetail, RelatedMovie ,MovieCast} from '../../services/movie.service';
 import { HttpClientModule } from '@angular/common/http';
 import { switchMap, of, catchError, forkJoin } from 'rxjs';
@@ -9,6 +9,7 @@ import { Movie } from '../../shared/models/movie.model';
 import { UserListsService, UserReview } from '../profile/services/user-lists.service';
 import { environment } from '../../../environments/environment';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../core/auth/Service/authService';
 
 
 @Component({
@@ -41,7 +42,9 @@ export class MoviePreviewComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private movieService: MovieService,
-    private listServices: UserListsService
+    private listServices: UserListsService,
+    public authService: AuthService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -50,11 +53,14 @@ export class MoviePreviewComponent implements OnInit {
       if (id) {
         this.movieId = parseInt(id, 10);
         this.loadMovieData();
-        this.checkFavoriteStatus(this.movieId.toString()); // Check if already in favorites
-        this.checkWatchlistStatus(this.movieId.toString()); // Check if already in watchlist
-        this.loadMovieVideos(); // Fetch all videos for the movie
-        this.loadMovieCast(); // New method to fetch cast data
-        this.checkUserReview(); // Check if the user has already reviewed this movie
+        // Only check favorite/watchlist status if user is authenticated
+        if (this.authService.isAuthenticated()) {
+          this.checkFavoriteStatus(this.movieId.toString());
+          this.checkWatchlistStatus(this.movieId.toString());
+          this.checkUserReview();
+        }
+        this.loadMovieVideos();
+        this.loadMovieCast();
       }
     });
   }
@@ -69,7 +75,6 @@ export class MoviePreviewComponent implements OnInit {
       switchMap(movie => {
         this.movie = movie;
 
-        // If there are related movies, fetch them. Otherwise, return empty array
         if (movie.related && movie.related.length > 0) {
           return this.movieService.getRelatedMovies(this.movieId!);
         }
@@ -175,22 +180,14 @@ export class MoviePreviewComponent implements OnInit {
     });
   }
 
-  ToggleMovieToWatchlist() {
-    if (!this.movie) return;
-
-    const movieId = this.movie.id.toString();
-
-    if (!this.isWatchlist) {
-      this.listServices.addMovieToWatchlist(movieId).subscribe({
-        next: () => {
-          this.isWatchlist = true;
-        },
-        error: (err) => {
-          console.error('Error adding to watchlist:', err);
-        }
-      });
-    } else {
-      this.listServices.removeMovieFromWatchlist(movieId).subscribe({
+  ToggleMovieToWatchlist(): void {
+    if (!this.authService.isAuthenticated()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    
+    if (this.isWatchlist) {
+      this.listServices.removeMovieFromWatchlist(this.movieId!.toString()).subscribe({
         next: () => {
           this.isWatchlist = false;
         },
@@ -198,12 +195,26 @@ export class MoviePreviewComponent implements OnInit {
           console.error('Error removing from watchlist:', err);
         }
       });
+    } else {
+      this.listServices.addMovieToWatchlist(this.movieId!.toString()).subscribe({
+        next: () => {
+          this.isWatchlist = true;
+        },
+        error: (err) => {
+          console.error('Error adding to watchlist:', err);
+        }
+      });
     }
   }
 
-  toggleFavorite(id: string): void {
+  toggleFavorite(movieId: string): void {
+    if (!this.authService.isAuthenticated()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    
     if (this.isFavorite) {
-      this.listServices.removeMovieFromFavorites(id).subscribe({
+      this.listServices.removeMovieFromFavorites(movieId).subscribe({
         next: () => {
           this.isFavorite = false;
         },
@@ -212,7 +223,7 @@ export class MoviePreviewComponent implements OnInit {
         }
       });
     } else {
-      this.listServices.addMovieToFavorites(id).subscribe({
+      this.listServices.addMovieToFavorites(movieId).subscribe({
         next: () => {
           this.isFavorite = true;
         },
@@ -389,16 +400,19 @@ export class MoviePreviewComponent implements OnInit {
   }
 
   navigateToWatch(): void {
-    if (!this.hasWatchableVideo || !this.movieId || !this.movieId) return;
-    // Mark as watched
+    if (!this.authService.isAuthenticated()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    
+    if (!this.hasWatchableVideo || !this.movieId) return;
+    
     this.listServices.addMovieToTracking(this.movieId.toString()).subscribe({
       next: () => {
-        // Navigate to the watch page (assuming /watch/:watchid route)
         window.location.href = `/watch?watchid=${this.movieId}&type=movie`;
       },
       error: (err) => {
         console.error('Error marking as watched:', err);
-        // Still navigate even if marking as watched fails
         window.location.href = `/watch?watchid=${this.movieId}&type=movie`;
       }
     });

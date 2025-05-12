@@ -330,7 +330,7 @@ AdmingetTopRatedSeries(): Observable<{ totalResults: number, series: Series[] }>
     return {
       id: series.id,
       title: series.name, // TV shows use 'name' instead of 'title' in TMDb API
-      imageUrl: this.getImageUrl(series.poster_path, 'w342'),
+      imageUrl: this.getImageUrl(series.poster_path, 'w342') || environment.ThemovieDB.nullImageUrl,
       backdropUrl: this.getImageUrl(series.backdrop_path, 'original'),
       rating: series.vote_average, // TMDb uses 10-point scale
       ratingCount: series.vote_count,
@@ -376,7 +376,7 @@ AdmingetTopRatedSeries(): Observable<{ totalResults: number, series: Series[] }>
   // Helper to get image URL
   private getImageUrl(path: string | null, size: string): string {
     if (!path) {
-      return environment.ThemovieDB.nullImageUrl || 'assets/images/no-image.png'; // Fallback image
+      return environment.ThemovieDB.nullImageUrl; // Fallback image
     }
     return `${this.imageBaseUrl}${size}${path}`;
   }

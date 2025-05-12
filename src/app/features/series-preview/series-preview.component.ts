@@ -1,6 +1,6 @@
 import { SeriesCardComponent } from '../../shared/components/series-card/series-card.component';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SeriesService } from '../../services/series.service';
 import { Series, SeriesCast } from '../../shared/models/series.model';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -9,6 +9,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { UserListsService, UserReview } from '../../features/profile/services/user-lists.service';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../core/auth/Service/authService';
 
 @Component({
   selector: 'app-series-preview',
@@ -46,19 +47,23 @@ export class SeriesPreviewComponent implements OnInit {
     private route: ActivatedRoute,
     private seriesService: SeriesService,
     private sanitizer: DomSanitizer,
-    private listServices: UserListsService
+    private listServices: UserListsService,
+    public authService: AuthService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
-    // Listen to changes in the route parameter (id)
     this.route.paramMap.subscribe(params => {
-      const seriesId = params.get('id');
-      this.seriesID = seriesId;
-    if (seriesId) {
-        this.loadSeriesData(seriesId); // Pass seriesId directly
-        this.checkFavoriteStatus(seriesId); // Check if already in favorites
-        this.checkWatchlistStatus(seriesId); // Check if already in watchlist
-        this.checkUserReview(seriesId); // Check if user has already reviewed
+      const id = params.get('id');
+      if (id) {
+        this.seriesID = id;
+        this.loadSeriesData();
+        // Only check favorite/watchlist status if user is authenticated
+        if (this.authService.isAuthenticated()) {
+          this.checkFavoriteStatus(id);
+          this.checkWatchlistStatus(id);
+          this.checkUserReview();
+        }
       } else {
         this.error = 'Series ID not found';
         this.loading = false;
@@ -66,15 +71,15 @@ export class SeriesPreviewComponent implements OnInit {
     });
   }
 
-  loadSeriesData(seriesId: string): void {
+  loadSeriesData(): void {
     this.loading = true;
     this.error = null;
 
     forkJoin({
-      series: this.seriesService.getSeriesById(seriesId),
-      similar: this.seriesService.getSimilarSeries(seriesId).pipe(catchError(() => of([]))),
-      cast: this.seriesService.getSeriesCast(seriesId).pipe(catchError(() => of([]))),
-      trailer: this.seriesService.getSeriesTrailers(seriesId).pipe(catchError(() => of(null)))
+      series: this.seriesService.getSeriesById(this.seriesID!),
+      similar: this.seriesService.getSimilarSeries(this.seriesID!).pipe(catchError(() => of([]))),
+      cast: this.seriesService.getSeriesCast(this.seriesID!).pipe(catchError(() => of([]))),
+      trailer: this.seriesService.getSeriesTrailers(this.seriesID!).pipe(catchError(() => of(null)))
     }).subscribe({
       next: (data) => {
         this.series = data.series;
@@ -92,7 +97,7 @@ export class SeriesPreviewComponent implements OnInit {
 
         // Load season episode counts
         if (this.series && this.series.seasons! > 0) {
-          this.seriesService.getAllSeasonEpisodeCounts(seriesId, this.series.seasons!)
+          this.seriesService.getAllSeasonEpisodeCounts(this.seriesID!, this.series.seasons!)
             .subscribe(counts => {
               this.seasonEpisodeCounts = counts;
             });
@@ -145,7 +150,7 @@ export class SeriesPreviewComponent implements OnInit {
   retry(): void {
     const seriesId = this.series?.id.toString() || this.route.snapshot.paramMap.get('id');
     if (seriesId) {
-      this.loadSeriesData(seriesId);
+      this.loadSeriesData();
     }
   }
 
@@ -176,22 +181,14 @@ export class SeriesPreviewComponent implements OnInit {
     });
   }
 
-  ToggleSeriesToWatchlist() {
-    if (!this.series) return;
-
-    const seriesId = this.series.id.toString();
-
-    if (!this.isWatchlist) {
-      this.listServices.addSeriesToWatchlist(seriesId).subscribe({
-        next: () => {
-          this.isWatchlist = true;
-        },
-        error: (err) => {
-          console.error('Error adding to watchlist:', err);
-        }
-      });
-    } else {
-      this.listServices.removeSeriesFromWatchlist(seriesId).subscribe({
+  ToggleSeriesToWatchlist(): void {
+    if (!this.authService.isAuthenticated()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    
+    if (this.isWatchlist) {
+      this.listServices.removeSeriesFromWatchlist(this.seriesID!).subscribe({
         next: () => {
           this.isWatchlist = false;
         },
@@ -199,12 +196,26 @@ export class SeriesPreviewComponent implements OnInit {
           console.error('Error removing from watchlist:', err);
         }
       });
+    } else {
+      this.listServices.addSeriesToWatchlist(this.seriesID!).subscribe({
+        next: () => {
+          this.isWatchlist = true;
+        },
+        error: (err) => {
+          console.error('Error adding to watchlist:', err);
+        }
+      });
     }
   }
 
-  toggleFavorite(id: string): void {
+  toggleFavorite(seriesId: string): void {
+    if (!this.authService.isAuthenticated()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    
     if (this.isFavorite) {
-      this.listServices.removeSeriesFromFavorites(id).subscribe({
+      this.listServices.removeSeriesFromFavorites(seriesId).subscribe({
         next: () => {
           this.isFavorite = false;
         },
@@ -213,7 +224,7 @@ export class SeriesPreviewComponent implements OnInit {
         }
       });
     } else {
-      this.listServices.addSeriesToFavorites(id).subscribe({
+      this.listServices.addSeriesToFavorites(seriesId).subscribe({
         next: () => {
           this.isFavorite = true;
         },
@@ -225,26 +236,27 @@ export class SeriesPreviewComponent implements OnInit {
   }
 
   navigateToWatch(): void {
-    if (!this.hasWatchableVideo) return;
-    // Mark as watched
-    this.listServices.addSeriesToTracking(this.seriesID!.toString()).subscribe({
+    if (!this.authService.isAuthenticated()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+    
+    if (!this.seriesID) return;
+    
+    this.listServices.addSeriesToTracking(this.seriesID).subscribe({
       next: () => {
-        // Navigate to the watch page (assuming /watch/:watchid route)
-        window.location.href = `/watch?watchid=${this.seriesID}&type=tv`;
+        window.location.href = `/watch?watchid=${this.seriesID}&type=series`;
       },
       error: (err) => {
         console.error('Error marking as watched:', err);
-        // Still navigate even if marking as watched fails
-        window.location.href = `/watch?watchid=${this.seriesID}&type=tv`;
+        window.location.href = `/watch?watchid=${this.seriesID}&type=series`;
       }
     });
   }
 
-  // New methods for handling reviews
-
   // Check if user has already reviewed this series
-  checkUserReview(seriesId: string): void {
-    this.listServices.getUserSeriesReview(seriesId).subscribe({
+  checkUserReview(): void {
+    this.listServices.getUserSeriesReview(this.seriesID!).subscribe({
       next: (review) => {
         if (review) {
           this.userHasReview = true;
@@ -266,11 +278,20 @@ export class SeriesPreviewComponent implements OnInit {
 
   // Set user rating when clicking on stars
   setUserRating(rating: number): void {
+    if (!this.authService.isAuthenticated()) {
+      this.router.navigate(['/login']);
+      return;
+    }
     this.userRating = rating;
   }
 
   // Submit or update a review for the series
   submitReview(): void {
+    if (!this.authService.isAuthenticated()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
     if (!this.series || !this.userRating) return;
 
     this.reviewSubmitting = true;
@@ -288,11 +309,11 @@ export class SeriesPreviewComponent implements OnInit {
     observable.subscribe({
       next: () => {
         // After submitting, refresh the user's review data
-        this.checkUserReview(seriesId);
+        this.checkUserReview();
         this.reviewSubmitting = false;
 
         // Optionally reload the series to see the updated reviews
-        this.loadSeriesData(seriesId);
+        this.loadSeriesData();
       },
       error: (err) => {
         console.error('Error submitting review:', err);
@@ -303,6 +324,11 @@ export class SeriesPreviewComponent implements OnInit {
 
   // Delete the user's review
   deleteReview(): void {
+    if (!this.authService.isAuthenticated()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
     if (!this.series || !this.userHasReview) return;
 
     this.reviewSubmitting = true;
@@ -317,7 +343,7 @@ export class SeriesPreviewComponent implements OnInit {
         this.reviewSubmitting = false;
 
         // Optionally reload the series to see the updated reviews
-        this.loadSeriesData(seriesId);
+        this.loadSeriesData();
       },
       error: (err) => {
         console.error('Error deleting review:', err);
@@ -328,6 +354,11 @@ export class SeriesPreviewComponent implements OnInit {
 
   // Scroll to review form when edit button is clicked
   editReview(): void {
+    if (!this.authService.isAuthenticated()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
     this.switchTab('reviews');
 
     // Make sure we're in the reviews tab before scrolling
