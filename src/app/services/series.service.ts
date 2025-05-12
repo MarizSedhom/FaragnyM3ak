@@ -244,25 +244,16 @@ AdmingetTopRatedSeries(): Observable<{ totalResults: number, series: Series[] }>
   );
 }
 
-  getGenres(): Observable<{ genre: string, count: number }[]> {
-  return this.http.get(`${this.apiBaseUrl}/genre/tv/list?api_key=${this.apiKey}&language=en-US`)
-    .pipe(
-      map((response: any) => {
-        // Transform the response into an array of genres with count
-        const genres = response.genres.map((genre: any) => ({
-          genre: genre.name,
-          count: 0  // You can update the count if needed based on your logic
-        }));
-        return genres;
-      }),
-      catchError(error => {
-        console.error('Error fetching genres:', error);
-        return of([]); // Return an empty array on error
-      })
-    );
-}
-
-
+// getSeriesGenres(): Observable<{ id: number, name: string }[]> {
+//   return this.http.get(`${this.apiBaseUrl}/genre/tv/list?api_key=${this.apiKey}&language=en-US`)
+//     .pipe(
+//       map((response: any) => response.genres),
+//       catchError(error => {
+//         console.error('Error fetching TV genres:', error);
+//         return of([]);
+//       })
+//     );
+// }
 //-----------------------------------------------------------------------------
   // Transform basic series data to match your Series interface
   private transformSeriesData(series: any): Series {

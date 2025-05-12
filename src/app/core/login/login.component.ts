@@ -72,19 +72,47 @@ export class LoginComponent implements OnInit {
 
   // Form submission handler
   onSubmit(): void {
-    this.isSubmitted = true;
-    if (this.myFormVali.valid) {
-      const rawForm = this.myFormVali.getRawValue()
+  this.isSubmitted = true;
+  if (this.myFormVali.valid) {
+    const rawForm = this.myFormVali.getRawValue();
 
-      this.authService.login(rawForm.email!, rawForm.password!)
-        .subscribe({
-          next: () => { 
-            console.log("Registration successful. Navigating...");this.router.navigateByUrl('/profile') },
-          error: (e) => { this.erroMessage = e.code; console.log(rawForm.password!, rawForm.email!) }
-        });
+    this.authService.login(rawForm.email!, rawForm.password!)
+      .subscribe({
+        next: () => {
+          console.log("Login successful. Navigating...");
 
-    } else {
-      console.log("Invalid Inputs");
-    }
+          // Redirect based on email
+          if (rawForm.email === 'admin@faragnymaak.com') {
+            this.router.navigateByUrl('/admin');
+          } else {
+            this.router.navigateByUrl('/profile');
+          }
+        },
+        error: (e) => {
+          this.erroMessage = e.error?.message || 'Login failed';
+          console.log(rawForm.email!, rawForm.password!);
+        }
+      });
+
+  } else {
+    console.log("Invalid Inputs");
   }
+}
+
+  // onSubmit(): void {
+  //   this.isSubmitted = true;
+  //   if (this.myFormVali.valid) {
+  //     const rawForm = this.myFormVali.getRawValue()
+
+  //     this.authService.login(rawForm.email!, rawForm.password!)
+  //       .subscribe({
+  //         next: () => { 
+  //           console.log("Registration successful. Navigating...");this.router.navigateByUrl('/profile') },
+  //         error: (e) => { this.erroMessage = e.code; console.log(rawForm.password!, rawForm.email!) }
+  //       });
+
+  //   } else {
+  //     console.log("Invalid Inputs");
+  //   }
+  // }
 }
