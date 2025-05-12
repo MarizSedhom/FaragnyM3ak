@@ -46,7 +46,8 @@
       <div class="genre-filter-box">
         <div class="genre-filter-header">
           <h3>Genres</h3>
-          <!-- <button class="clear-filters">Clear</button> -->
+          <button class="clear-filters" (click)="clearGenres()">Clear</button>
+
         </div>
         <label *ngFor="let genre of genres" class="genre-checkbox">
           <input type="checkbox" [value]="genre.id" (change)="toggleGenre(genre.id, $event)" >

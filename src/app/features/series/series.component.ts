@@ -35,6 +35,7 @@ export class SeriesComponent implements OnInit {
     { id: 37, name: 'Western' }
   ];
   selectedGenres: number[] = [];
+  selectedGenresString = "";
   loading = false;
   series: Series[] = [];
   currentPage = 1;
@@ -42,6 +43,7 @@ export class SeriesComponent implements OnInit {
   isInViewport = false;
   pageSize = 20;
   maxPages = 1;
+  category = "airing_today";
 
   constructor(private seriesService: SeriesService, private route: ActivatedRoute) {}
 
@@ -62,19 +64,31 @@ export class SeriesComponent implements OnInit {
       });
   }
 
+clearGenres(): void
+{
+  this.selectedGenres = [];
+  this.selectedGenresString = "";
+  // Clear all checkboxes
+  const checkboxes = document.querySelectorAll('.genre-checkbox input') as NodeListOf<HTMLInputElement>;
+  checkboxes.forEach(checkbox => checkbox.checked = false);
+  this.filterSeries(this.category);
+}
+
 // Toggle genre selection
 toggleGenre(genreId: number, event: Event) {
-  const isChecked = (event.target as HTMLInputElement).checked;
+  const isChecked = (event.target as HTMLInputElement).checked; 
   if (isChecked) {
     this.selectedGenres.push(genreId);
   } else {
     this.selectedGenres = this.selectedGenres.filter(id => id !== genreId);
   }
+  this.filterSeries(this.category);
 }
+
 
 // Get comma-separated string of selected genres
 getSelectedGenresString(): string {
-  return this.selectedGenres.join(',');
+  return this.selectedGenres.join('%2C');
 }
 
 
@@ -86,10 +100,12 @@ filterSeries(category: string): void {
     this.series = []; // Clear the current series list
     this.pageSize = 20; // Reset page size
     this.isInViewport = false; // Reset viewport status
+    this.category = category;
+    this.selectedGenresString = this.getSelectedGenresString();
 
-    switch (category) {
-      case 'airing_today':
-        this.seriesService.getAiringTodaySeriesWithPagination(this.currentPage).subscribe({
+    // switch (category) {
+    //   case 'airing_today':
+        this.seriesService.getCertainSeriesWithPagination(this.currentPage,this.selectedGenresString,this.category).subscribe({
           next: (response) => {
             this.series = response.results;
             this.totalSeries = response.total_results;
@@ -102,63 +118,63 @@ filterSeries(category: string): void {
             this.loading = false;
           }
         });
-        break;
-      case 'on_the_air':
-        this.seriesService.getOnTheAirSeriesWithPagination(this.currentPage).subscribe({
-          next: (response) => {
-            this.series = response.results;
-            this.totalSeries = response.total_results;
-            this.pageSize = 20;
-            this.maxPages = Math.ceil(this.totalSeries / this.pageSize);
-            this.loading = false;
-          },
-          error: (error) => {
-            console.error('Error fetching series:', error);
-            this.loading = false;
-          }
-        });
-        break;
-      case 'popular':
-        this.seriesService.getPopularSeriesWithPagination(this.currentPage).subscribe({
-          next: (response) => {
-            this.series = response.results;
-            this.totalSeries = response.total_results;
-            this.pageSize = 20;
-            this.maxPages = Math.ceil(this.totalSeries / this.pageSize);
-            this.loading = false;
-          },
-          error: (error) => {
-            console.error('Error fetching series:', error);
-            this.loading = false;
-          }
-        });
-        break;
-      case 'top_rated':
-        this.seriesService.getTopRatedSeriesWithPagination(this.currentPage).subscribe({
-          next: (response) => {
-            this.series = response.results;
-            this.totalSeries = response.total_results;
-            this.pageSize = 20;
-            this.maxPages = Math.ceil(this.totalSeries / this.pageSize);
-            this.loading = false;
-          },
-          error: (error) => {
-            console.error('Error fetching series:', error);
-            this.loading = false;
-          }
-        });
-        break;
-      default:
-        this.loading = false;
-        break;
-    }
+    //     break;
+    //   case 'on_the_air':
+    //     this.seriesService.getOnTheAirSeriesWithPagination(this.currentPage).subscribe({
+    //       next: (response) => {
+    //         this.series = response.results;
+    //         this.totalSeries = response.total_results;
+    //         this.pageSize = 20;
+    //         this.maxPages = Math.ceil(this.totalSeries / this.pageSize);
+    //         this.loading = false;
+    //       },
+    //       error: (error) => {
+    //         console.error('Error fetching series:', error);
+    //         this.loading = false;
+    //       }
+    //     });
+    //     break;
+    //   case 'popular':
+    //     this.seriesService.getPopularSeriesWithPagination(this.currentPage).subscribe({
+    //       next: (response) => {
+    //         this.series = response.results;
+    //         this.totalSeries = response.total_results;
+    //         this.pageSize = 20;
+    //         this.maxPages = Math.ceil(this.totalSeries / this.pageSize);
+    //         this.loading = false;
+    //       },
+    //       error: (error) => {
+    //         console.error('Error fetching series:', error);
+    //         this.loading = false;
+    //       }
+    //     });
+    //     break;
+    //   case 'top_rated':
+    //     this.seriesService.getTopRatedSeriesWithPagination(this.currentPage).subscribe({
+    //       next: (response) => {
+    //         this.series = response.results;
+    //         this.totalSeries = response.total_results;
+    //         this.pageSize = 20;
+    //         this.maxPages = Math.ceil(this.totalSeries / this.pageSize);
+    //         this.loading = false;
+    //       },
+    //       error: (error) => {
+    //         console.error('Error fetching series:', error);
+    //         this.loading = false;
+    //       }
+    //     });
+    //     break;
+    //   default:
+    //     this.loading = false;
+    //     break;
+    // }
   };
 
 
 
 loadSeries(): void {
   this.loading = true;
-  this.seriesService.getAiringTodaySeriesWithPagination(this.currentPage).subscribe({
+  this.seriesService.getCertainSeriesWithPagination(this.currentPage,this.selectedGenresString,this.category).subscribe({
     next: (response) => {
       this.series = response.results;
       this.totalSeries = response.total_results;
