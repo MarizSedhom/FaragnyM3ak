@@ -39,23 +39,77 @@ import { RouterModule } from '@angular/router';
 
 
 export class MoviesComponent implements OnInit {
-  loading = false;
+    genres = [
+    { id: 28, name: 'Action' },
+    { id: 12, name: 'Adventure' },
+    { id: 16, name: 'Animation' },
+    { id: 35, name: 'Comedy' },
+    { id: 80, name: 'Crime' },
+    { id: 99, name: 'Documentary' },
+    { id: 18, name: 'Drama' },
+    { id: 10751, name: 'Family' },
+    { id: 14, name: 'Fantasy' },
+    { id: 36, name: 'History' },
+    { id: 27, name: 'Horror' },
+    { id: 10402, name: 'Music' },
+    { id: 9648, name: 'Mystery' },
+    { id: 10749, name: 'Romance' },
+    { id: 878, name: 'Science Fiction' },
+    { id: 10770, name: 'TV Movie' },
+    { id: 53, name: 'Thriller' },
+    { id: 10752, name: 'War' },
+    { id: 37, name: 'Western' }
+  ];
   movies: Movie[] = [];
   currentPage = 1;
   maxPages = 1;
-
   totalMovies = 0;
   isInViewport = false;
   pageSize = 20;
+  selectedGenres: number[] = [];
+  loading = false;
+
   constructor(private movieService: MovieService, private route: ActivatedRoute)  {}
 
   ngOnInit(): void {
       this.loadMovie();
+      
+      // Add event listeners to filter-category buttons
+      document.querySelectorAll('.filter-category-button').forEach(button => {
+        button.addEventListener('click', () => {
+          // Remove "active" class from all buttons
+          document.querySelectorAll('.filter-category-button').forEach(btn => 
+            btn.classList.remove('active')
+          );
+
+          // Add "active" class to the clicked button
+          button.classList.add('active');
+        });
+      });
   }
+// Toggle genre selection
+toggleGenre(genreId: number, event: Event) {
+  const isChecked = (event.target as HTMLInputElement).checked;
+  if (isChecked) {
+    this.selectedGenres.push(genreId);
+  } else {
+    this.selectedGenres = this.selectedGenres.filter(id => id !== genreId);
+  }
+}
+
+// Get comma-separated string of selected genres
+getSelectedGenresString(): string {
+  return this.selectedGenres.join(',');
+}
+
+// Example: Log selected genres when a button is clicked
+logSelectedGenres() {
+  console.log('Selected Genre IDs:', this.getSelectedGenresString());
+}
 
 loadMovie(): void {
   this.loading = true;
-  this.movieService.getPopularMoviesWithPagination(this.currentPage).subscribe({
+  this.movieService.getNowPlayingMoviesWithPagination(this.currentPage).subscribe({
     next: (response) => {
       this.movies = response.results;
       this.totalMovies = response.total_results;
@@ -69,6 +123,83 @@ loadMovie(): void {
     }
   });
 }
+filterMovies(category: string): void {
+    this.loading = true;
+    this.currentPage = 1; // Reset to the first page when changing category
+    this.maxPages = 1; // Reset max pages
+    this.totalMovies = 0; // Reset total movies count
+    this.movies = []; // Clear the current movies list
+    this.pageSize = 20; // Reset page size
+    this.isInViewport = false; // Reset viewport status
+
+    switch (category) {
+      case 'now_playing':
+        this.movieService.getNowPlayingMoviesWithPagination(this.currentPage).subscribe({
+          next: (response) => {
+            this.movies = response.results;
+            this.totalMovies = response.total_results;
+            this.pageSize = 20;
+            this.maxPages = Math.ceil(this.totalMovies / this.pageSize);
+            this.loading = false;
+          },
+          error: (error) => {
+            console.error('Error fetching series:', error);
+            this.loading = false;
+          }
+        });
+        break;
+      case 'popular':
+        this.movieService.getPopularMoviesWithPagination(this.currentPage).subscribe({
+          next: (response) => {
+            this.movies = response.results;
+            this.totalMovies = response.total_results;
+            this.pageSize = 20;
+            this.maxPages = Math.ceil(this.totalMovies / this.pageSize);
+            this.loading = false;
+          },
+          error: (error) => {
+            console.error('Error fetching series:', error);
+            this.loading = false;
+          }
+        });
+        break;
+      case 'top_rated':
+        this.movieService.getTopRatedMoviesWithPagination(this.currentPage).subscribe({
+          next: (response) => {
+            this.movies = response.results;
+            this.totalMovies = response.total_results;
+            this.pageSize = 20;
+            this.maxPages = Math.ceil(this.totalMovies / this.pageSize);
+            this.loading = false;
+          },
+          error: (error) => {
+            console.error('Error fetching series:', error);
+            this.loading = false;
+          }
+        });
+        break;
+      case 'upcoming':
+        this.movieService.getUpcomingMoviesWithPagination(this.currentPage).subscribe({
+          next: (response) => {
+            this.movies = response.results;
+            this.totalMovies = response.total_results;
+            this.pageSize = 20;
+            this.maxPages = Math.ceil(this.totalMovies / this.pageSize);
+            this.loading = false;
+          },
+          error: (error) => {
+            console.error('Error fetching series:', error);
+            this.loading = false;
+          }
+        });
+        break;
+      default:
+        this.loading = false;
+        break;
+    }
+  };
+
+
 
 goToPreviousPage(): void {
   if (this.currentPage > 1) {

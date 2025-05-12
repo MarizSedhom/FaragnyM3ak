@@ -1,17 +1,47 @@
-<div class="container">
-  <app-movie-card *ngFor="let movie of movies" [movie]="movie" class="movie-card"></app-movie-card>
+<div class="header-container">
+  <div class="page-title">
+    <h1>Movies</h1>
+  </div>
+
+  <div class="navigation-container">
+    <div class="filter-category-container">
+      <button class="filter-category-button active" (click)="filterMovies('now_playing')">Now Playing</button>
+      <button class="filter-category-button" (click)="filterMovies('popular')">Popular</button>
+      <button class="filter-category-button" (click)="filterMovies('top_rated')">Top Rated</button>
+      <button class="filter-category-button" (click)="filterMovies('upcoming')">Upcoming</button>
+    </div>
+  </div>
 </div>
 
-<div class="pagination-container">
-  <button class="pagination-button prev" [disabled]="currentPage <= 1" (click)="goToPreviousPage()">
-    <span class="arrow arrow-left"></span> Previous
-  </button>
-  
-  <div class="pagination-info">
-    Page {{ currentPage }} out of {{maxPages}}
+
+<div class="main-content-wrapper">
+  <div class="container">
+    <app-movie-card *ngFor="let movie of movies" [movie]="movie" class="movie-card"></app-movie-card>
   </div>
-  
-  <button class="pagination-button next" [disabled]="currentPage >= maxPages" (click)="goToNextPage()">
-    Next <span class="arrow arrow-right"></span>
-  </button>
+  <div class="genre-filter-sidebar">
+    <div class="genre-filter-box">
+      <div class="genre-filter-header">
+        <h3>Genres</h3>
+      </div>
+      <label *ngFor="let genre of genres" class="genre-checkbox">
+        <input type="checkbox" [value]="genre.id" (change)="toggleGenre(genre.id, $event)" >
+        <span>{{ genre.name }}</span>
+      </label>
+    </div>
+  </div>
+  <div class="pagination-container">
+    <button class="pagination-button prev" [disabled]="currentPage <= 1" (click)="goToPreviousPage()">
+      <span class="arrow arrow-left"></span> Previous
+    </button>
+    
+    <div class="pagination-info">
+      Page {{ currentPage }} out of {{maxPages}}
+    </div>
+    
+    <button class="pagination-button next" [disabled]="currentPage >= maxPages" (click)="goToNextPage()">
+      Next <span class="arrow arrow-right"></span>
+    </button>
+  </div>
 </div>
+
+

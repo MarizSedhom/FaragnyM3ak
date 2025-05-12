@@ -56,7 +56,54 @@ export class MovieService {
         })
       );
   }
+  
+  getNowPlayingMoviesWithPagination(page: number = 1): Observable<MovieResponse> {
+    return this.http.get(`${this.apiBaseUrl}/movie/now_playing?api_key=${this.apiKey}&page=${page}`)
+    // return this.http.get(`${this.apiBaseUrl}/discover/movie?api_key=${this.apiKey}&page=${page}&with_genres=28%2C
+      .pipe(
+        map((response: any) => ({
+          results: response.results.map((movie: any) => this.transformMovieData(movie)),
+          total_pages: response.total_pages,
+          total_results: response.total_results,
+          page: response.page
+        })),
+        catchError(error => {
+          console.error('Error fetching now playing movies:', error);
+          throw error;
+        })
+      );
+  }
 
+    getTopRatedMoviesWithPagination(page: number = 1): Observable<MovieResponse> {
+    return this.http.get(`${this.apiBaseUrl}/movie/top_rated?api_key=${this.apiKey}&page=${page}`)
+      .pipe(
+        map((response: any) => ({
+          results: response.results.map((movie: any) => this.transformMovieData(movie)),
+          total_pages: response.total_pages,
+          total_results: response.total_results,
+          page: response.page
+        })),
+        catchError(error => {
+          console.error('Error fetching top rated movies:', error);
+          throw error;
+        })
+      );
+  }
+    getUpcomingMoviesWithPagination(page: number = 1): Observable<MovieResponse> {
+    return this.http.get(`${this.apiBaseUrl}/movie/upcoming?api_key=${this.apiKey}&page=${page}`)
+      .pipe(
+        map((response: any) => ({
+          results: response.results.map((movie: any) => this.transformMovieData(movie)),
+          total_pages: response.total_pages,
+          total_results: response.total_results,
+          page: response.page
+        })),
+        catchError(error => {
+          console.error('Error fetching upcoming movies:', error);
+          throw error;
+        })
+      );
+  }
   // Search movies by query
   searchMovies(query: string): Observable<Movie[]> {
     if (!query || query.trim() === '') {
