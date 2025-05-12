@@ -57,6 +57,10 @@ export const routes: Routes = [
         loadComponent: () => import('./core/register/register.component').then(m => m.RegisterComponent)
     },
     {
+        path: 'pay',
+        loadComponent: () => import('./features/payment/payment.component').then(m => m.PaymentComponent)
+    },
+    {
         path: '**',
         loadComponent: () => import('./shared/components/error/error.component').then(m => m.ErrorComponent)
     },
