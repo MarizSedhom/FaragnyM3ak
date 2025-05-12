@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Movie } from '../../../shared/models/movie.model';
 import { Router } from '@angular/router';
@@ -14,6 +14,7 @@ import { environment } from '../../../../environments/environment';
 })
 export class MovieCardComponent {
   @Input() movie!: Movie; // ! indicates that this property will be initialized later
+  @Output() statusChange = new EventEmitter<{ movieId: string, isFavorite: boolean, isWatchlist: boolean }>();
   constructor(private router: Router, private listServices: UserListsService) { }
   isFavorite: boolean = false;
   isWatchlist: boolean = false;
@@ -39,33 +40,67 @@ export class MovieCardComponent {
     });
   }
 
-  toggleFavorite(): void {
+  toggleFavorite(event: MouseEvent): void {
+    // Prevent event bubbling to parent elements
+    event.stopPropagation();
+    
     if (!this.movie) return;
 
     const movieId = this.movie.id.toString();
+    
+    // Optimistically update the UI
+    this.isFavorite = !this.isFavorite;
+
+    // Emit the status change
+    this.statusChange.emit({
+      movieId,
+      isFavorite: this.isFavorite,
+      isWatchlist: this.isWatchlist
+    });
 
     const action = this.isFavorite
-      ? this.listServices.removeMovieFromFavorites(movieId)
-      : this.listServices.addMovieToFavorites(movieId);
+      ? this.listServices.addMovieToFavorites(movieId)
+      : this.listServices.removeMovieFromFavorites(movieId);
 
     action.subscribe({
-      next: () => this.isFavorite = !this.isFavorite,
-      error: (err) => console.error(`Error ${this.isFavorite ? 'removing from' : 'adding to'} favorites:`, err)
+      error: (err) => {
+        // Revert the optimistic update if there's an error
+        this.isFavorite = !this.isFavorite;
+        console.error(`Error ${this.isFavorite ? 'adding to' : 'removing from'} favorites:`, err);
+        // You could also show a toast/notification here to inform the user
+      }
     });
   }
 
-  toggleWatchlist(): void {
+  toggleWatchlist(event: MouseEvent): void {
+    // Prevent event bubbling to parent elements
+    event.stopPropagation();
+    
     if (!this.movie) return;
 
     const movieId = this.movie.id.toString();
+    
+    // Optimistically update the UI
+    this.isWatchlist = !this.isWatchlist;
+
+    // Emit the status change
+    this.statusChange.emit({
+      movieId,
+      isFavorite: this.isFavorite,
+      isWatchlist: this.isWatchlist
+    });
 
     const action = this.isWatchlist
-      ? this.listServices.removeMovieFromWatchlist(movieId)
-      : this.listServices.addMovieToWatchlist(movieId);
+      ? this.listServices.addMovieToWatchlist(movieId)
+      : this.listServices.removeMovieFromWatchlist(movieId);
 
     action.subscribe({
-      next: () => this.isWatchlist = !this.isWatchlist,
-      error: (err) => console.error(`Error ${this.isWatchlist ? 'removing from' : 'adding to'} watchlist:`, err)
+      error: (err) => {
+        // Revert the optimistic update if there's an error
+        this.isWatchlist = !this.isWatchlist;
+        console.error(`Error ${this.isWatchlist ? 'adding to' : 'removing from'} watchlist:`, err);
+        // You could also show a toast/notification here to inform the user
+      }
     });
   }
 

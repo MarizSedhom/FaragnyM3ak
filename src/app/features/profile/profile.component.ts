@@ -316,4 +316,67 @@ export class ProfileComponent implements OnInit {
     return currentIndex < maxPages - 1;
   }
 
+  // Add these new methods to handle immediate updates
+  updateMovieStatus(movieId: string, isFavorite: boolean, isWatchlist: boolean): void {
+    // Update the local arrays immediately
+    if (isFavorite) {
+      if (!this.moviesFavorites.includes(movieId)) {
+        this.moviesFavorites.push(movieId);
+      }
+    } else {
+      this.moviesFavorites = this.moviesFavorites.filter(id => id !== movieId);
+    }
+
+    if (isWatchlist) {
+      if (!this.moviesWatchlist.includes(movieId)) {
+        this.moviesWatchlist.push(movieId);
+      }
+    } else {
+      this.moviesWatchlist = this.moviesWatchlist.filter(id => id !== movieId);
+    }
+
+    // Update the mediaItems array to reflect the changes
+    this.mediaItems = this.mediaItems.map(item => {
+      if (item.type === 'movie' && item.id.toString() === movieId) {
+        return {
+          ...item,
+          isFavorite: isFavorite,
+          watched: item.watched // preserve the watched status
+        };
+      }
+      return item;
+    });
+  }
+
+  updateSeriesStatus(seriesId: string, isFavorite: boolean, isWatchlist: boolean): void {
+    // Update the local arrays immediately
+    if (isFavorite) {
+      if (!this.seriesFavorites.includes(seriesId)) {
+        this.seriesFavorites.push(seriesId);
+      }
+    } else {
+      this.seriesFavorites = this.seriesFavorites.filter(id => id !== seriesId);
+    }
+
+    if (isWatchlist) {
+      if (!this.seriesWatchlist.includes(seriesId)) {
+        this.seriesWatchlist.push(seriesId);
+      }
+    } else {
+      this.seriesWatchlist = this.seriesWatchlist.filter(id => id !== seriesId);
+    }
+
+    // Update the mediaItems array to reflect the changes
+    this.mediaItems = this.mediaItems.map(item => {
+      if (item.type === 'series' && item.id.toString() === seriesId) {
+        return {
+          ...item,
+          isFavorite: isFavorite,
+          watched: item.watched // preserve the watched status
+        };
+      }
+      return item;
+    });
+  }
+
 }
