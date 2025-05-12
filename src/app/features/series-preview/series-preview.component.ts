@@ -7,13 +7,13 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { forkJoin, of, catchError } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import{UserListsService} from'../../features/profile/services/user-lists.service';
-
+import { UserListsService, UserReview } from '../../features/profile/services/user-lists.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-series-preview',
-  standalone:true,
-  imports: [CommonModule, HttpClientModule, SeriesCardComponent],
+  standalone: true,
+  imports: [CommonModule, HttpClientModule, SeriesCardComponent, FormsModule],
   templateUrl: './series-preview.component.html',
   styleUrls: ['./series-preview.component.scss']
 })
@@ -29,6 +29,13 @@ export class SeriesPreviewComponent implements OnInit {
   isFavorite = false;
   isWatchlist = false;
 
+  // Review-related properties
+  userRating: number = 0;
+  userReviewComment: string = '';
+  userHasReview: boolean = false;
+  userReview: UserReview | null = null;
+  reviewSubmitting: boolean = false;
+
   trailerUrl: string | null = null;
   safeTrailerUrl: SafeResourceUrl | null = null;
   showTrailer = false;
@@ -37,84 +44,29 @@ export class SeriesPreviewComponent implements OnInit {
     private route: ActivatedRoute,
     private seriesService: SeriesService,
     private sanitizer: DomSanitizer,
-    private listServices:UserListsService
+    private listServices: UserListsService
   ) { }
 
-  /*ngOnInit(): void {
-    this.loadSeriesData();
-  }*/
-
-    ngOnInit(): void {
-  // Listen to changes in the route parameter (id)
-  this.route.paramMap.subscribe(params => {
-    const seriesId = params.get('id');
-    if (seriesId) {
-      this.loadSeriesData(seriesId); // Pass seriesId directly
-      this.checkFavoriteStatus(seriesId); // Check if already in favorites
-      this.checkWatchlistStatus(seriesId); // Check if already in watchlist
-    } else {
-      this.error = 'Series ID not found';
-      this.loading = false;
-    }
-  });
-}
-
-loadSeriesData(seriesId: string): void {
-  this.loading = true;
-  this.error = null;
-
-  forkJoin({
-    series: this.seriesService.getSeriesById(seriesId),
-    similar: this.seriesService.getSimilarSeries(seriesId).pipe(catchError(() => of([]))),
-    cast: this.seriesService.getSeriesCast(seriesId).pipe(catchError(() => of([]))),
-    trailer: this.seriesService.getSeriesTrailers(seriesId).pipe(catchError(() => of(null)))
-  }).subscribe({
-    next: (data) => {
-      this.series = data.series;
-      this.similarSeries = data.similar;
-      this.seriesCast = data.cast;
-
-      // Trailer
-      this.trailerUrl = data.trailer;
-      if (this.trailerUrl) {
-        this.safeTrailerUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
-          `https://www.youtube.com/embed/${this.trailerUrl}`
-        );
+  ngOnInit(): void {
+    // Listen to changes in the route parameter (id)
+    this.route.paramMap.subscribe(params => {
+      const seriesId = params.get('id');
+      if (seriesId) {
+        this.loadSeriesData(seriesId); // Pass seriesId directly
+        this.checkFavoriteStatus(seriesId); // Check if already in favorites
+        this.checkWatchlistStatus(seriesId); // Check if already in watchlist
+        this.checkUserReview(seriesId); // Check if user has already reviewed
+      } else {
+        this.error = 'Series ID not found';
+        this.loading = false;
       }
+    });
+  }
 
-      // Load season episode counts
-      if (this.series && this.series.seasons! > 0) {
-        this.seriesService.getAllSeasonEpisodeCounts(seriesId, this.series.seasons!)
-          .subscribe(counts => {
-            this.seasonEpisodeCounts = counts;
-          });
-      }
-
-      this.loading = false;
-    },
-    error: (err) => {
-      console.error('Error loading series data:', err);
-      this.error = 'Failed to load series data. Please try again.';
-      this.loading = false;
-    }
-  });
-}
-
-
-/*
-  loadSeriesData(): void {
+  loadSeriesData(seriesId: string): void {
     this.loading = true;
     this.error = null;
 
-    const seriesId = this.route.snapshot.paramMap.get('id');
-
-    if (!seriesId) {
-      this.error = 'Series ID not found';
-      this.loading = false;
-      return;
-    }
-
-    // Use forkJoin to fetch all data in parallel
     forkJoin({
       series: this.seriesService.getSeriesById(seriesId),
       similar: this.seriesService.getSimilarSeries(seriesId).pipe(catchError(() => of([]))),
@@ -126,7 +78,7 @@ loadSeriesData(seriesId: string): void {
         this.similarSeries = data.similar;
         this.seriesCast = data.cast;
 
-        // Handle trailer
+        // Trailer
         this.trailerUrl = data.trailer;
         if (this.trailerUrl) {
           this.safeTrailerUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
@@ -134,7 +86,7 @@ loadSeriesData(seriesId: string): void {
           );
         }
 
-        // Load season episode counts if there are seasons
+        // Load season episode counts
         if (this.series && this.series.seasons! > 0) {
           this.seriesService.getAllSeasonEpisodeCounts(seriesId, this.series.seasons!)
             .subscribe(counts => {
@@ -151,7 +103,7 @@ loadSeriesData(seriesId: string): void {
       }
     });
   }
-*/
+
   // Format a date to a more readable format
   formatDate(dateString: string): string {
     if (!dateString) return 'Unknown';
@@ -187,15 +139,17 @@ loadSeriesData(seriesId: string): void {
   }
 
   retry(): void {
-    this.loadSeriesData(this.series!.id.toString());
+    const seriesId = this.series?.id.toString() || this.route.snapshot.paramMap.get('id');
+    if (seriesId) {
+      this.loadSeriesData(seriesId);
+    }
   }
 
   switchTab(tab: string): void {
     this.activeTab = tab;
   }
 
-
-    checkFavoriteStatus(seriesId: string): void {
+  checkFavoriteStatus(seriesId: string): void {
     this.listServices.isSeriesInFavouriteList(seriesId).subscribe({
       next: (isFavorite) => {
         this.isFavorite = isFavorite;
@@ -206,7 +160,7 @@ loadSeriesData(seriesId: string): void {
     });
   }
 
-  // New method to check watchlist status
+  // Check watchlist status
   checkWatchlistStatus(seriesId: string): void {
     this.listServices.isSeriesInWatchlist(seriesId).subscribe({
       next: (isWatchlist) => {
@@ -218,7 +172,7 @@ loadSeriesData(seriesId: string): void {
     });
   }
 
-ToggleSeriesToWatchlist() {
+  ToggleSeriesToWatchlist() {
     if (!this.series) return;
 
     const seriesId = this.series.id.toString();
@@ -244,7 +198,7 @@ ToggleSeriesToWatchlist() {
     }
   }
 
-toggleFavorite(id: string): void {
+  toggleFavorite(id: string): void {
     if (this.isFavorite) {
       this.listServices.removeSeriesFromFavorites(id).subscribe({
         next: () => {
@@ -264,5 +218,141 @@ toggleFavorite(id: string): void {
         }
       });
     }
+  }
+
+  // New methods for handling reviews
+
+  // Check if user has already reviewed this series
+  checkUserReview(seriesId: string): void {
+    this.listServices.getUserSeriesReview(seriesId).subscribe({
+      next: (review) => {
+        if (review) {
+          this.userHasReview = true;
+          this.userReview = review;
+          this.userRating = review.rating;
+          this.userReviewComment = review.comment;
+        } else {
+          this.userHasReview = false;
+          this.userReview = null;
+          this.userRating = 0;
+          this.userReviewComment = '';
+        }
+      },
+      error: (err) => {
+        console.error('Error checking user review:', err);
+      }
+    });
+  }
+
+  // Set user rating when clicking on stars
+  setUserRating(rating: number): void {
+    this.userRating = rating;
+  }
+
+  // Submit or update a review for the series
+  submitReview(): void {
+    if (!this.series || !this.userRating) return;
+
+    this.reviewSubmitting = true;
+    const seriesId = this.series.id.toString();
+    const review = {
+      rating: this.userRating,
+      comment: this.userReviewComment
+    };
+
+    // Choose whether to update or add a new review
+    const observable = this.userHasReview
+      ? this.listServices.updateSeriesReview(seriesId, review)
+      : this.listServices.addSeriesReview(seriesId, review);
+
+    observable.subscribe({
+      next: () => {
+        // After submitting, refresh the user's review data
+        this.checkUserReview(seriesId);
+        this.reviewSubmitting = false;
+
+        // Optionally reload the series to see the updated reviews
+        this.loadSeriesData(seriesId);
+      },
+      error: (err) => {
+        console.error('Error submitting review:', err);
+        this.reviewSubmitting = false;
+      }
+    });
+  }
+
+  // Delete the user's review
+  deleteReview(): void {
+    if (!this.series || !this.userHasReview) return;
+
+    this.reviewSubmitting = true;
+    const seriesId = this.series.id.toString();
+
+    this.listServices.removeSeriesReview(seriesId).subscribe({
+      next: () => {
+        this.userHasReview = false;
+        this.userReview = null;
+        this.userRating = 0;
+        this.userReviewComment = '';
+        this.reviewSubmitting = false;
+
+        // Optionally reload the series to see the updated reviews
+        this.loadSeriesData(seriesId);
+      },
+      error: (err) => {
+        console.error('Error deleting review:', err);
+        this.reviewSubmitting = false;
+      }
+    });
+  }
+
+  // Scroll to review form when edit button is clicked
+  editReview(): void {
+    this.switchTab('reviews');
+
+    // Make sure we're in the reviews tab before scrolling
+    setTimeout(() => {
+      const reviewForm = document.getElementById('review-form');
+      if (reviewForm) {
+        reviewForm.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
+  }
+
+  // Helper method to generate an array for star display
+  getStarsArray(count: number): any[] {
+    return new Array(count);
+  }
+
+  // Format the date for user reviews
+  formatUserReviewDate(dateInput: any): string {
+    if (!dateInput) return '';
+
+    // Handle both string dates and Firestore timestamps
+    let date;
+    if (typeof dateInput === 'string') {
+      date = new Date(dateInput);
+    } else if (dateInput.toDate && typeof dateInput.toDate === 'function') {
+      // Handle Firestore timestamp
+      date = dateInput.toDate();
+    } else if (dateInput.seconds) {
+      // Handle Firestore timestamp in seconds format
+      date = new Date(dateInput.seconds * 1000);
+    } else if (dateInput instanceof Date) {
+      date = dateInput;
+    } else {
+      return 'Invalid date';
+    }
+
+    // Check if the date is valid
+    if (isNaN(date.getTime())) {
+      return 'Invalid date';
+    }
+
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
   }
 }

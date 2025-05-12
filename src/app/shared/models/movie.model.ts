@@ -36,3 +36,10 @@ export interface RelatedMovie {
   imageUrl: string;
   matchPercentage: number;
 }
+
+export interface MovieCast {
+  id: number;
+  name: string;
+  character: string;
+  profilePath: string;
+}

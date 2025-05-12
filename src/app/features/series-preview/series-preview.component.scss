@@ -568,3 +568,160 @@
     display: block;
   }
 }
+
+.reviews-container {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.review-card {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 20px;
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: translateY(-3px);
+  }
+}
+
+.review-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #e50914;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.user-info {
+  flex: 1;
+
+  .username {
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+
+  .star-rating {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .star {
+      font-size: 12px;
+    }
+
+    .review-date {
+      font-size: 12px;
+      opacity: 0.7;
+    }
+  }
+}
+
+.review-text {
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+.review-actions {
+  display: flex;
+  gap: 15px;
+}
+
+.review-action-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  padding: 5px 0;
+
+  &:hover {
+    color: white;
+  }
+}
+
+// Add Review
+.add-review {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 20px;
+
+  h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+  }
+}
+
+.rating-input {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+
+  .star-selector {
+    display: flex;
+    gap: 5px;
+  }
+
+  .selectable-star {
+    font-size: 20px;
+    cursor: pointer;
+    transition: transform 0.2s;
+
+    &:hover {
+      transform: scale(1.2);
+    }
+  }
+}
+
+.review-textarea {
+  width: 100%;
+  min-height: 100px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 10px;
+  color: white;
+  font-family: inherit;
+  margin-bottom: 15px;
+  resize: vertical;
+
+  &:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+}
+
+.submit-review-btn {
+  background-color: #e50914;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #f40612;
+  }
+}
+.your-review-badge{
+  color: #a1a1a1;
+  font-size: 13px;
+}
