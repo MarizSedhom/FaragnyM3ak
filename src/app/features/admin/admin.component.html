@@ -8,11 +8,7 @@
   </div>
 
   <div class="row mt-4">
-    <!-- <div class="toggle-pie-chart-view">
-  <button class="btn btn-primary" (click)="togglePieChartView()">
-    Switch to {{ currentPieChartView === 'Movies' ? 'Series' : 'Movies' }} Genre Distribution
-  </button>
-</div> -->
+
     <!-- Pie Chart -->
     <div class="col-md-6">
       <div class="chart-card">
@@ -24,6 +20,7 @@
         <div [chart]="genrePieChart"></div>
       </div>
     </div>
+    
 
     <!-- Bar Chart -->
     <div class="col-md-6">

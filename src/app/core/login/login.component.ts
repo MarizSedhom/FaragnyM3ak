@@ -67,40 +67,53 @@ export class LoginComponent implements OnInit {
 
   // Form submission handler
   onSubmit(): void {
-    this.isSubmitted = true;
-    if (this.myFormVali.valid) {
+  this.isSubmitted = true;
+  if (this.myFormVali.valid) {
       this.isLoading = true;
-      const rawForm = this.myFormVali.getRawValue();
+    const rawForm = this.myFormVali.getRawValue();;
 
       if (!rawForm.email || !rawForm.password) {
         this.isLoading = false;
         return;
       }
 
-      this.authService.login(rawForm.email, rawForm.password)
-        .subscribe({
-          next: () => { 
-            console.log("Login successful. Navigating...");
-            this.router.navigateByUrl('/profile');
-          },
-          error: (e) => { 
-            this.erroMessage = e.code; 
-            this.isLoading = false;
-          },
-          complete: () => {
-            this.isLoading = false;
-          }
-        });
-    } else {
-      this.isLoading = false;
-      console.log("Invalid Inputs");
-    }
-  }
+    this.authService.login(rawForm.email!, rawForm.password!)
+      .subscribe({
+        next: () => {
+          console.log("Login successful. Navigating...");
 
-  ngOnInit(): void {
-    // if(this.auth.isAuthed)
-    // {
-    //   this.router.navigate(["/"])
-    // }
+          // Redirect based on email
+          if (rawForm.email === 'admin@faragnymaak.com') {
+            this.router.navigateByUrl('/admin');
+          } else {
+            this.router.navigateByUrl('/profile');
+          }
+        },
+        error: (e) => {
+          this.erroMessage = e.error?.message || 'Login failed';
+          console.log(rawForm.email!, rawForm.password!);
+        }
+      });
+
+  } else {
+    console.log("Invalid Inputs");
   }
+}
+
+  // onSubmit(): void {
+  //   this.isSubmitted = true;
+  //   if (this.myFormVali.valid) {
+  //     const rawForm = this.myFormVali.getRawValue()
+
+  //     this.authService.login(rawForm.email!, rawForm.password!)
+  //       .subscribe({
+  //         next: () => { 
+  //           console.log("Registration successful. Navigating...");this.router.navigateByUrl('/profile') },
+  //         error: (e) => { this.erroMessage = e.code; console.log(rawForm.password!, rawForm.email!) }
+  //       });
+
+  //   } else {
+  //     console.log("Invalid Inputs");
+  //   }
+  // }
 }

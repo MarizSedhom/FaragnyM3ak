@@ -2,6 +2,8 @@ import { Component, ElementRef, ViewChild, HostListener, AfterViewInit } from '@
 import { Router, RouterLink, RouterLinkActive, RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/auth/Service/authService';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../../core/auth/Service/authService';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-navbar',
@@ -11,19 +13,22 @@ import { CommonModule } from '@angular/common';
   standalone: true
 })
 export class NavbarComponent implements AfterViewInit {
+
   @ViewChild('searchContainer') searchContainer!: ElementRef;
   @ViewChild('searchInput') searchInput!: ElementRef;
+  userEmail: string | null = null;
 
-  constructor(
-    private router: Router,
-    public authService: AuthService
-  ) {}
 
+
+  constructor(private router: Router, private authService: AuthService) {
+    this.authService.currentUser$.subscribe(user => {
+      this.userEmail = user?.email ?? null;
+    });
+  }
   logout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
   }
-
   ngAfterViewInit() {
     // Initialize search functionality after view is initialized
     this.initSearchFunctionality();
@@ -89,8 +94,8 @@ export class NavbarComponent implements AfterViewInit {
   @HostListener('document:click', ['$event'])
   handleClickOutside(event: Event) {
     if (this.searchContainer &&
-        !this.searchContainer.nativeElement.contains(event.target) &&
-        this.searchContainer.nativeElement.classList.contains('expanded')) {
+      !this.searchContainer.nativeElement.contains(event.target) &&
+      this.searchContainer.nativeElement.classList.contains('expanded')) {
       this.closeSearch();
     }
   }

@@ -55,12 +55,28 @@
     </a>
 
     <!-- Profile link - only show when authenticated -->
-    <a *ngIf="authService.isAuthenticated()" routerLink="/profile" routerLinkActive="active" class="icon-container position-relative d-block">
+    <!-- <a *ngIf="authService.isAuthenticated()" routerLink="/profile" routerLinkActive="active" class="icon-container position-relative d-block">
       <span class="circle-icon d-flex align-items-center justify-content-center">
         <i class="bi bi-person-fill"></i>
       </span>
       <span class="icon-label text-white">Profile</span>
-    </a>
+    </a> -->
+    <!-- Admin Dashboard link -->
+<a *ngIf="userEmail === 'admin@faragnymaak.com'" routerLink="/admin" routerLinkActive="active" class="icon-container position-relative d-block">
+  <span class="circle-icon d-flex align-items-center justify-content-center">
+    <i class="bi bi-speedometer2"></i>
+  </span>
+  <span class="icon-label text-white">Dashboard</span>
+</a>
+
+<!-- Regular Profile link -->
+<a *ngIf="userEmail !== 'admin@faragnymaak.com'" routerLink="/profile" routerLinkActive="active" class="icon-container position-relative d-block">
+  <span class="circle-icon d-flex align-items-center justify-content-center">
+    <i class="bi bi-person-fill"></i>
+  </span>
+  <span class="icon-label text-white">Profile</span>
+</a>
+
 
     <!-- Login/Register links - only show when not authenticated -->
     <a *ngIf="!authService.isAuthenticated()" routerLink="/login" routerLinkActive="active" class="icon-container position-relative d-block">
