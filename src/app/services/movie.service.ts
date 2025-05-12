@@ -304,6 +304,17 @@ export class MovieService {
     }
     return `${this.imageBaseUrl}${size}${path}`;
   }
+
+  // Get all videos for a movie (trailers, featurettes, etc.)
+  getMovieVideos(movieId: number): Observable<any> {
+    return this.http.get(`${this.apiBaseUrl}/movie/${movieId}/videos?api_key=${this.apiKey}&language=en-US`).pipe(
+      map((response: any) => response),
+      catchError(error => {
+        console.error(`Error fetching videos for movie ${movieId}:`, error);
+        return of({ id: movieId, results: [] });
+      })
+    );
+  }
 }
 export type { RelatedMovie, MovieDetail };
 

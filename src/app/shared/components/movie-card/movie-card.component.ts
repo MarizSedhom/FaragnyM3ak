@@ -14,80 +14,62 @@ import { environment } from '../../../../environments/environment';
 })
 export class MovieCardComponent {
   @Input() movie!: Movie; // ! indicates that this property will be initialized later
-  constructor(private router: Router, private listServices: UserListsService) {}
-  isFavorite:boolean=false;
-  isWatchlist:boolean=false;
+  constructor(private router: Router, private listServices: UserListsService) { }
+  isFavorite: boolean = false;
+  isWatchlist: boolean = false;
 
-checkFavoriteStatus(movieId: string): void {
-    this.listServices.isMovieInFavouriteList(movieId).subscribe({
-      next: (isFavorite) => {
-        this.isFavorite = isFavorite;
-      },
-      error: (err) => {
-        console.error('Error checking favorite status:', err);
-      }
-    });
+  ngOnInit(): void {
+    this.checkMovieStatuses();
   }
+  
 
-  // New method to check watchlist status
-  checkWatchlistStatus(movieId: string): void {
-    this.listServices.isMovieInWatchlist(movieId).subscribe({
-      next: (isWatchlist) => {
-        this.isWatchlist = isWatchlist;
-      },
-      error: (err) => {
-        console.error('Error checking watchlist status:', err);
-      }
-    });
-  }
-
-ToggleMovieToWatchlist() {
+  checkMovieStatuses(): void {
     if (!this.movie) return;
 
     const movieId = this.movie.id.toString();
 
-    if (!this.isWatchlist) {
-      this.listServices.addMovieToWatchlist(movieId).subscribe({
-        next: () => {
-          this.isWatchlist = true;
-        },
-        error: (err) => {
-          console.error('Error adding to watchlist:', err);
-        }
-      });
-    } else {
-      this.listServices.removeMovieFromWatchlist(movieId).subscribe({
-        next: () => {
-          this.isWatchlist = false;
-        },
-        error: (err) => {
-          console.error('Error removing from watchlist:', err);
-        }
-      });
-    }
+    this.listServices.isMovieInFavouriteList(movieId).subscribe({
+      next: (isFav) => this.isFavorite = isFav,
+      error: (err) => console.error('Error checking favorite status:', err)
+    });
+
+    this.listServices.isMovieInWatchlist(movieId).subscribe({
+      next: (inWatchlist) => this.isWatchlist = inWatchlist,
+      error: (err) => console.error('Error checking watchlist status:', err)
+    });
   }
 
-toggleFavorite(id: string): void {
-    if (this.isFavorite) {
-      this.listServices.removeMovieFromFavorites(id).subscribe({
-        next: () => {
-          this.isFavorite = false;
-        },
-        error: (err) => {
-          console.error('Error removing from favorites:', err);
-        }
-      });
-    } else {
-      this.listServices.addMovieToFavorites(id).subscribe({
-        next: () => {
-          this.isFavorite = true;
-        },
-        error: (err) => {
-          console.error('Error adding to favorites:', err);
-        }
-      });
-    }
+  toggleFavorite(): void {
+    if (!this.movie) return;
+
+    const movieId = this.movie.id.toString();
+
+    const action = this.isFavorite
+      ? this.listServices.removeMovieFromFavorites(movieId)
+      : this.listServices.addMovieToFavorites(movieId);
+
+    action.subscribe({
+      next: () => this.isFavorite = !this.isFavorite,
+      error: (err) => console.error(`Error ${this.isFavorite ? 'removing from' : 'adding to'} favorites:`, err)
+    });
   }
+
+  toggleWatchlist(): void {
+    if (!this.movie) return;
+
+    const movieId = this.movie.id.toString();
+
+    const action = this.isWatchlist
+      ? this.listServices.removeMovieFromWatchlist(movieId)
+      : this.listServices.addMovieToWatchlist(movieId);
+
+    action.subscribe({
+      next: () => this.isWatchlist = !this.isWatchlist,
+      error: (err) => console.error(`Error ${this.isWatchlist ? 'removing from' : 'adding to'} watchlist:`, err)
+    });
+  }
+
+  /////////////////////////////////////////////////////////////////////////
 
 
   navigateToMovie(): void {

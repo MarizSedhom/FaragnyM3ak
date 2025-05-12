@@ -1,6 +1,6 @@
 <div class="card">
 
-  <img [src]="movie.imageUrl" [alt]="movie.title" class="card-image" (click)="navigateToMovie()"/>
+  <img [src]="movie.imageUrl" [alt]="movie.title" class="card-image" (click)="navigateToMovie()" />
   <div class="card-overlay">
     <div class="card-content" (click)="navigateToMovie()">
 
@@ -22,8 +22,18 @@
     </div>
 
     <div class="action-buttons d-flex justify-content-center gap-2">
-      <div class="action-button" (click)="toggleFavorite(movie.id.toString())">♥</div>
-      <div class="action-button" (click)="ToggleMovieToWatchlist()">+</div>
+      <!-- Favorite Button: show ♥ if not favorite, show ❤️ if already favorite -->
+      <!-- Favorite Toggle -->
+      <div class="action-button" (click)="toggleFavorite()">
+        {{ isFavorite ? '❤️' : '♥' }}
+      </div>
+
+      <!-- Watchlist Toggle -->
+      <div class="action-button" (click)="toggleWatchlist()">
+        {{ isWatchlist ? '✔️' : '+' }}
+      </div>
+
+
     </div>
   </div>
 </div>

@@ -27,6 +27,9 @@ export class MoviePreviewComponent implements OnInit {
   isWatchlist: boolean = false;
   loading: boolean = true;
   error: string | null = null;
+  movieVideos: any = null; // Store all videos for the movie
+  hasWatchableVideo: boolean = false;
+  mainVideoKey: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -42,6 +45,7 @@ export class MoviePreviewComponent implements OnInit {
         this.loadMovieData();
         this.checkFavoriteStatus(this.movieId.toString()); // Check if already in favorites
         this.checkWatchlistStatus(this.movieId.toString()); // Check if already in watchlist
+        this.loadMovieVideos(); // Fetch all videos for the movie
       }
     });
   }
@@ -120,7 +124,7 @@ export class MoviePreviewComponent implements OnInit {
     });
   }
 
-ToggleMovieToWatchlist() {
+  ToggleMovieToWatchlist() {
     if (!this.movie) return;
 
     const movieId = this.movie.id.toString();
@@ -146,7 +150,7 @@ ToggleMovieToWatchlist() {
     }
   }
 
-toggleFavorite(id: string): void {
+  toggleFavorite(id: string): void {
     if (this.isFavorite) {
       this.listServices.removeMovieFromFavorites(id).subscribe({
         next: () => {
@@ -167,8 +171,6 @@ toggleFavorite(id: string): void {
       });
     }
   }
-
-
 
   setUserRating(rating: number): void {
     this.userRating = rating;
@@ -203,5 +205,42 @@ toggleFavorite(id: string): void {
 
   retry(): void {
     this.loadMovieData();
+  }
+
+  loadMovieVideos(): void {
+    if (!this.movieId) return;
+    this.movieService.getMovieVideos(this.movieId).subscribe({
+      next: (videos) => {
+        this.movieVideos = videos;
+        // Find a main video (prefer Trailer, then Featurette, etc.)
+        const trailer = videos.results?.find((v: any) => v.type === 'Trailer' && v.site === 'YouTube');
+        const featurette = videos.results?.find((v: any) => v.type === 'Featurette' && v.site === 'YouTube');
+        const mainVideo = trailer || featurette || videos.results?.find((v: any) => v.site === 'YouTube');
+        this.mainVideoKey = mainVideo ? mainVideo.key : null;
+        this.hasWatchableVideo = !!this.mainVideoKey;
+      },
+      error: (err) => {
+        this.movieVideos = null;
+        this.hasWatchableVideo = false;
+        this.mainVideoKey = null;
+        console.error('Error loading movie videos:', err);
+      }
+    });
+  }
+
+  navigateToWatch(): void {
+    if (!this.hasWatchableVideo || !this.mainVideoKey || !this.movieId) return;
+    // Mark as watched
+    this.listServices.addMovieToTracking(this.movieId.toString()).subscribe({
+      next: () => {
+        // Navigate to the watch page (assuming /watch/:watchid route)
+        window.location.href = `/watch/${this.mainVideoKey}`;
+      },
+      error: (err) => {
+        console.error('Error marking as watched:', err);
+        // Still navigate even if marking as watched fails
+        window.location.href = `/watch/${this.mainVideoKey}`;
+      }
+    });
   }
 }
