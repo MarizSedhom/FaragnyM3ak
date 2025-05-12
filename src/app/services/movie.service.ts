@@ -274,8 +274,6 @@ export class MovieService {
     );
   }
 
-  //------------------------------------------------------------
-
   // Get movie trailers
   getMovieTrailer(movieId: number): Observable<string | null> {
     return this.http.get(`${this.apiBaseUrl}/movie/${movieId}/videos?api_key=${this.apiKey}&language=en-US`)

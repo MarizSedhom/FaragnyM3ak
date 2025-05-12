@@ -28,8 +28,6 @@ import { RouterModule } from '@angular/router';
   ],
   templateUrl: './movie-card.component.html',
   styleUrls: ['./movie-card.component.scss'],
-  standalone: true,
-
 })
 export class MovieCardComponent {
   @Input() movie!: Movie; // ! indicates that this property will be initialized later
