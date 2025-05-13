@@ -9,7 +9,7 @@ import { Series, SeriesCast, SeriesResponse } from '../shared/models/series.mode
 })
 export class SeriesService {
   private apiBaseUrl = environment.ThemovieDB.apiBaseUrl;
-  private apiKey = environment.ThemovieDB.apiKey;
+  private apiKey = environment.ThemovieDB.api_Key;
   private imageBaseUrl = environment.ThemovieDB.imageBaseUrl;
 
   private genreMap: { [id: number]: string } = {};
