@@ -186,7 +186,7 @@ export class SeriesPreviewComponent implements OnInit {
       this.router.navigate(['/login']);
       return;
     }
-    
+
     if (this.isWatchlist) {
       this.listServices.removeSeriesFromWatchlist(this.seriesID!).subscribe({
         next: () => {
@@ -213,7 +213,7 @@ export class SeriesPreviewComponent implements OnInit {
       this.router.navigate(['/login']);
       return;
     }
-    
+
     if (this.isFavorite) {
       this.listServices.removeSeriesFromFavorites(seriesId).subscribe({
         next: () => {
@@ -240,16 +240,16 @@ export class SeriesPreviewComponent implements OnInit {
       this.router.navigate(['/login']);
       return;
     }
-    
+
     if (!this.seriesID) return;
-    
+
     this.listServices.addSeriesToTracking(this.seriesID).subscribe({
       next: () => {
-        window.location.href = `/watch?watchid=${this.seriesID}&type=series`;
+        window.location.href = `/watch?watchid=${this.seriesID}&type=tv`;
       },
       error: (err) => {
         console.error('Error marking as watched:', err);
-        window.location.href = `/watch?watchid=${this.seriesID}&type=series`;
+        window.location.href = `/watch?watchid=${this.seriesID}&type=tv`;
       }
     });
   }

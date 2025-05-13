@@ -10,7 +10,7 @@ import { Series, SeriesResponse } from '../../shared/models/series.model';
 })
 export class SeriesService {
   private apiBaseUrl = 'https://api.themoviedb.org/3';
-  private apiKey = environment.ThemovieDB.api_Key;
+  private apiKey = environment.ThemovieDB.apiKey;
   private imageBaseUrl = 'https://image.tmdb.org/t/p/';
 
   constructor(private http: HttpClient) { }

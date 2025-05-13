@@ -10,7 +10,7 @@ import { environment } from '../../environments/environment';
 export class MovieService {
   private apiBaseUrl = environment.ThemovieDB.apiBaseUrl;
   private imageBaseUrl = environment.ThemovieDB.imageBaseUrl;
-  private apiKey = environment.ThemovieDB.api_Key;
+  private apiKey = environment.ThemovieDB.apiKey;
 
   constructor(private http: HttpClient) { }
 
