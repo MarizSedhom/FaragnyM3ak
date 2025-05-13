@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MovieService, MovieDetail, RelatedMovie, MovieCast } from '../../services/movie.service';
 import { switchMap, of, catchError } from 'rxjs';
-import { switchMap, of, catchError } from 'rxjs';
 import { MovieCardComponent } from '../../shared/components/movie-card/movie-card.component';
 import { Movie } from '../../shared/models/movie.model';
 import { UserListsService, UserReview } from '../profile/services/user-lists.service';
