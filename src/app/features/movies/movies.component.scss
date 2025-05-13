@@ -51,18 +51,18 @@ body {
   padding: 16px 0;
   margin: 20px 0;
   width: 100%;
-  background-color: rgba(15, 32, 49, 0.8); /* Dark blue semi-transparent */
+  background-color:#1A1423; /* Dark blue semi-transparent */
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   grid-column: 1 / -1;
 }
 
 .pagination-button {
-  background: linear-gradient(145deg, #1a84ff, #0065d1);
+  background: linear-gradient(145deg, #1A1423, #312043);
   color: white;
   border: none;
   padding: 10px 20px;
-  border-radius: 50px;
+  border-radius: 10px;
   font-weight: 600;
   letter-spacing: 0.5px;
   display: flex;
@@ -75,7 +75,7 @@ body {
 
 .pagination-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(26, 132, 255, 0.4);
+  box-shadow: 0 6px 12px #372549;
 }
 
 .pagination-button:active {
@@ -84,7 +84,7 @@ body {
 }
 
 .pagination-button:disabled {
-  background: linear-gradient(145deg, #6a7a8c, #455971);
+  background: linear-gradient(145deg, #37323c, #455971);
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
@@ -100,7 +100,7 @@ body {
 }
 
 .pagination-info {
-  background-color: rgba(0, 0, 0, 0.4);
+  // background-color: rgba(27, 27, 27, 0.4);
   color: #e0e0e0;
   padding: 8px 16px;
   border-radius: 50px;
@@ -134,7 +134,6 @@ body {
       margin-left: auto;
       margin-right: auto;
       padding: 80px 135px 30px 30px;
-//                  125px
     }
 
     .page-title {
@@ -152,7 +151,7 @@ body {
       top: 10%;
       height: 80%;
       width: 4px;
-      background: #1a84ff;
+      background: #573a74;
       border-radius: 2px;
     }
 
@@ -168,7 +167,7 @@ body {
       gap: 8px;
       padding: 0 8px;
       background: rgba(15, 25, 35, 0.4);
-      border-radius: 20px;
+      border-radius: 10px;
       border: 1px solid rgba(255, 255, 255, 0.08);
       height: 36px;
       overflow: hidden;
@@ -178,7 +177,7 @@ body {
       background: transparent;
       color: #e0e0e0;
       border: none;
-      border-radius: 16px;
+      border-radius: 10px;
       padding: 0 14px;
       font-size: 14px;
       font-weight: 500;
@@ -194,7 +193,7 @@ body {
     }
 
     .filter-category-button.active {
-      background: #1a84ff;
+      background: #573a74;
       color: white;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
@@ -202,7 +201,7 @@ body {
 
     /* Control buttons */
     .control-button {
-      background: rgba(15, 25, 35, 0.4);
+      background: rgba(255, 255, 255, 0.4);
       color: #e0e0e0;
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 8px;
@@ -262,7 +261,7 @@ body {
 .genre-filter-box {
   position: sticky;
   top: 20px; /* Keeps sidebar in view when scrolling */
-  background-color: #2c3040;
+  background-color: #372549;
   border-radius: 8px;
   padding: 15px;
   padding-right: 80px;
@@ -270,7 +269,7 @@ body {
   // max-height: 600px;
   overflow-y: hidden;
   // height: fit-content;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.662);
 }
 .genre-filter-header {
     display: flex;
@@ -304,17 +303,17 @@ body {
     appearance: none;
     width: 18px;
     height: 18px;
-    border: 2px solid #1a84ff;
+    border: 2px solid #7c41b7;
     border-radius: 4px;
     outline: none;
     cursor: pointer;
     position: relative;
 }
 .genre-checkbox input:checked {
-    background-color: #1a84ff;
+    background-color: #7c41b7;
 }
 .genre-checkbox input:checked::after {
-    content: '☑';
+    // content: '☑';
     position: absolute;
     top: 50%;
     left: 50%;

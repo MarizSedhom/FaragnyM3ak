@@ -6,9 +6,9 @@
 // ============================
 // Variables - Updated to blue theme
 // ============================
-$primary-blue: #1a8cff;
-$dark-blue: #0066cc;
-$light-blue: #4da6ff;
+$primary-blue: #573a74;
+$dark-blue: #1A1423;
+$light-blue: #573a74;
 $primary-black: #0a0a0a;
 $dark-gray: #121212;
 $medium-gray: #222222;
@@ -27,7 +27,7 @@ $error-red: #f44336;
 // ============================
 .watch-page {
   min-height: 100vh;
-  background: linear-gradient(to right, #1a2b3c, #2d4b66);
+  background: linear-gradient(to right, #1A1423, #372549);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
@@ -36,12 +36,12 @@ $error-red: #f44336;
 // ============================
 .watch-section {
   height: 90vh;
-  border: 2px solid $primary-blue;
-  box-shadow: 0 0 12px 4px $primary-blue;
+  border: 1px solid $primary-blue;
+  box-shadow: 0 0 2px 1px $primary-blue;
   transition: all 0.3s ease-in-out;
 
   &.playing {
-    box-shadow: 0 0 12px 10px $primary-blue;
+    box-shadow: 0 0 2px 1px $primary-blue;
   }
 
   .video-wrapper {

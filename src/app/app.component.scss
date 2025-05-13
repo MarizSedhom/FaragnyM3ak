@@ -1,5 +1,63 @@
+:root {
+  /* Base color definitions */
+  --color-light-1: #ededf5;
+  /* Very light purple/gray */
+  --color-light-2: #d9d2cc;
+  /* Light warm gray */
+  --color-medium-1: #a79c98;
+  /* Medium warm gray */
+  --color-dark-1: #184241;
+  /* Dark teal */
+  --color-dark-2: #072628;
+  /* Very dark teal */
+  --color-dark-3: #091e1f;
+  /* Very dark blue-green */
+
+  /* Default theme (dark) */
+  --bg-primary: var(--dark-bg-primary);
+  --bg-secondary: var(--dark-bg-secondary);
+  --text-primary: var(--dark-text-primary);
+  --text-secondary: var(--dark-text-secondary);
+  --accent: var(--dark-accent);
+  --surface: var(--dark-surface);
+
+  /* Dark theme */
+  --dark-bg-primary: var(--color-dark-3); // #091e1f (Very dark blue-green)
+  --dark-bg-secondary: var(--color-dark-2); // #072628 (Very dark teal)
+  --dark-text-primary: var(--color-light-1); // #ededf5 (Very light purple/gray)
+  --dark-text-secondary: var(--color-light-2); // #d9d2cc (Light warm gray)
+  --dark-accent: var(--color-medium-1); // #a79c98 (Medium warm gray)
+  --dark-surface: var(--color-dark-1); // #184241 (Dark teal)
+
+  /* Light theme */
+  --light-bg-primary: var(--color-light-1);
+  --light-bg-secondary: var(--color-light-2);
+  --light-text-primary: var(--color-dark-3);
+  --light-text-secondary: var(--color-dark-1);
+  --light-accent: var(--color-dark-2);
+  --light-surface: var(--color-medium-1);
+
+  // /* Dark theme */
+  // --dark-bg-primary: var(--color-dark-3);
+  // --dark-bg-secondary: var(--color-dark-2);
+  // --dark-text-primary: var(--color-light-1);
+  // --dark-text-secondary: var(--color-light-2);
+  // --dark-accent: var(--color-medium-1);
+  // --dark-surface: var(--color-dark-1);
+
+}
+
+[data-theme="light"] {
+  --bg-primary: var(--light-bg-primary);
+  --bg-secondary: var(--light-bg-secondary);
+  --text-primary: var(--light-text-primary);
+  --text-secondary: var(--light-text-secondary);
+  --accent: var(--light-accent);
+  --surface: var(--light-surface);
+}
+
 :host {
-  background: linear-gradient(to right, #1a2b3c, #2d4b66);
+  background: linear-gradient(to right, var(--bg-primary), var(--bg-secondary));
   min-height: 100vh;
 }
 
@@ -12,47 +70,4 @@ body {
 
 .page-content {
   flex-grow: 1;
-}
-
-:root {
-  /* Base color definitions */
-  --color-light-1: #ededf5;  /* Very light purple/gray */
-  --color-light-2: #d9d2cc;  /* Light warm gray */
-  --color-medium-1: #a79c98; /* Medium warm gray */
-  --color-dark-1: #184241;   /* Dark teal */
-  --color-dark-2: #072628;   /* Very dark teal */
-  --color-dark-3: #091e1f;   /* Very dark blue-green */
-
-  /* Light theme */
-  --light-bg-primary: var(--color-light-1);
-  --light-bg-secondary: var(--color-light-2);
-  --light-text-primary: var(--color-dark-3);
-  --light-text-secondary: var(--color-dark-1);
-  --light-accent: var(--color-dark-2);
-  --light-surface: var(--color-medium-1);
-
-  /* Dark theme */
-  --dark-bg-primary: var(--color-dark-3);
-  --dark-bg-secondary: var(--color-dark-2);
-  --dark-text-primary: var(--color-light-1);
-  --dark-text-secondary: var(--color-light-2);
-  --dark-accent: var(--color-medium-1);
-  --dark-surface: var(--color-dark-1);
-
-  /* Default theme (dark) */
-  --bg-primary: var(--dark-bg-primary);
-  --bg-secondary: var(--dark-bg-secondary);
-  --text-primary: var(--dark-text-primary);
-  --text-secondary: var(--dark-text-secondary);
-  --accent: var(--dark-accent);
-  --surface: var(--dark-surface);
-}
-
-[data-theme="light"] {
-  --bg-primary: var(--light-bg-primary);
-  --bg-secondary: var(--light-bg-secondary);
-  --text-primary: var(--light-text-primary);
-  --text-secondary: var(--light-text-secondary);
-  --accent: var(--light-accent);
-  --surface: var(--light-surface);
 }

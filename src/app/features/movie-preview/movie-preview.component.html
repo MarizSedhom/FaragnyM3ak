@@ -199,10 +199,10 @@
             <div class="detail-label">Director</div>
             <div class="detail-value">{{ movie.director }}</div>
           </div>
-          <div class="detail-row" *ngIf="movie.cast && movie.cast.length">
+          <!-- <div class="detail-row" *ngIf="movie.cast && movie.cast.length">
             <div class="detail-label">Cast</div>
             <div class="detail-value">{{ movie.cast.join(', ') }}</div>
-          </div>
+          </div> -->
           <div class="detail-row" *ngIf="movie.duration">
             <div class="detail-label">Duration</div>
             <div class="detail-value">{{ formatDuration(movie.duration) }}</div>
