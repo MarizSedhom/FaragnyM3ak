@@ -36,21 +36,11 @@
     <div class="carousel-inner">
       <div *ngFor="let image of images; let i = index" class="carousel-item" style="padding-top: 30px;"
         [ngClass]="{ 'active': i === 0 }">
-        <img class="d-block w-100" [src]="image.src" [alt]="image.alt" style="max-height: 670px; max-width: 100%;">
+        <img class="d-block w-100" [src]="image.src" [alt]="image.alt" style="max-height: 50rem; max-width: 100%;">
       </div>
     </div>
 
-    <!-- Carousel Controls (Optional) -->
-    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
-      data-bs-slide="prev">
-      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Previous</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators"
-      data-bs-slide="next">
-      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Next</span>
-    </button>
+
   </div>
 
   <!-- Empty State for Carousel -->
