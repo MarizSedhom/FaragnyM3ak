@@ -1,0 +1,4 @@
+{
+  "buildCommand": "node set-env.js && npm run build",
+  "outputDirectory": "dist"
+}
