@@ -1,8 +1,8 @@
 @use "sass:math";
 @use "sass:color";
 // Variables
-$primary-orange: #ff6b01;
-$dark-orange: #e05800;
+$primary-orange: #1a2b3c;
+$dark-orange: #2d4b66;
 $light-orange: #ff8c3d;
 $primary-black: #0a0a0a;
 $dark-gray: #121212;
@@ -20,7 +20,7 @@ $error-red: #f44336;
 // Main container
 .register-page {
   min-height: 100vh;
-  background-color: var(--bg-primary);
+  background-color: $primary-black;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   display: flex;
   justify-content: center;
@@ -35,13 +35,13 @@ $error-red: #f44336;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
   border-radius: 12px;
   margin: 20px;
-  background-color: var(--bg-secondary);
+  background-color: $primary-black;
 }
 
 // Left section - Registration Form
 .registration-form-section {
   flex: 1;
-  background-color: var(--bg-secondary);
+  background-color: $dark-gray;
   padding: 30px 40px;
   display: flex;
   flex-direction: column;
@@ -49,7 +49,7 @@ $error-red: #f44336;
   position: relative;
   min-width: 320px;
   max-width: 500px;
-  border-right: 1px solid rgba(var(--accent), 0.2);
+  border-right: 1px solid rgba($primary-orange, 0.2);
 
   &::before {
     content: '';
@@ -58,7 +58,7 @@ $error-red: #f44336;
     left: 0;
     width: 100%;
     height: 5px;
-    background: linear-gradient(to right, var(--accent), var(--surface));
+    background: linear-gradient(to right, $primary-orange, $dark-orange);
   }
 }
 
@@ -72,15 +72,15 @@ $error-red: #f44336;
 .logo {
   width: 70px;
   height: 70px;
-  background: linear-gradient(135deg, var(--accent), var(--surface));
+  background: linear-gradient(135deg, $primary-orange, $dark-orange);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 15px rgba(var(--accent), 0.3);
+  box-shadow: 0 4px 15px rgba($primary-orange, 0.3);
 
   i {
-    color: var(--text-primary);
+    color: white;
     font-size: 32px;
   }
 }
@@ -91,7 +91,7 @@ form {
 }
 
 .register-title {
-  color: var(--text-primary);
+  color: white;
   font-size: 28px;
   font-weight: 600;
   margin-bottom: 20px;
@@ -104,7 +104,7 @@ form {
 
   label {
     display: block;
-    color: var(--text-secondary);
+    color: #aaa;
     font-size: 14px;
     margin-bottom: 6px;
     font-weight: 500;
@@ -155,11 +155,11 @@ form {
 
 .form-input {
   width: 100%;
-  background-color: var(--surface);
-  border: 1px solid var(--text-secondary);
+  background-color: $medium-gray;
+  border: 1px solid #444;
   border-radius: 6px;
   padding: 14px 15px 14px 42px;
-  color: var(--text-primary);
+  color: white;
   font-size: 15px;
   transition: all 0.3s ease;
 
@@ -170,7 +170,7 @@ form {
   }
 
   &::placeholder {
-    color: var(--text-secondary);
+    color: #777;
   }
 }
 
@@ -207,7 +207,7 @@ form {
   position: relative;
   cursor: pointer;
   font-size: 14px;
-  color: var(--text-secondary);
+  color: #aaa;
   padding-left: 28px;
   user-select: none;
   line-height: 1.4;
@@ -220,8 +220,8 @@ form {
     width: 0;
 
     &:checked ~ .checkmark {
-      background-color: var(--accent);
-      border-color: var(--accent);
+      background-color: $primary-orange;
+      border-color: $primary-orange;
 
       &:after {
         display: block;
@@ -239,8 +239,8 @@ form {
     left: 0;
     height: 18px;
     width: 18px;
-    background-color: var(--surface);
-    border: 1px solid var(--text-secondary);
+    background-color: $medium-gray;
+    border: 1px solid #444;
     border-radius: 3px;
     transition: all 0.2s ease;
 
@@ -252,24 +252,24 @@ form {
       top: 2px;
       width: 5px;
       height: 10px;
-      border: solid var(--text-primary);
+      border: solid white;
       border-width: 0 2px 2px 0;
       transform: rotate(45deg);
     }
   }
 
   &:hover input ~ .checkmark {
-    background-color: var(--surface);
+    background-color: #444;
   }
 }
 
 .terms-link {
-  color: var(--accent);
+  color: #3d6aff;
   text-decoration: none;
   transition: color 0.2s ease;
 
   &:hover {
-    color: var(--text-secondary);
+    color: #3d6aff;
     text-decoration: underline;
   }
 }
@@ -277,8 +277,8 @@ form {
 // Button
 .register-button {
   width: 100%;
-  background: linear-gradient(to right, var(--accent), var(--surface));
-  color: var(--text-primary);
+  background: linear-gradient(to right, $primary-orange, $dark-orange);
+  color: white;
   border: none;
   border-radius: 6px;
   padding: 14px;
@@ -301,7 +301,7 @@ form {
   }
 
   &:hover {
-    box-shadow: 0 6px 15px rgba(var(--accent), 0.3);
+    box-shadow: 0 6px 15px rgba($primary-orange, 0.3);
 
     i {
       transform: translateX(4px);
@@ -310,7 +310,7 @@ form {
 
   &:active {
     transform: translateY(2px);
-    background: linear-gradient(to right, var(--surface), var(--surface));
+    background: linear-gradient(to right, $dark-orange, $dark-orange);
   }
 }
 
@@ -323,19 +323,19 @@ form {
   margin-top: 10px;
 
   span {
-    color: var(--text-secondary);
+    color: #3d4b79;
     font-size: 14px;
   }
 
   .login-link {
-    color: var(--accent);
+    color: #3d6aff;
     font-size: 14px;
     font-weight: 500;
     text-decoration: none;
     transition: color 0.2s ease;
 
     &:hover {
-      color: var(--text-secondary);
+      color: #3d6aff;
       text-decoration: underline;
     }
   }
@@ -344,7 +344,7 @@ form {
 // Right Section - Movie Posters
 .movie-posters-section {
   flex: 1.5;
-  background-color: var(--bg-primary);
+  background-color: $primary-black;
   position: relative;
   overflow: hidden;
 }

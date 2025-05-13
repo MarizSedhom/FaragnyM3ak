@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
@@ -44,8 +44,10 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   constructor(
     private movieService: MovieService,
-    private seriesService: SeriesService
-  ) {}
+    private seriesService: SeriesService,
+    private cdr: ChangeDetectorRef // <-- Add this
+
+  ) { }
 
   ngAfterViewInit(): void {
     this.initializeCarousel();
@@ -54,6 +56,12 @@ export class HomeComponent implements OnInit, AfterViewInit {
   initializeCarousel(): void {
     const carouselElement = document.querySelector('#carouselExampleIndicators');
     if (carouselElement && this.images.length > 0 && !this.hasCarouselError) {
+      // Make sure any previous carousel instance is disposed
+      const existingCarousel = bootstrap.Carousel.getInstance(carouselElement);
+      if (existingCarousel) {
+        existingCarousel.dispose();
+      }
+      // Initialize a new carousel
       new bootstrap.Carousel(carouselElement, {
         interval: 2000,
         ride: 'carousel',
@@ -118,27 +126,36 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
 
   loadCarouselImages(): void {
+    // Set loading state
+    this.isLoadingCarousel = true;
+
     // Simulate loading time for carousel images
     setTimeout(() => {
       try {
         this.images = [
-          { src: 'https://awesomefriday.ca/2014/05/review-x-men-days-of-future-past/x-men-days-of-future-past-banner/', alt: 'First slide' },
-          { src: 'https://wallpapercave.com/wp/wp12507537.jpg', alt: 'Second slide' },
-          { src: 'https://movieposterhd.com/wp-content/uploads/2019/03/Wallpapers-Avengers-Endgame.jpg', alt: 'Third slide' },
-          { src: 'https://mrwallpaper.com/images/hd/the-batman-title-poster-j2ft6omd0csyg22b.jpg' , alt: 'Fourth slide'},
-          { src: 'https://baylorlariat.com/wp-content/uploads/2022/04/attack-on-titan.jpeg' , alt: 'Fifth slide'},
-          { src: 'https://wallpapercave.com/wp/wp6085066.jpg' , alt: 'Sixth slide'}
-
+          { src: 'https://awesomefriday.ca/2014/05/review-x-men-days-of-future-past/x-men-days-of-future-past-banner/', alt: 'Xmen' },
+          { src: 'https://wallpapercave.com/wp/wp14769056.jpg', alt: 'Arcane' },
+          { src: 'https://wallpapercave.com/wp/wp5435745.jpg', alt: 'Venom' },
+          { src: 'https://wallpapercave.com/wp/wp6085066.jpg', alt: 'Jujutsu Kaisen' },
+          { src: 'https://wallpapercave.com/wp/wp12507537.jpg', alt: 'DareDevil' },
+          { src: 'https://mrwallpaper.com/images/hd/the-batman-title-poster-j2ft6omd0csyg22b.jpg', alt: 'batman' }
         ];
 
         this.isLoadingCarousel = false;
-        setTimeout(() => this.initializeCarousel(), 0);
+
+        // Mark for change detection and initialize the carousel after view has been updated
+        this.cdr.detectChanges();
+
+        // Use requestAnimationFrame instead of setTimeout for better timing
+        requestAnimationFrame(() => {
+          this.initializeCarousel();
+        });
       } catch (error) {
         console.error('Error loading carousel images:', error);
         this.hasCarouselError = true;
         this.isLoadingCarousel = false;
       }
-    }, 1000); // Simulate 1 second loading time
+    }, 500); // Simulate 1 second loading time
   }
 
   filterMovies() {

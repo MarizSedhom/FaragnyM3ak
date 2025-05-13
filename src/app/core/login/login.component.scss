@@ -387,94 +387,33 @@ form {
 //   }
 // }
 
-@for $i from 1 through 36 {
-  .poster-#{$i} {
-    background-color: color.mix($primary-black, $primary-orange, math.random(61) + 19 * 1%);
-    background-image: linear-gradient(
-      #{math.random(360)}deg,
-      rgba($primary-orange, calc(math.random(40) / 100)) (math.random(100)* 1%),
-      rgba($dark-gray, calc(math.random(40) / 100)) (math.random(100)* 1%)
-    );
-  }
-}
+// @for $i from 1 through 36 {
+//   .poster-#{$i} {
+//     background-color: color.mix($primary-black, $primary-orange, math.random(61) + 19 * 1%);
+//     background-image: linear-gradient(
+//       #{math.random(360)}deg,
+//       rgba($primary-orange, calc(math.random(40) / 100)) (math.random(100)* 1%),
+//       rgba($dark-gray, calc(math.random(40) / 100)) (math.random(100)* 1%)
+//     );
+//   }
+// }
 
-// Gradient overlay on posters section
-.overlay-gradient {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    rgba($primary-black, 0.9) 0%,
-    rgba($primary-black, 0.2) 20%,
-    rgba($primary-black, 0) 50%,
-    rgba($primary-black, 0.2) 80%,
-    rgba($primary-black, 0.9) 100%
-  );
-  pointer-events: none; // Allow clicks to pass through
-}
+// // Gradient overlay on posters section
+// .overlay-gradient {
+//   position: absolute;
+//   top: 0;
+//   left: 0;
+//   width: 100%;
+//   height: 100%;
+//   background: linear-gradient(
+//     90deg,
+//     rgba($primary-black, 0.9) 0%,
+//     rgba($primary-black, 0.2) 20%,
+//     rgba($primary-black, 0) 50%,
+//     rgba($primary-black, 0.2) 80%,
+//     rgba($primary-black, 0.9) 100%
+//   );
+//   pointer-events: none; // Allow clicks to pass through
+// }
 
 // Responsive design
-@media (max-width: 900px) {
-  .login-container {
-    flex-direction: column;
-    height: auto;
-    max-height: none;
-  }
-
-  .login-form-section {
-    max-width: 100%;
-    order: 2; // Move login form to bottom on mobile
-    padding: 30px 20px;
-
-    &::before {
-      display: none;
-    }
-  }
-
-  .movie-posters-section {
-    order: 1; // Move posters to top on mobile
-    min-height: 220px;
-    max-height: 300px;
-  }
-
-  .poster-container {
-    flex-direction: column;
-  }
-
-  .poster-row {
-    height: 180px;
-  }
-
-  .overlay-gradient {
-    background: linear-gradient(
-      180deg,
-      rgba($primary-black, 0.9) 0%,
-      rgba($primary-black, 0.2) 20%,
-      rgba($primary-black, 0) 50%,
-      rgba($primary-black, 0.2) 80%,
-      rgba($primary-black, 0.9) 100%
-    );
-  }
-}
-
-// Small screens
-@media (max-width: 480px) {
-  .login-container {
-    margin: 0;
-    border-radius: 0;
-    box-shadow: none;
-  }
-
-  .movie-posters-section {
-    min-height: 180px;
-  }
-
-  .poster {
-    height: 150px;
-    width: 100px;
-    margin: 5px;
-  }
-}

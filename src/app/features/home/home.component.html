@@ -21,32 +21,35 @@
     </div>
   </div>
 
-  <!-- Carousel Content -->
   <div *ngIf="!isLoadingCarousel && !hasCarouselError && images.length > 0" id="carouselExampleIndicators"
-    class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000"
-    data-bs-pause="false">
-    <!-- Indicators (Dots) -->
+    class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="2000" data-bs-pause="false">
+
+    <!-- Carousel Indicators -->
     <div class="carousel-indicators">
       <button *ngFor="let image of images; let i = index" type="button"
-        [attr.data-bs-target]="'#carouselExampleIndicators'" [attr.data-bs-slide-to]="i" [class.active]="i === 0"
-        [attr.aria-current]="i === 0 ? 'true' : null" [attr.aria-label]="'Slide ' + (i + 1)">
-      </button>
+        [attr.data-bs-target]="'#carouselExampleIndicators'" [attr.data-bs-slide-to]="i"
+        [ngClass]="{ 'active': i === 0 }" [attr.aria-current]="i === 0 ? 'true' : null"
+        [attr.aria-label]="'Slide ' + (i + 1)"></button>
     </div>
 
     <!-- Slides -->
     <div class="carousel-inner">
-      <div *ngFor="let image of images; let i = index" class="carousel-item" style="padding-top: 30px;" [ngClass]="{ 'active': i === 0 }">
-      <img class="d-block w-100" [src]="image.src" [alt]="image.alt"
-        style="max-height: 750px; max-width: 100%;">
+      <div *ngFor="let image of images; let i = index" class="carousel-item" style="padding-top: 30px;"
+        [ngClass]="{ 'active': i === 0 }">
+        <img class="d-block w-100" [src]="image.src" [alt]="image.alt" style="max-height: 670px; max-width: 100%;">
       </div>
     </div>
 
-    <!-- Controls -->
-    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+    <!-- Carousel Controls (Optional) -->
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
+      data-bs-slide="prev">
       <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
     </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators"
+      data-bs-slide="next">
       <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
     </button>
   </div>
 
@@ -62,7 +65,8 @@
     <div class="d-flex justify-content-between align-items-center mb-3 w-100">
       <h3 class="text-white m-0">Top 10 Movies</h3>
       <div>
-        <button class="btn btn-sm btn-outline-light me-2" (click)="prevMovieGroup()" [disabled]="currentMovieGroup === 0">‹</button>
+        <button class="btn btn-sm btn-outline-light me-2" (click)="prevMovieGroup()"
+          [disabled]="currentMovieGroup === 0">‹</button>
         <button class="btn btn-sm btn-outline-light" (click)="nextMovieGroup()"
           [disabled]="currentMovieGroup >= movieGroups.length - 1">›</button>
       </div>

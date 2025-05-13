@@ -130,7 +130,7 @@
 }
 
 .primary-btn {
-  background-color: #e50914;
+  background-color: #7c41b7;
   color: white;
   border: none;
 
@@ -302,6 +302,7 @@
   gap: 20px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   margin-bottom: 30px;
+  overflow: hidden;
 }
 
 .tab-btn {
@@ -329,7 +330,7 @@
       left: 0;
       right: 0;
       height: 3px;
-      background-color: #e50914;
+      background-color: #c48bfd;
     }
   }
 }
