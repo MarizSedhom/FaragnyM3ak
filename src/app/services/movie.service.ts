@@ -45,6 +45,29 @@ export class MovieService {
       );
   }
 
+  // ADDED: Get details for multiple movies (including durations)
+  getDetailsForMovies(movies: Movie[]): Observable<Movie[]> {
+    if (!movies || movies.length === 0) {
+      return of([]);
+    }
+
+    // Create a batch of requests to get details for each movie
+    const movieDetailRequests = movies.map(movie =>
+      this.http.get(`${this.apiBaseUrl}/movie/${movie.id}?api_key=${this.apiKey}`)
+        .pipe(
+          map((response: any) => ({
+            ...movie,
+            duration: response.runtime || 0
+          })),
+          catchError(error => {
+            console.error(`Error fetching details for movie ID ${movie.id}:`, error);
+            return of(movie); // Return original movie without updates if error occurs
+          })
+        )
+    );
+
+    return forkJoin(movieDetailRequests);
+  }
 
   getPopularMoviesWithPagination(page: number = 1): Observable<MovieResponse> {
     return this.http.get(`${this.apiBaseUrl}/movie/popular?api_key=${this.apiKey}&page=${page}`)
@@ -61,23 +84,6 @@ export class MovieService {
         })
       );
   }
-
-
-  // getPopularMoviesWithPagination(page: number = 1): Observable<MovieResponse> {
-  //   return this.http.get(`${this.apiBaseUrl}/movie/popular?api_key=${this.apiKey}&page=${page}`)
-  //     .pipe(
-  //       map((response: any) => ({
-  //         results: response.results.map((movie: any) => this.transformMovieData(movie)),
-  //         total_pages: response.total_pages,
-  //         total_results: response.total_results,
-  //         page: response.page
-  //       })),
-  //       catchError(error => {
-  //         console.error('Error fetching popular movies:', error);
-  //         throw error;
-  //       })
-  //     );
-  // }
 
   // Get popular movies
   getPopularMovies(): Observable<Movie[]> {
@@ -114,7 +120,8 @@ export class MovieService {
         })
       );
   }
-  getCertainMoviesWithPagination(page: number = 1, selectedGenresString: string,category: string): Observable<MovieResponse> {
+
+  getCertainMoviesWithPagination(page: number = 1, selectedGenresString: string, category: string): Observable<MovieResponse> {
     if (selectedGenresString != "") {
       return this.http.get(`${this.apiBaseUrl}/discover/movie?api_key=${this.apiKey}&with_genres=${selectedGenresString}&page=${page}`)
       .pipe(
@@ -298,8 +305,6 @@ export class MovieService {
       })
     );
   }
-
-
 
   //------------------------------------------------------------
 

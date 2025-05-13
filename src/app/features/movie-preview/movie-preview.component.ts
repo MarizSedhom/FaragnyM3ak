@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MovieService, MovieDetail, RelatedMovie ,MovieCast} from '../../services/movie.service';
+import { MovieService, MovieDetail, RelatedMovie, MovieCast } from '../../services/movie.service';
 import { switchMap, of, catchError } from 'rxjs';
 import { MovieCardComponent } from '../../shared/components/movie-card/movie-card.component';
 import { Movie } from '../../shared/models/movie.model';
@@ -23,7 +23,8 @@ export class MoviePreviewComponent implements OnInit {
   movieId: number | null = null;
   movie: MovieDetail | null = null;
   relatedMovies: RelatedMovie[] = [];
-  movieCast: MovieCast[] = []; // New property to store cast data
+  relatedMoviesWithDetails: Movie[] = []; // New property to store related movies with duration
+  movieCast: MovieCast[] = [];
   activeTab: string = 'related';
   userRating: number = 0;
   userReviewComment: string = '';
@@ -33,7 +34,7 @@ export class MoviePreviewComponent implements OnInit {
   isWatchlist: boolean = false;
   loading: boolean = true;
   error: string | null = null;
-  movieVideos: any = null; // Store all videos for the movie
+  movieVideos: any = null;
   hasWatchableVideo: boolean = false;
   mainVideoKey: string | null = null;
   reviewSubmitting: boolean = false;
@@ -79,14 +80,23 @@ export class MoviePreviewComponent implements OnInit {
         }
         return of([]);
       }),
+      switchMap(relatedMovies => {
+        this.relatedMovies = relatedMovies;
+
+        // Convert related movies to the Movie format (but without duration yet)
+        const basicRelatedMovies = relatedMovies.map(relatedMovie => this.convertToBasicMovieFormat(relatedMovie));
+
+        // Now fetch details for these movies to get their durations
+        return this.movieService.getDetailsForMovies(basicRelatedMovies);
+      }),
       catchError(error => {
         this.error = 'Failed to load movie data. Please try again later.';
         console.error('Error loading movie data:', error);
         return of([]);
       })
     ).subscribe({
-      next: (relatedMovies) => {
-        this.relatedMovies = relatedMovies;
+      next: (moviesWithDetails) => {
+        this.relatedMoviesWithDetails = moviesWithDetails;
         this.loading = false;
       },
       error: () => {
@@ -115,19 +125,33 @@ export class MoviePreviewComponent implements OnInit {
     return cast.map(actor => actor.name).join(', ');
   }
 
-  // Convert RelatedMovie to Movie format for movie-card component
-  convertToMovieFormat(relatedMovie: RelatedMovie): Movie {
+  // Convert RelatedMovie to basic Movie format (without duration)
+  convertToBasicMovieFormat(relatedMovie: RelatedMovie): Movie {
     return {
       id: relatedMovie.id,
       title: relatedMovie.title,
       imageUrl: relatedMovie.imageUrl || environment.ThemovieDB.nullImageUrl,
-      rating: 0, // Default values since RelatedMovie doesn't have these properties
+      rating: 0,
       ratingCount: 0,
-      duration: 0,
+      duration: 0, // This will be filled in by getDetailsForMovies
       description: `${relatedMovie.matchPercentage}% Match to ${this.movie?.title}`,
-      hasSub: true, // Default values
+      hasSub: true,
       hasDub: false
     };
+  }
+
+  // Add the missing method used in the template
+  convertToMovieFormat(relatedMovie: RelatedMovie): Movie {
+    // Find the corresponding movie with details including duration
+    const movieWithDetails = this.relatedMoviesWithDetails.find(m => m.id === relatedMovie.id);
+    if (movieWithDetails) {
+      return {
+        ...movieWithDetails,
+        description: `${relatedMovie.matchPercentage}% Match to ${this.movie?.title}`
+      };
+    }
+    // Fallback to basic format if details aren't available yet
+    return this.convertToBasicMovieFormat(relatedMovie);
   }
 
   switchTab(tabName: string): void {
@@ -184,7 +208,7 @@ export class MoviePreviewComponent implements OnInit {
       this.router.navigate(['/login']);
       return;
     }
-    
+
     if (this.isWatchlist) {
       this.listServices.removeMovieFromWatchlist(this.movieId!.toString()).subscribe({
         next: () => {
@@ -211,7 +235,7 @@ export class MoviePreviewComponent implements OnInit {
       this.router.navigate(['/login']);
       return;
     }
-    
+
     if (this.isFavorite) {
       this.listServices.removeMovieFromFavorites(movieId).subscribe({
         next: () => {
@@ -403,9 +427,9 @@ export class MoviePreviewComponent implements OnInit {
       this.router.navigate(['/login']);
       return;
     }
-    
+
     if (!this.hasWatchableVideo || !this.movieId) return;
-    
+
     this.listServices.addMovieToTracking(this.movieId.toString()).subscribe({
       next: () => {
         window.location.href = `/watch?watchid=${this.movieId}&type=movie`;
