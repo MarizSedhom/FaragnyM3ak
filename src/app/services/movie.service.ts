@@ -46,28 +46,30 @@ export class MovieService {
   }
 
   // ADDED: Get details for multiple movies (including durations)
-  getDetailsForMovies(movies: Movie[]): Observable<Movie[]> {
-    if (!movies || movies.length === 0) {
-      return of([]);
-    }
-
-    // Create a batch of requests to get details for each movie
-    const movieDetailRequests = movies.map(movie =>
-      this.http.get(`${this.apiBaseUrl}/movie/${movie.id}?api_key=${this.apiKey}`)
-        .pipe(
-          map((response: any) => ({
-            ...movie,
-            duration: response.runtime || 0
-          })),
-          catchError(error => {
-            console.error(`Error fetching details for movie ID ${movie.id}:`, error);
-            return of(movie); // Return original movie without updates if error occurs
-          })
-        )
-    );
-
-    return forkJoin(movieDetailRequests);
+getDetailsForMovies(movies: Movie[]): Observable<Movie[]> {
+  if (!movies || movies.length === 0) {
+    return of([]);
   }
+
+  // Create a batch of requests to get details for each movie
+  const movieDetailRequests = movies.map(movie =>
+    this.http.get(`${this.apiBaseUrl}/movie/${movie.id}?api_key=${this.apiKey}`)
+      .pipe(
+        map((response: any) => ({
+          ...movie,
+          duration: response.runtime || 0,
+          rating: response.vote_average || movie.rating || 0,  // Preserve existing rating if API doesn't return one
+          ratingCount: response.vote_count || movie.ratingCount || 0  // Preserve existing count if API doesn't return one
+        })),
+        catchError(error => {
+          console.error(`Error fetching details for movie ID ${movie.id}:`, error);
+          return of(movie); // Return original movie without updates if error occurs
+        })
+      )
+  );
+
+  return forkJoin(movieDetailRequests);
+}
 
   getPopularMoviesWithPagination(page: number = 1): Observable<MovieResponse> {
     return this.http.get(`${this.apiBaseUrl}/movie/popular?api_key=${this.apiKey}&page=${page}`)
