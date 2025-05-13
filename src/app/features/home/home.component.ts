@@ -121,11 +121,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
     // Simulate loading time for carousel images
     setTimeout(() => {
       try {
-        // Simulate random error (1 in 5 chance)
-       /* if (Math.random() < 0.2) {
-          throw new Error('Simulated carousel loading error');
-        }*/
-
         this.images = [
           { src: 'https://awesomefriday.ca/2014/05/review-x-men-days-of-future-past/x-men-days-of-future-past-banner/', alt: 'First slide' },
           { src: 'https://lumiere-a.akamaihd.net/v1/images/image_d93db6a1.jpeg?region=0,0,760,328', alt: 'Second slide' },

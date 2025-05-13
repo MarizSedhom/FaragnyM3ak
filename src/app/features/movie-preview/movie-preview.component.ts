@@ -428,15 +428,16 @@ export class MoviePreviewComponent implements OnInit {
       return;
     }
 
-    if (!this.hasWatchableVideo || !this.movieId) return;
+    if (!this.movieId) return;
 
     this.listServices.addMovieToTracking(this.movieId.toString()).subscribe({
       next: () => {
-        window.location.href = `/watch?watchid=${this.movieId}&type=movie`;
+        this.router.navigate(['/watch'], { queryParams: { watchid: this.movieId, type: 'movie' } });
+
       },
       error: (err) => {
         console.error('Error marking as watched:', err);
-        window.location.href = `/watch?watchid=${this.movieId}&type=movie`;
+        this.router.navigate(['/watch'], { queryParams: { watchid: this.movieId, type: 'movie' } });
       }
     });
   }

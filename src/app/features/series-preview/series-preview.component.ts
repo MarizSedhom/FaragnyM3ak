@@ -28,8 +28,8 @@ export class SeriesPreviewComponent implements OnInit {
   activeTab = 'similar';
   isFavorite = false;
   isWatchlist = false;
-  seriesID : string | null = null;
-  hasWatchableVideo : boolean = false;
+  seriesID: string | null = null;
+  hasWatchableVideo: boolean = false;
 
   // Review-related properties
   userRating: number = 0;
@@ -85,14 +85,14 @@ export class SeriesPreviewComponent implements OnInit {
         this.similarSeries = data.similar;
         this.seriesCast = data.cast;
 
-      // Trailer
-      this.trailerUrl = data.trailer;
-      this.hasWatchableVideo = !!data.trailer;
-      if (this.trailerUrl) {
-        this.safeTrailerUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
-          `https://www.youtube.com/embed/${this.trailerUrl}`
-        );
-      }
+        // Trailer
+        this.trailerUrl = data.trailer;
+        this.hasWatchableVideo = !!data.trailer;
+        if (this.trailerUrl) {
+          this.safeTrailerUrl = this.sanitizer.bypassSecurityTrustResourceUrl(
+            `https://www.youtube.com/embed/${this.trailerUrl}`
+          );
+        }
 
         // Load season episode counts
         if (this.series && this.series.seasons! > 0) {
@@ -244,11 +244,11 @@ export class SeriesPreviewComponent implements OnInit {
 
     this.listServices.addSeriesToTracking(this.seriesID).subscribe({
       next: () => {
-        window.location.href = `/watch?watchid=${this.seriesID}&type=tv`;
+        this.router.navigate(['/watch'], { queryParams: { watchid: this.seriesID, type: 'tv' } });
       },
       error: (err) => {
         console.error('Error marking as watched:', err);
-        window.location.href = `/watch?watchid=${this.seriesID}&type=tv`;
+        this.router.navigate(['/watch'], { queryParams: { watchid: this.seriesID, type: 'tv' } });
       }
     });
   }
