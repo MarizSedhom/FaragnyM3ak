@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Series } from '../../shared/models/series.model';
 import { SeriesCardComponent } from '../../shared/components/series-card/series-card.component';
 import { ActivatedRoute } from '@angular/router';
-import { SeriesService } from '../../services/Series/series.service';
+import { SeriesService } from '../../services/series.service';
 import { PageEvent } from '@angular/material/paginator';
 
 @Component({
@@ -103,8 +103,6 @@ filterSeries(category: string): void {
     this.category = category;
     this.selectedGenresString = this.getSelectedGenresString();
 
-    // switch (category) {
-    //   case 'airing_today':
         this.seriesService.getCertainSeriesWithPagination(this.currentPage,this.selectedGenresString,this.category).subscribe({
           next: (response) => {
             this.series = response.results;
@@ -118,56 +116,6 @@ filterSeries(category: string): void {
             this.loading = false;
           }
         });
-    //     break;
-    //   case 'on_the_air':
-    //     this.seriesService.getOnTheAirSeriesWithPagination(this.currentPage).subscribe({
-    //       next: (response) => {
-    //         this.series = response.results;
-    //         this.totalSeries = response.total_results;
-    //         this.pageSize = 20;
-    //         this.maxPages = Math.ceil(this.totalSeries / this.pageSize);
-    //         this.loading = false;
-    //       },
-    //       error: (error) => {
-    //         console.error('Error fetching series:', error);
-    //         this.loading = false;
-    //       }
-    //     });
-    //     break;
-    //   case 'popular':
-    //     this.seriesService.getPopularSeriesWithPagination(this.currentPage).subscribe({
-    //       next: (response) => {
-    //         this.series = response.results;
-    //         this.totalSeries = response.total_results;
-    //         this.pageSize = 20;
-    //         this.maxPages = Math.ceil(this.totalSeries / this.pageSize);
-    //         this.loading = false;
-    //       },
-    //       error: (error) => {
-    //         console.error('Error fetching series:', error);
-    //         this.loading = false;
-    //       }
-    //     });
-    //     break;
-    //   case 'top_rated':
-    //     this.seriesService.getTopRatedSeriesWithPagination(this.currentPage).subscribe({
-    //       next: (response) => {
-    //         this.series = response.results;
-    //         this.totalSeries = response.total_results;
-    //         this.pageSize = 20;
-    //         this.maxPages = Math.ceil(this.totalSeries / this.pageSize);
-    //         this.loading = false;
-    //       },
-    //       error: (error) => {
-    //         console.error('Error fetching series:', error);
-    //         this.loading = false;
-    //       }
-    //     });
-    //     break;
-    //   default:
-    //     this.loading = false;
-    //     break;
-    // }
   };
 
 

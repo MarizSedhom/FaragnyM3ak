@@ -13,7 +13,8 @@
 <!-- Movie content -->
 <div *ngIf="movie && !loading && !error">
   <!-- Movie hero section -->
-  <div class="movie-hero" [ngStyle]="{'background-image': 'linear-gradient(to right, rgba(0, 0, 0, 0.9) 20%, rgba(0, 0, 0, 0.6) 50%, rgba(0, 0, 0, 0.4) 100%), url(' + movie.backdropUrl + ')'}">
+  <div class="movie-hero"
+    [ngStyle]="{'background-image': 'linear-gradient(to right, rgba(0, 0, 0, 0.9) 20%, rgba(0, 0, 0, 0.6) 50%, rgba(0, 0, 0, 0.4) 100%), url(' + movie.backdropUrl + ')'}">
     <div class="content-wrapper">
       <div class="poster-section">
         <img [src]="movie.imageUrl" alt="{{ movie.title }}" class="poster-img">
@@ -22,16 +23,16 @@
             <i class="play-icon">▶</i> {{ authService.isAuthenticated() ? 'Play Now' : 'Login to Watch' }}
           </button>
           <button class="secondary-btn" [class.listed]="isWatchlist" (click)="ToggleMovieToWatchlist()">
-            <i class="add-icon">{{ isWatchlist ? '-' : '+' }}</i> 
-            {{ authService.isAuthenticated() 
-              ? (isWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist')
-              : 'Login to Add to Watchlist' }}
+            <i class="add-icon">{{ isWatchlist ? '-' : '+' }}</i>
+            {{ authService.isAuthenticated()
+            ? (isWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist')
+            : 'Login to Add to Watchlist' }}
           </button>
           <button class="favorite-btn" [class.favorited]="isFavorite" (click)="toggleFavorite(movie.id.toString())">
-            <i class="heart-icon">{{ isFavorite ? '❤️' : '🤍' }}</i> 
+            <i class="heart-icon">{{ isFavorite ? '❤️' : '🤍' }}</i>
             {{ authService.isAuthenticated()
-              ? (isFavorite ? 'Favorite' : 'Add to Favorites')
-              : 'Login to Add to Favorites' }}
+            ? (isFavorite ? 'Favorite' : 'Add to Favorites')
+            : 'Login to Add to Favorites' }}
           </button>
         </div>
       </div>
@@ -75,7 +76,8 @@
   <div class="content-section">
     <div class="tab-container">
       <div class="tabs">
-        <button class="tab-btn" [class.active]="activeTab === 'related'" (click)="switchTab('related')">More Like This</button>
+        <button class="tab-btn" [class.active]="activeTab === 'related'" (click)="switchTab('related')">More Like
+          This</button>
         <button class="tab-btn" [class.active]="activeTab === 'cast'" (click)="switchTab('cast')">Cast</button>
         <button class="tab-btn" [class.active]="activeTab === 'reviews'" (click)="switchTab('reviews')">Reviews</button>
         <button class="tab-btn" [class.active]="activeTab === 'details'" (click)="switchTab('details')">Details</button>
@@ -85,9 +87,7 @@
         <!-- <h2 class="section-title">More Like This</h2> -->
         <div class="related-movies">
           <!-- Use MovieCardComponent for each related movie -->
-          <app-movie-card
-            *ngFor="let relatedMovie of relatedMovies"
-            [movie]="convertToMovieFormat(relatedMovie)">
+          <app-movie-card *ngFor="let relatedMovie of relatedMovies" [movie]="convertToMovieFormat(relatedMovie)">
           </app-movie-card>
 
           <!-- No related movies message -->
@@ -126,7 +126,8 @@
             <div class="review-header">
               <div class="user-avatar">{{ userReview.username?.charAt(0) || 'Y' }}</div>
               <div class="user-info">
-                <div class="username">{{ userReview.username || 'You' }} <span class="your-review-badge">Your Review</span></div>
+                <div class="username">{{ userReview.username || 'You' }} <span class="your-review-badge">Your
+                    Review</span></div>
                 <div class="star-rating">
                   <span *ngFor="let star of getStarsArray(userReview.rating)" class="star">⭐</span>
                   <span class="review-date">{{ formatUserReviewDate(userReview.createdAt) }}</span>
@@ -165,23 +166,32 @@
           </div>
 
           <!-- Review form -->
-          <div class="add-review" id="review-form">
-            <h3>{{ userHasReview ? 'Edit Your Review' : 'Add Your Review' }}</h3>
-            <div class="rating-input">
-              <span>Your Rating:</span>
-              <div class="star-selector">
-                <span *ngFor="let i of [1,2,3,4,5]" class="selectable-star" (click)="setUserRating(i)">
-                  {{ userRating >= i ? '⭐' : '☆' }}
-                </span>
+          <div *ngIf="authService.isAuthenticated()" class="add-review" id="review-form">
+
+            <div class="add-review" id="review-form">
+              <h3>{{ userHasReview ? 'Edit Your Review' : 'Add Your Review' }}</h3>
+              <div class="rating-input">
+                <span>Your Rating:</span>
+                <div class="star-selector">
+                  <span *ngFor="let i of [1,2,3,4,5]" class="selectable-star" (click)="setUserRating(i)">
+                    {{ userRating >= i ? '⭐' : '☆' }}
+                  </span>
+                </div>
               </div>
+              <textarea [(ngModel)]="userReviewComment" placeholder="Write your review here..."
+                class="review-textarea"></textarea>
+              <button class="submit-review-btn" [disabled]="!userRating || reviewSubmitting" (click)="submitReview()">
+                <span *ngIf="!reviewSubmitting">{{ userHasReview ? 'Update Review' : 'Submit Review' }}</span>
+                <span *ngIf="reviewSubmitting">Submitting...</span>
+              </button>
             </div>
-            <textarea [(ngModel)]="userReviewComment" placeholder="Write your review here..." class="review-textarea"></textarea>
-            <button class="submit-review-btn" [disabled]="!userRating || reviewSubmitting" (click)="submitReview()">
-              <span *ngIf="!reviewSubmitting">{{ userHasReview ? 'Update Review' : 'Submit Review' }}</span>
-              <span *ngIf="reviewSubmitting">Submitting...</span>
-            </button>
           </div>
         </div>
+      </div>
+
+      <!-- Login prompt for unauthenticated users -->
+      <div *ngIf="!authService.isAuthenticated()" class="login-prompt">
+        <p>Please <a routerLink="/login">login</a> to add your review.</p>
       </div>
 
       <div class="tab-content" *ngIf="activeTab === 'details'">

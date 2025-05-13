@@ -3,6 +3,8 @@ import { Series } from '../../models/series.model';
 import { Router } from '@angular/router';
 import { UserListsService } from '../../../features/profile/services/user-lists.service';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../../core/auth/Service/authService';
+
 
 @Component({
   selector: 'app-series-card',
@@ -13,10 +15,10 @@ import { CommonModule } from '@angular/common';
 export class SeriesCardComponent {
   @Input() series!: Series;
   @Output() statusChange = new EventEmitter<{ seriesId: string, isFavorite: boolean, isWatchlist: boolean }>();
-    @Input() isContinueWatching: boolean = false;
-@Output() remove = new EventEmitter<string>();
+  @Input() isContinueWatching: boolean = false;
+  @Output() remove = new EventEmitter<string>();
 
-  constructor(private router: Router, private listServices: UserListsService) { }
+  constructor(private router: Router, private listServices: UserListsService, public authService: AuthService) { }
   isFavorite: boolean = false;
   isWatchlist: boolean = false;
 
@@ -42,11 +44,11 @@ export class SeriesCardComponent {
 
   toggleFavorite(event: MouseEvent): void {
     event.stopPropagation();
-    
+
     if (!this.series) return;
 
     const seriesId = this.series.id.toString();
-    
+
     // Optimistically update the UI
     this.isFavorite = !this.isFavorite;
 
@@ -72,11 +74,11 @@ export class SeriesCardComponent {
 
   toggleWatchlist(event: MouseEvent): void {
     event.stopPropagation();
-    
+
     if (!this.series) return;
 
     const seriesId = this.series.id.toString();
-    
+
     // Optimistically update the UI
     this.isWatchlist = !this.isWatchlist;
 
@@ -112,8 +114,8 @@ export class SeriesCardComponent {
     return (count * 1000).toLocaleString();
   }
 
-    onRemove(event: Event): void {
-  event.stopPropagation(); // Prevent navigation
-  this.remove.emit(String( this.series.id));
-}
+  onRemove(event: Event): void {
+    event.stopPropagation(); // Prevent navigation
+    this.remove.emit(String(this.series.id));
+  }
 }
