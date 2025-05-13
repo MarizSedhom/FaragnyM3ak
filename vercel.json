@@ -1,4 +1,8 @@
 {
   "buildCommand": "node set-env.js && npm run build",
-  "outputDirectory": "dist/movie-app"
+  "outputDirectory": "dist/movie-app",
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/index.html" }
+  ]
 }
