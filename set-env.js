@@ -1,9 +1,16 @@
 const fs = require('fs');
+const path = require('path');
 
-const targetPath = './src/environments/environment.ts';
+const dir = './src/environments';
+const targetPath = path.join(dir, 'environment.ts');
 
-const envFileContent = `
-export const environment = {
+// ✅ Make sure directory exists
+if (!fs.existsSync(dir)) {
+  fs.mkdirSync(dir, { recursive: true });
+}
+
+// ✅ Write environment file with secrets from Vercel environment variables
+fs.writeFileSync(targetPath, `export const environment = {
   production: true,
   FireBase: {
     apiKey: "${process.env.FIREBASE_API_KEY}",
@@ -22,8 +29,5 @@ export const environment = {
   },
   stripePublicKey: "${process.env.STRIPE_PUBLIC_KEY}",
   stripeSecretKey: "${process.env.STRIPE_SECRET_KEY}"
-};
-`;
-
-fs.writeFileSync(targetPath, envFileContent, { encoding: 'utf8' });
-console.log('✅ environment.ts created successfully!');
+};`);
+console.log('✅ environment.ts created successfully');
