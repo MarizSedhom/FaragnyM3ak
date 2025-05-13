@@ -2,8 +2,7 @@ import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MovieService, MovieDetail, RelatedMovie ,MovieCast} from '../../services/movie.service';
-import { HttpClientModule } from '@angular/common/http';
-import { switchMap, of, catchError, forkJoin } from 'rxjs';
+import { switchMap, of, catchError } from 'rxjs';
 import { MovieCardComponent } from '../../shared/components/movie-card/movie-card.component';
 import { Movie } from '../../shared/models/movie.model';
 import { UserListsService, UserReview } from '../profile/services/user-lists.service';
@@ -15,7 +14,7 @@ import { AuthService } from '../../core/auth/Service/authService';
 @Component({
   selector: 'app-movie-preview',
   standalone: true,
-  imports: [CommonModule, HttpClientModule, MovieCardComponent, FormsModule],
+  imports: [CommonModule, MovieCardComponent, FormsModule],
   templateUrl: './movie-preview.component.html',
   styleUrl: './movie-preview.component.scss'
 })

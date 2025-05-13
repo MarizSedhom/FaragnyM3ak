@@ -3,15 +3,14 @@ import { CommonModule } from '@angular/common';
 import { Movie } from '../../../shared/models/movie.model';
 import { Router } from '@angular/router';
 import { UserListsService } from '../../../features/profile/services/user-lists.service';
-import { environment } from '../../../../environments/environment';import { MatCardModule } from '@angular/material/card';
+import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatPaginatorModule } from '@angular/material/paginator';
-import { ActivatedRoute } from '@angular/router';
-import { PageEvent } from '@angular/material/paginator';
 import { RouterModule } from '@angular/router';
+import { AuthService } from '../../../core/auth/Service/authService';
 
 @Component({
   selector: 'app-movie-card',
@@ -24,7 +23,7 @@ import { RouterModule } from '@angular/router';
     MatListModule,
     MatProgressSpinnerModule,
     MatChipsModule,
-    MatPaginatorModule
+    MatPaginatorModule,
   ],
   templateUrl: './movie-card.component.html',
   styleUrls: ['./movie-card.component.scss'],
@@ -33,17 +32,15 @@ export class MovieCardComponent {
   @Input() movie!: Movie; // ! indicates that this property will be initialized later
   @Output() statusChange = new EventEmitter<{ movieId: string, isFavorite: boolean, isWatchlist: boolean }>();
   @Input() isContinueWatching: boolean = false;
-@Output() remove = new EventEmitter<string>();
+  @Output() remove = new EventEmitter<string>();
 
-  constructor(private router: Router, private listServices: UserListsService) { }
+  constructor(private router: Router, private listServices: UserListsService, public authService: AuthService) { }
   isFavorite: boolean = false;
   isWatchlist: boolean = false;
 
   ngOnInit(): void {
     this.checkMovieStatuses();
   }
-  
-  
 
   checkMovieStatuses(): void {
     if (!this.movie) return;
@@ -64,11 +61,11 @@ export class MovieCardComponent {
   toggleFavorite(event: MouseEvent): void {
     // Prevent event bubbling to parent elements
     event.stopPropagation();
-    
+
     if (!this.movie) return;
 
     const movieId = this.movie.id.toString();
-    
+
     // Optimistically update the UI
     this.isFavorite = !this.isFavorite;
 
@@ -96,11 +93,11 @@ export class MovieCardComponent {
   toggleWatchlist(event: MouseEvent): void {
     // Prevent event bubbling to parent elements
     event.stopPropagation();
-    
+
     if (!this.movie) return;
 
     const movieId = this.movie.id.toString();
-    
+
     // Optimistically update the UI
     this.isWatchlist = !this.isWatchlist;
 
@@ -150,7 +147,7 @@ export class MovieCardComponent {
     }
   }
   onRemove(event: Event): void {
-  event.stopPropagation(); // Prevent navigation
-  this.remove.emit(String( this.movie.id));
-}
+    event.stopPropagation(); // Prevent navigation
+    this.remove.emit(String(this.movie.id));
+  }
 }

@@ -1,5 +1,4 @@
 <div class="card">
-
   <img [src]="movie.imageUrl" [alt]="movie.title" class="card-image" (click)="navigateToMovie()" />
   <div class="card-overlay">
     <div class="card-content" (click)="navigateToMovie()">
@@ -23,14 +22,13 @@
     
     <div class="action-buttons d-flex justify-content-center gap-2">
       <!-- Favorite Toggle -->
-      <div class="action-button" (click)="toggleFavorite($event)">
+      <div *ngIf="authService.isAuthenticated()" class="action-button" (click)="toggleFavorite($event)">
         {{ isFavorite ? '❤️' : '♥' }}
       </div>
 
       <!-- Watchlist Toggle -->
-      <div class="action-button" (click)="toggleWatchlist($event)">
+      <div *ngIf="authService.isAuthenticated()" class="action-button" (click)="toggleWatchlist($event)">
         {{ isWatchlist ? '✔️' : '+' }}
       </div>
-
     </div>
   </div>

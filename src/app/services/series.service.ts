@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map, of, catchError, forkJoin, switchMap  } from 'rxjs';
-import { Series, SeriesCast } from '../shared/models/series.model';
+import { Observable, map, of, catchError, forkJoin, switchMap } from 'rxjs';
+import { Series, SeriesCast, SeriesResponse } from '../shared/models/series.model';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +12,7 @@ export class SeriesService {
   private apiKey = environment.ThemovieDB.apiKey;
   private imageBaseUrl = environment.ThemovieDB.imageBaseUrl;
 
-    private genreMap: {[id: number]: string} = {};
+  private genreMap: { [id: number]: string } = {};
 
   constructor(private http: HttpClient) { }
 
@@ -160,34 +160,9 @@ export class SeriesService {
       );
   }
 
-  // Get season details including episode count
-  getSeasonDetails(seriesId: string, seasonNumber: number): Observable<any> {
-    return this.http.get(`${this.apiBaseUrl}/tv/${seriesId}/season/${seasonNumber}?api_key=${this.apiKey}`)
-      .pipe(
-        map((response: any) => {
-          return {
-            seasonNumber: response.season_number,
-            episodeCount: response.episodes ? response.episodes.length : 0,
-            name: response.name,
-            overview: response.overview,
-            airDate: response.air_date
-          };
-        }),
-        catchError(error => {
-          console.error(`Error fetching season ${seasonNumber} for series ID ${seriesId}:`, error);
-          return of({
-            seasonNumber: seasonNumber,
-            episodeCount: 0,
-            name: `Season ${seasonNumber}`,
-            overview: '',
-            airDate: null
-          });
-        })
-      );
-  }
 
   // Get all seasons' episode counts
-  getAllSeasonEpisodeCounts(seriesId: string, numberOfSeasons: number): Observable<{[key: number]: number}> {
+  getAllSeasonEpisodeCounts(seriesId: string, numberOfSeasons: number): Observable<{ [key: number]: number }> {
     if (numberOfSeasons <= 0) {
       return of({});
     }
@@ -204,7 +179,7 @@ export class SeriesService {
     // Combine all observables and merge results
     return forkJoin(seasonObservables).pipe(
       map(results => {
-        const episodeCounts: {[key: number]: number} = {};
+        const episodeCounts: { [key: number]: number } = {};
         results.forEach(result => {
           Object.assign(episodeCounts, result);
         });
@@ -213,99 +188,89 @@ export class SeriesService {
       catchError(() => of({}))
     );
   }
-//--------------------------------- Admin Series ----------------------------------------------
-AdmingetAiringTodaySeries(): Observable<{ totalResults: number, series: Series[] }> {
-  return this.http.get(`${this.apiBaseUrl}/tv/airing_today?api_key=${this.apiKey}&language=en-US&page=1`)
-    .pipe(
-      map((response: any) => {
-        const totalResults = response.total_results;
-        const series = response.results.map((item: any) => this.transformSeriesData(item));
-        return { totalResults, series };
-      }),
-      catchError(error => {
-        console.error('Error fetching airing today series:', error);
-        return of({ totalResults: 0, series: [] });
-      })
-    );
-}
+  //--------------------------------- Admin Series ----------------------------------------------
+  AdmingetAiringTodaySeries(): Observable<{ totalResults: number, series: Series[] }> {
+    return this.http.get(`${this.apiBaseUrl}/tv/airing_today?api_key=${this.apiKey}&language=en-US&page=1`)
+      .pipe(
+        map((response: any) => {
+          const totalResults = response.total_results;
+          const series = response.results.map((item: any) => this.transformSeriesData(item));
+          return { totalResults, series };
+        }),
+        catchError(error => {
+          console.error('Error fetching airing today series:', error);
+          return of({ totalResults: 0, series: [] });
+        })
+      );
+  }
 
-AdmingetOnTheAirSeries(): Observable<{ totalResults: number, series: Series[] }> {
-  return this.http.get(`${this.apiBaseUrl}/tv/on_the_air?api_key=${this.apiKey}&language=en-US&page=1`)
-    .pipe(
-      map((response: any) => {
-        const totalResults = response.total_results;
-        const series = response.results.map((item: any) => this.transformSeriesData(item));
-        return { totalResults, series };
-      }),
-      catchError(error => {
-        console.error('Error fetching on the air series:', error);
-        return of({ totalResults: 0, series: [] });
-      })
-    );
-}
+  AdmingetOnTheAirSeries(): Observable<{ totalResults: number, series: Series[] }> {
+    return this.http.get(`${this.apiBaseUrl}/tv/on_the_air?api_key=${this.apiKey}&language=en-US&page=1`)
+      .pipe(
+        map((response: any) => {
+          const totalResults = response.total_results;
+          const series = response.results.map((item: any) => this.transformSeriesData(item));
+          return { totalResults, series };
+        }),
+        catchError(error => {
+          console.error('Error fetching on the air series:', error);
+          return of({ totalResults: 0, series: [] });
+        })
+      );
+  }
 
 
-AdmingetPopularSeries(): Observable<{ totalResults: number, series: Series[] }> {
-  return this.http.get(`${this.apiBaseUrl}/tv/popular?api_key=${this.apiKey}&language=en-US&page=1`)
-    .pipe(
-      map((response: any) => {
-        const totalResults = response.total_results;
-        const series = response.results.map((item: any) => this.transformSeriesData(item));
-        return { totalResults, series };
-      }),
-      catchError(error => {
-        console.error('Error fetching popular series:', error);
-        return of({ totalResults: 0, series: [] });
-      })
-    );
-}
+  AdmingetPopularSeries(): Observable<{ totalResults: number, series: Series[] }> {
+    return this.http.get(`${this.apiBaseUrl}/tv/popular?api_key=${this.apiKey}&language=en-US&page=1`)
+      .pipe(
+        map((response: any) => {
+          const totalResults = response.total_results;
+          const series = response.results.map((item: any) => this.transformSeriesData(item));
+          return { totalResults, series };
+        }),
+        catchError(error => {
+          console.error('Error fetching popular series:', error);
+          return of({ totalResults: 0, series: [] });
+        })
+      );
+  }
 
-AdmingetTopRatedSeries(): Observable<{ totalResults: number, series: Series[] }> {
-  return this.http.get(`${this.apiBaseUrl}/tv/top_rated?api_key=${this.apiKey}&language=en-US&page=1`)
-    .pipe(
-      map((response: any) => {
-        const totalResults = response.total_results;
-        const series = response.results.map((item: any) => this.transformSeriesData(item));
-        return { totalResults, series };
-      }),
-      catchError(error => {
-        console.error('Error fetching top rated series:', error);
-        return of({ totalResults: 0, series: [] });
-      })
-    );
-}
+  AdmingetTopRatedSeries(): Observable<{ totalResults: number, series: Series[] }> {
+    return this.http.get(`${this.apiBaseUrl}/tv/top_rated?api_key=${this.apiKey}&language=en-US&page=1`)
+      .pipe(
+        map((response: any) => {
+          const totalResults = response.total_results;
+          const series = response.results.map((item: any) => this.transformSeriesData(item));
+          return { totalResults, series };
+        }),
+        catchError(error => {
+          console.error('Error fetching top rated series:', error);
+          return of({ totalResults: 0, series: [] });
+        })
+      );
+  }
 
   getTVSeriesByDateRange(startDate: string, endDate: string): Observable<any[]> {
-  const baseUrl = `${this.apiBaseUrl}/discover/tv?first_air_date.gte=${startDate}&first_air_date.lte=${endDate}&with_original_language=en&api_key=${this.apiKey}&page=1`;
+    const baseUrl = `${this.apiBaseUrl}/discover/tv?first_air_date.gte=${startDate}&first_air_date.lte=${endDate}&with_original_language=en&api_key=${this.apiKey}&page=1`;
 
-  return this.http.get<any>(baseUrl).pipe(
-    switchMap(response => {
-      const totalPages = response.total_pages;
-      const requests = [];
+    return this.http.get<any>(baseUrl).pipe(
+      switchMap(response => {
+        const totalPages = response.total_pages;
+        const requests = [];
 
-      for (let page = 1; page <= totalPages; page++) {
-        const pageUrl = `${this.apiBaseUrl}/discover/tv?first_air_date.gte=${startDate}&first_air_date.lte=${endDate}&with_original_language=en&api_key=${this.apiKey}&page=${page}`;
-        requests.push(this.http.get<any>(pageUrl));
-      }
+        for (let page = 1; page <= totalPages; page++) {
+          const pageUrl = `${this.apiBaseUrl}/discover/tv?first_air_date.gte=${startDate}&first_air_date.lte=${endDate}&with_original_language=en&api_key=${this.apiKey}&page=${page}`;
+          requests.push(this.http.get<any>(pageUrl));
+        }
 
-      return forkJoin(requests).pipe(
-        map(responses => responses.flatMap(res => res.results))
-      );
-    })
-  );
-}
+        return forkJoin(requests).pipe(
+          map(responses => responses.flatMap(res => res.results))
+        );
+      })
+    );
+  }
 
-// getSeriesGenres(): Observable<{ id: number, name: string }[]> {
-//   return this.http.get(`${this.apiBaseUrl}/genre/tv/list?api_key=${this.apiKey}&language=en-US`)
-//     .pipe(
-//       map((response: any) => response.genres),
-//       catchError(error => {
-//         console.error('Error fetching TV genres:', error);
-//         return of([]);
-//       })
-//     );
-// }
-//-----------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------
   // Get total episode count for a series
   getTotalEpisodeCount(seriesId: string, numberOfSeasons: number): Observable<number> {
     return this.getAllSeasonEpisodeCounts(seriesId, numberOfSeasons).pipe(
@@ -334,7 +299,7 @@ AdmingetTopRatedSeries(): Observable<{ totalResults: number, series: Series[] }>
       lastAirDate: series.last_air_date || null,
       status: series.status || 'Unknown',
       genres: series.genres ? series.genres.map((g: any) => g.name) :
-              (series.genre_ids ? this.mapGenreIdsToNames(series.genre_ids) : []),
+        (series.genre_ids ? this.mapGenreIdsToNames(series.genre_ids) : []),
       popularity: series.popularity || 0
     };
   }
@@ -374,7 +339,7 @@ AdmingetTopRatedSeries(): Observable<{ totalResults: number, series: Series[] }>
 
   // Map genre IDs to genre names
   private mapGenreIdsToNames(genreIds: number[]): string[] {
-    const genreMap: {[id: number]: string} = {
+    const genreMap: { [id: number]: string } = {
       10759: 'Action & Adventure',
       16: 'Animation',
       35: 'Comedy',
@@ -394,5 +359,82 @@ AdmingetTopRatedSeries(): Observable<{ totalResults: number, series: Series[] }>
     };
 
     return genreIds.map(id => genreMap[id] || 'Unknown');
+  }
+  // Get season details including episode count
+  getSeasonDetails(seriesId: string, seasonNumber: number): Observable<any> {
+    return this.http.get(`${this.apiBaseUrl}/tv/${seriesId}/season/${seasonNumber}?api_key=${this.apiKey}`)
+      .pipe(
+        map((response: any) => {
+          return {
+            seasonNumber: response.season_number,
+            episodeCount: response.episodes ? response.episodes.length : 0,
+            name: response.name,
+            overview: response.overview,
+            airDate: response.air_date
+          };
+        }),
+        catchError(error => {
+          console.error(`Error fetching season ${seasonNumber} for series ID ${seriesId}:`, error);
+          return of({
+            seasonNumber: seasonNumber,
+            episodeCount: 0,
+            name: `Season ${seasonNumber}`,
+            overview: '',
+            airDate: null
+          });
+        })
+      );
+  }
+
+  getCertainSeriesWithPagination(page: number = 1, selectedGenresString: string, category: string): Observable<SeriesResponse> {
+    let apiUrl = '';
+
+    if (selectedGenresString !== "") {
+      apiUrl = `${this.apiBaseUrl}/discover/tv?api_key=${this.apiKey}&with_genres=${selectedGenresString}&page=${page}`;
+    } else {
+      apiUrl = `${this.apiBaseUrl}/tv/${category}?api_key=${this.apiKey}&page=${page}`;
+    }
+
+    return this.http.get(apiUrl)
+      .pipe(
+        // First get basic series data and transform to Series[]
+        map((response: any) => ({
+          results: response.results.map((series: any) => this.transformSeriesData(series)) as Series[],
+          total_pages: response.total_pages,
+          total_results: response.total_results,
+          page: response.page
+        })),
+        // Then fetch full details for each series including seasons and episodes
+        switchMap((response: { results: Series[]; total_pages: number; total_results: number; page: number; }) => {
+          if (response.results.length === 0) {
+            return of({
+              results: [],
+              total_pages: response.total_pages,
+              total_results: response.total_results,
+              page: response.page
+            });
+          }
+    
+          // Create a request for each series to get detailed information
+          const detailRequests = response.results.map((series: Series) =>
+            this.getSeriesById(series.id.toString()).pipe(
+              catchError(() => of(series))
+            )
+          );
+    
+          return forkJoin(detailRequests).pipe(
+            map(detailedSeries => ({
+              results: detailedSeries,
+              total_pages: response.total_pages,
+              total_results: response.total_results,
+              page: response.page
+            }))
+          );
+        }),
+        catchError(error => {
+          console.error('Error fetching series with pagination:', error);
+          throw error;
+        })
+      );
   }
 }

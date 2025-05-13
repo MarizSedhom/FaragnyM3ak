@@ -107,17 +107,17 @@ export const routes: Routes = [
     {
         path: 'watch',
         loadComponent: () => import('./features/watch/watch.component').then(m => m.WatchComponent),
-        // canActivate: [AuthGuard]
+        canActivate: [AuthGuard]
     },
     {
         path: 'admin',
         loadComponent: () => import('./features/admin/admin.component').then(m => m.AdminComponent),
-        // canActivate: [AuthGuard]
+        canActivate: [AuthGuard]
     },
     {
         path: 'search',
         loadComponent: () => import('./features/search/search.component').then(m => m.SearchComponent),
-        // canActivate: [AuthGuard]
+        canActivate: [AuthGuard]
     },
     {
         path: 'login',

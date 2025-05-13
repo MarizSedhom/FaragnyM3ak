@@ -6,7 +6,6 @@ import { Series, SeriesCast } from '../../shared/models/series.model';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { forkJoin, of, catchError } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
 import { UserListsService, UserReview } from '../../features/profile/services/user-lists.service';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/auth/Service/authService';
@@ -14,7 +13,7 @@ import { AuthService } from '../../core/auth/Service/authService';
 @Component({
   selector: 'app-series-preview',
   standalone: true,
-  imports: [CommonModule, HttpClientModule, SeriesCardComponent, FormsModule],
+  imports: [CommonModule, SeriesCardComponent, FormsModule],
   templateUrl: './series-preview.component.html',
   styleUrls: ['./series-preview.component.scss']
 })
