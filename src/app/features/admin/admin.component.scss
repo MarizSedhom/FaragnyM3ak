@@ -1,11 +1,13 @@
-body {
+.body {
   background-size: cover;
+  background: linear-gradient(to right, #1A1423, #372549);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .admin-dashboard {
+
   .admin-header {
-    margin-top: 20px;
+    margin-top: 50px;
 
     .admin-avatar {
       width: 60px;
@@ -26,7 +28,7 @@ body {
   }
 
   .chart-card {
-    background: linear-gradient(to right, #1a2b3c, #2d4b66);
+    background: linear-gradient(to right, #1A1423, #372549);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     padding: 20px;
@@ -73,7 +75,7 @@ body {
             padding: 8px 10px;
             border-radius: 6px;
             border: 1px solid #ccc;
-            background: #243b55;
+            background: #372549;
             color: #fff;
             font-size: 0.9rem;
             outline: none;
@@ -87,7 +89,7 @@ body {
 
         .filter-btn {
           padding: 8px 14px;
-          background-color: #00bcd4;
+          background-color: #1A1423;
           color: #fff;
           border: none;
           border-radius: 6px;
@@ -96,7 +98,7 @@ body {
           transition: background-color 0.3s ease;
 
           &:hover {
-            background-color: #0097a7;
+            background-color: #8d729d;
           }
         }
       }
