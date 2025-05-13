@@ -25,7 +25,7 @@ export class NavbarComponent implements AfterViewInit {
   }
   logout(): void {
     this.authService.logout();
-    this.router.navigate(['/login']);
+    this.router.navigate(['/']);
   }
   ngAfterViewInit() {
     // Initialize search functionality after view is initialized

@@ -414,14 +414,14 @@ export class SeriesService {
               page: response.page
             });
           }
-    
+
           // Create a request for each series to get detailed information
           const detailRequests = response.results.map((series: Series) =>
             this.getSeriesById(series.id.toString()).pipe(
               catchError(() => of(series))
             )
           );
-    
+
           return forkJoin(detailRequests).pipe(
             map(detailedSeries => ({
               results: detailedSeries,

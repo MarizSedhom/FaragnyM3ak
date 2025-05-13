@@ -64,10 +64,10 @@
             <span class="label">Director:</span>
             <span class="value">{{ movie.director }}</span>
           </div>
-          <div class="detail-item" *ngIf="movie.cast && movie.cast.length">
+          <!--<div class="detail-item" *ngIf="movie.cast && movie.cast.length">
             <span class="label">Starring:</span>
             <span class="value">{{ movie.cast.slice(0, 3).join(', ') }}</span>
-          </div>
+          </div>-->
         </div>
       </div>
     </div>
@@ -86,8 +86,10 @@
       <div class="tab-content" *ngIf="activeTab === 'related'">
         <!-- <h2 class="section-title">More Like This</h2> -->
         <div class="related-movies">
-          <!-- Use MovieCardComponent for each related movie -->
-          <app-movie-card *ngFor="let relatedMovie of relatedMovies" [movie]="convertToMovieFormat(relatedMovie)">
+          <!-- Use MovieCardComponent for each related movie, now with duration details -->
+          <app-movie-card
+            *ngFor="let relatedMovie of relatedMovies"
+            [movie]="convertToMovieFormat(relatedMovie)">
           </app-movie-card>
 
           <!-- No related movies message -->

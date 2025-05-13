@@ -45,6 +45,9 @@ export interface RelatedMovie {
   title: string;
   imageUrl: string;
   matchPercentage: number;
+  description: string;
+  rating: number;
+  ratingCount: number;
 }
 
 export interface MovieCast {
