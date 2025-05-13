@@ -135,7 +135,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
         this.images = [
           { src: 'https://awesomefriday.ca/2014/05/review-x-men-days-of-future-past/x-men-days-of-future-past-banner/', alt: 'Xmen' },
           { src: 'https://wallpapercave.com/wp/wp14769056.jpg', alt: 'Arcane' },
-          { src: 'https://movieposterhd.com/wp-content/uploads/2019/03/Wallpapers-Avengers-Endgame.jpg', alt: 'Avengers-Endgame' },
+          { src: 'https://wallpapercave.com/wp/wp10815292.jpg', alt: 'John-Wick' },
           { src: 'https://wallpapercave.com/wp/wp6085066.jpg', alt: 'Jujutsu Kaisen' },
           { src: 'https://wallpapercave.com/wp/wp12507537.jpg', alt: 'DareDevil' },
           { src: 'https://mrwallpaper.com/images/hd/the-batman-title-poster-j2ft6omd0csyg22b.jpg', alt: 'batman' }
@@ -155,7 +155,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
         this.hasCarouselError = true;
         this.isLoadingCarousel = false;
       }
-    }, 500); // Simulate 1 second loading time
+    }, 1500); // Simulate 1 second loading time
   }
 
   filterMovies() {

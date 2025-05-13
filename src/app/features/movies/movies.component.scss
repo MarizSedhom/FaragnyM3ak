@@ -313,13 +313,16 @@ body {
     background-color: #7c41b7;
 }
 .genre-checkbox input:checked::after {
-    // content: '☑';
+    content: '';
     position: absolute;
-    top: 50%;
+    top: 40%;
     left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-    font-size: 10px;
+    transform: translate(-50%, -50%) rotate(45deg);
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    margin-top: 1px;
 }
 .genre-checkbox span {
     flex-grow: 1;
