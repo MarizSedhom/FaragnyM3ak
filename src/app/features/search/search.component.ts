@@ -103,7 +103,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
   // Fetch only Movies
   fetchMovies(): void {
-    this.http.get(`${environment.ThemovieDB.apiBaseUrl}/search/movie?query=${this.query}&api_key=${environment.ThemovieDB.apiKey}&page=${this.currentPage}`)
+    this.http.get(`${environment.ThemovieDB.apiBaseUrl}/search/movie?query=${this.query}&api_key=${environment.ThemovieDB.api_Key}&page=${this.currentPage}`)
       .pipe(
         map((response: any) => ({
           data: response.results,
@@ -120,7 +120,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
           }
 
           const movieDetailsRequests = movies.data.map((movie: any) =>
-            this.http.get(`${environment.ThemovieDB.apiBaseUrl}/movie/${movie.id}?api_key=${environment.ThemovieDB.apiKey}`).pipe(
+            this.http.get(`${environment.ThemovieDB.apiBaseUrl}/movie/${movie.id}?api_key=${environment.ThemovieDB.api_Key}`).pipe(
               map((movieDetails: any) => ({
                 ...movie,
                 runtime: movieDetails.runtime
@@ -163,7 +163,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
   // Fetch only TV Shows
   fetchTVShows(): void {
-    this.http.get(`${environment.ThemovieDB.apiBaseUrl}/search/tv?query=${this.query}&api_key=${environment.ThemovieDB.apiKey}&page=${this.currentPage}`)
+    this.http.get(`${environment.ThemovieDB.apiBaseUrl}/search/tv?query=${this.query}&api_key=${environment.ThemovieDB.api_Key}&page=${this.currentPage}`)
       .pipe(
         map((response: any) => ({
           data: response.results,
@@ -180,7 +180,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
           }
 
           const tvShowDetailsRequests = tvShows.data.map((tv: any) =>
-            this.http.get(`${environment.ThemovieDB.apiBaseUrl}/tv/${tv.id}?api_key=${environment.ThemovieDB.apiKey}`).pipe(
+            this.http.get(`${environment.ThemovieDB.apiBaseUrl}/tv/${tv.id}?api_key=${environment.ThemovieDB.api_Key}`).pipe(
               map((tvShowDetails: any) => ({
                 ...tv,
                 seasons: tvShowDetails.seasons
