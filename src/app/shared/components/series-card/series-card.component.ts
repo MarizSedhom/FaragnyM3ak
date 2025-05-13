@@ -13,6 +13,8 @@ import { CommonModule } from '@angular/common';
 export class SeriesCardComponent {
   @Input() series!: Series;
   @Output() statusChange = new EventEmitter<{ seriesId: string, isFavorite: boolean, isWatchlist: boolean }>();
+    @Input() isContinueWatching: boolean = false;
+@Output() remove = new EventEmitter<string>();
 
   constructor(private router: Router, private listServices: UserListsService) { }
   isFavorite: boolean = false;
@@ -109,4 +111,9 @@ export class SeriesCardComponent {
   formatCount(count: number): string {
     return (count * 1000).toLocaleString();
   }
+
+    onRemove(event: Event): void {
+  event.stopPropagation(); // Prevent navigation
+  this.remove.emit(String( this.series.id));
+}
 }

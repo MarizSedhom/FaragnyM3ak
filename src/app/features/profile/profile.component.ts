@@ -25,6 +25,7 @@ export type MediaItem = (Movie & { type: 'movie', isFavorite: boolean, watched: 
 })
 export class ProfileComponent implements OnInit {
   // Pagination for each section
+  
   currentContinueIndex: number = 0;
   currentWatchlistIndex: number = 0;
   currentFavoritesIndex: number = 0;
@@ -63,7 +64,6 @@ export class ProfileComponent implements OnInit {
     { label: 'All', value: 'all' },
     { label: 'Watched', value: 'watched' },
     { label: 'Unwatched', value: 'unwatched' },
-    { label: 'In Progress', value: 'in-progress' }
   ];
   selectedFilter = 'all';
 
@@ -378,5 +378,11 @@ export class ProfileComponent implements OnInit {
       return item;
     });
   }
+
+  removeFromContinueWatching(movieId: string): void {
+ this.continueWatching.splice(0, this.continueWatching.length, ...this.continueWatching.filter(item => item.id.toString() !== movieId));
+
+  // You can also update localStorage or your backend API here if needed
+}
 
 }
