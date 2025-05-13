@@ -1,7 +1,7 @@
 {
   "version": 2,
   "buildCommand": "node set-env.js && npm run build",
-  "outputDirectory": "dist/movie-app",
+  "outputDirectory": "dist/movie-app/browser",
   "framework": "angular",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
