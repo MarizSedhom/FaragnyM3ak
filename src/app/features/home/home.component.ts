@@ -128,8 +128,12 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
         this.images = [
           { src: 'https://awesomefriday.ca/2014/05/review-x-men-days-of-future-past/x-men-days-of-future-past-banner/', alt: 'First slide' },
-          { src: 'https://lumiere-a.akamaihd.net/v1/images/image_d93db6a1.jpeg?region=0,0,760,328', alt: 'Second slide' },
-          { src: 'https://static1.cbrimages.com/wordpress/wp-content/uploads/2023/02/up-movie-poster.jpg', alt: 'Third slide' }
+          { src: 'https://wallpapercave.com/wp/wp12507537.jpg', alt: 'Second slide' },
+          { src: 'https://movieposterhd.com/wp-content/uploads/2019/03/Wallpapers-Avengers-Endgame.jpg', alt: 'Third slide' },
+          { src: 'https://mrwallpaper.com/images/hd/the-batman-title-poster-j2ft6omd0csyg22b.jpg' , alt: 'Fourth slide'},
+          { src: 'https://baylorlariat.com/wp-content/uploads/2022/04/attack-on-titan.jpeg' , alt: 'Fifth slide'},
+          { src: 'https://wallpapercave.com/wp/wp6085066.jpg' , alt: 'Sixth slide'}
+
         ];
 
         this.isLoadingCarousel = false;

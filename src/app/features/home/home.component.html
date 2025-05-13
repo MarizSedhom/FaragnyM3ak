@@ -35,9 +35,9 @@
 
     <!-- Slides -->
     <div class="carousel-inner">
-      <div *ngFor="let image of images; let i = index" class="carousel-item" [ngClass]="{ 'active': i === 0 }">
-        <img class="d-block w-100" [src]="image.src" [alt]="image.alt"
-          style="height: 750px; width: 100vw; object-fit: cover;">
+      <div *ngFor="let image of images; let i = index" class="carousel-item" style="padding-top: 30px;" [ngClass]="{ 'active': i === 0 }">
+      <img class="d-block w-100" [src]="image.src" [alt]="image.alt"
+        style="max-height: 750px; max-width: 100%;">
       </div>
     </div>
 
