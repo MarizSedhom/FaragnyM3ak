@@ -32,6 +32,9 @@ import { RouterModule } from '@angular/router';
 export class MovieCardComponent {
   @Input() movie!: Movie; // ! indicates that this property will be initialized later
   @Output() statusChange = new EventEmitter<{ movieId: string, isFavorite: boolean, isWatchlist: boolean }>();
+  @Input() isContinueWatching: boolean = false;
+@Output() remove = new EventEmitter<string>();
+
   constructor(private router: Router, private listServices: UserListsService) { }
   isFavorite: boolean = false;
   isWatchlist: boolean = false;
@@ -39,6 +42,7 @@ export class MovieCardComponent {
   ngOnInit(): void {
     this.checkMovieStatuses();
   }
+  
   
 
   checkMovieStatuses(): void {
@@ -145,4 +149,8 @@ export class MovieCardComponent {
       return `${mins} min`;
     }
   }
+  onRemove(event: Event): void {
+  event.stopPropagation(); // Prevent navigation
+  this.remove.emit(String( this.movie.id));
+}
 }

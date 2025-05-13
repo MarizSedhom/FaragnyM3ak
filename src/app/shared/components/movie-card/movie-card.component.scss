@@ -109,3 +109,21 @@
     border-radius: 5px;
   }
 }
+
+.remove-button {
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 50%;
+  color: white;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+.remove-button:hover {
+  background: rgba(255, 0, 0, 0.7);
+}

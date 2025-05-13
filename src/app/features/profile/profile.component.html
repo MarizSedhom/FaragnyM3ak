@@ -53,46 +53,66 @@
     <div class="collections-container card-body">
       <div class="lists-container">
         <!--Watchlist-->
-        <section class="section">
-          <div class="section-header">
-            <h2>Watchlist</h2>
-          </div>
-          <div class="section-content" #watchlistScroll>
-            <div class="cards-container">
-              <ng-container *ngFor="let item of watchList">
-                <app-movie-card *ngIf="isMovie(item)"
-                  [movie]="item"
-                  (statusChange)="updateMovieStatus($event.movieId, $event.isFavorite, $event.isWatchlist)">
-                </app-movie-card>
-                <app-series-card *ngIf="isSeries(item)"
-                  [series]="item"
-                  (statusChange)="updateSeriesStatus($event.seriesId, $event.isFavorite, $event.isWatchlist)">
-                </app-series-card>
-              </ng-container>
-            </div>
-          </div>
-        </section>
+<!-- Watchlist Section -->
+<section class="section">
+  <div class="section-header">
+    <h2>Watchlist</h2>
+  </div>
+  <div class="section-content" #watchlistScroll>
+    <div class="cards-container">
+      <!-- Display a message if no items in watchlist -->
+      <div *ngIf="watchList.length === 0" class="no-items-message">
+        No items in your Watchlist. 
+      </div>
+      
+      <ng-container *ngFor="let item of watchList">
+        <app-movie-card *ngIf="isMovie(item)"
+          [movie]="item"
+          (statusChange)="updateMovieStatus($event.movieId, $event.isFavorite, $event.isWatchlist)">
+        </app-movie-card>
+        <app-series-card *ngIf="isSeries(item)"
+          [series]="item"
+          (statusChange)="updateSeriesStatus($event.seriesId, $event.isFavorite, $event.isWatchlist)">
+        </app-series-card>
+      </ng-container>
+    </div>
+  </div>
+</section>
 
-        <!--Favorites-->
-        <section class="section">
-          <div class="section-header">
-            <h2>Favorites</h2>
-          </div>
-          <div class="section-content" #favoritesScroll>
-            <div class="cards-container">
-              <ng-container *ngFor="let item of favorites">
-                <app-movie-card *ngIf="isMovie(item)"
-                  [movie]="item"
-                  (statusChange)="updateMovieStatus($event.movieId, $event.isFavorite, $event.isWatchlist)">
-                </app-movie-card>
-                <app-series-card *ngIf="isSeries(item)"
-                  [series]="item"
-                  (statusChange)="updateSeriesStatus($event.seriesId, $event.isFavorite, $event.isWatchlist)">
-                </app-series-card>
-              </ng-container>
-            </div>
-          </div>
-        </section>
+<!-- Favorites Section -->
+<section class="section">
+  <div class="section-header">
+    <h2>Favorites</h2>
+  </div>
+  <div class="section-content" #favoritesScroll>
+    <div class="cards-container">
+      <!-- Display a message if no items in favorites -->
+      <div *ngIf="favorites.length === 0" class="no-items-message">
+        No items in your Favorites. 
+      </div>
+
+      <ng-container *ngFor="let item of favorites">
+      <app-movie-card *ngIf="isMovie(item)"
+  [movie]="item"
+  [isContinueWatching]="true"
+  (remove)="removeFromContinueWatching(item.id.toString())"
+  (statusChange)="updateMovieStatus($event.movieId, $event.isFavorite, $event.isWatchlist)">
+</app-movie-card>
+
+        <app-series-card *ngIf="isSeries(item)"
+          [series]="item"
+            [isContinueWatching]="true"
+  (remove)="removeFromContinueWatching(item.id.toString())"
+          (statusChange)="updateSeriesStatus($event.seriesId, $event.isFavorite, $event.isWatchlist)">
+        </app-series-card>
+      </ng-container>
+    </div>
+  </div>
+</section>
+
+
+
+
       </div>
     </div>
   </section>
