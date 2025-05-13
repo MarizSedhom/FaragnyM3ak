@@ -173,7 +173,7 @@ export class WatchComponent implements OnInit, OnDestroy, AfterViewInit {
    * Fetches movie data and related YouTube videos
    */
   fetchAllData(): void {
-    this.http.get(`${environment.ThemovieDB.apiBaseUrl}/${this.type}/${this.watchID}?api_key=${environment.ThemovieDB.api_Key}&append_to_response=videos`)
+    this.http.get(`${environment.ThemovieDB.apiBaseUrl}/${this.type}/${this.watchID}?api_key=${environment.ThemovieDB.apiKey}&append_to_response=videos`)
       .subscribe({
         next: (movieData: any) => {
           // Filter only YouTube videos

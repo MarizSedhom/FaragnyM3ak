@@ -9,7 +9,7 @@ import { Series, SeriesCast, SeriesResponse } from '../shared/models/series.mode
 })
 export class SeriesService {
   private apiBaseUrl = environment.ThemovieDB.apiBaseUrl;
-  private apiKey = environment.ThemovieDB.api_Key;
+  private apiKey = environment.ThemovieDB.apiKey;
   private imageBaseUrl = environment.ThemovieDB.imageBaseUrl;
 
   private genreMap: { [id: number]: string } = {};
@@ -414,14 +414,14 @@ export class SeriesService {
               page: response.page
             });
           }
-    
+
           // Create a request for each series to get detailed information
           const detailRequests = response.results.map((series: Series) =>
             this.getSeriesById(series.id.toString()).pipe(
               catchError(() => of(series))
             )
           );
-    
+
           return forkJoin(detailRequests).pipe(
             map(detailedSeries => ({
               results: detailedSeries,
