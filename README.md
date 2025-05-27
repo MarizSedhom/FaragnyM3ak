@@ -16,6 +16,9 @@ A Netflix-like streaming platform where users can explore, watch, and manage the
 - 🎯 Filter content by categories (e.g., Action, Comedy, Drama)
 - 🏆 View Top 10 trending movies
 - 💬 Responsive and modern design with Bootstrap styling
+- 💳 Integrated payment service (Stripe) for premium content access
+
+> 🧪 **Test Payment:** Use card number `4242 4242 4242 4242`, any future date for expiration, and any 3-digit CVC to test payment flow in development.
 
 ---
 
