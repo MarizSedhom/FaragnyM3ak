@@ -3,6 +3,7 @@
 A Netflix-like streaming platform where users can explore, watch, and manage their favorite movies and series — all powered by real-time data and Firebase.
 
 🌐 Live Demo: [https://faragny-m3ak.vercel.app](https://faragny-m3ak.vercel.app)
+
 Project Video: [https://drive.google.com/file/d/1YEo3r_b61HCJ2DWgI6u40DKTJksnNkqd/view](https://drive.google.com/file/d/1YEo3r_b61HCJ2DWgI6u40DKTJksnNkqd/view)
 
 ---
